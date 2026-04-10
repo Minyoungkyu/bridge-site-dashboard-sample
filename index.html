@@ -550,13 +550,13 @@
                     <div id="tf-body" style="grid-template-columns:150px 1fr;">
                         <!-- 수조 게이지 -->
                         <div id="tf-tank-col">
-                            <canvas id="cv-tf-tank" width="120" height="280"></canvas>
+                            <canvas id="cv-tf-tank" width="120" height="220"></canvas>
                             <div style="font-family:Consolas,monospace;font-size:22px;font-weight:900;margin-top:6px;text-shadow:0 0 14px currentColor" id="tf-num">---</div>
                             <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px;">EL.m (해수위)</div>
                         </div>
                         <!-- 메인 캔버스 -->
                         <div id="tf-main-col">
-                            <canvas id="cv-tf-main" style="width:100%;height:100%;display:block"></canvas>
+                            <canvas id="cv-tf-main" style="width:95%;height:85%;display:block;margin:auto"></canvas>
                             <div id="tf-tooltip" style="position:absolute;display:none;pointer-events:none;background:rgba(0,0,0,.92);border:1px solid rgba(0,200,255,.5);border-radius:6px;padding:6px 10px;font-family:Consolas,monospace;font-size:13px;color:#fff;z-index:20;white-space:nowrap;box-shadow:0 4px 12px rgba(0,100,255,.3);"></div>
                         </div>
                     </div>
@@ -715,12 +715,12 @@
                             </div>
                             <div style="flex:1;display:grid;grid-template-columns:150px 1fr;overflow:hidden;">
                                 <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-right:1px solid rgba(0,200,255,.12);padding:10px 0;">
-                                    <canvas id="tp-cv-tank" width="120" height="280"></canvas>
+                                    <canvas id="tp-cv-tank" width="120" height="220"></canvas>
                                     <div id="tp-tank-num" style="font-family:Consolas,monospace;font-size:22px;font-weight:900;text-shadow:0 0 14px currentColor;margin-top:6px;">---</div>
                                     <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px;">EL.m (해수위)</div>
                                 </div>
                                 <div id="tp-main-col" style="position:relative;overflow:hidden;">
-                                    <canvas id="tp-cv-main" style="width:100%;height:100%;display:block;"></canvas>
+                                    <canvas id="tp-cv-main" style="width:95%;height:85%;display:block;margin:auto"></canvas>
                                     <div id="tp-tooltip" style="position:absolute;display:none;pointer-events:none;background:rgba(0,0,0,.92);border:1px solid rgba(0,200,255,.5);border-radius:6px;padding:6px 10px;font-family:Consolas,monospace;font-size:11px;color:#fff;z-index:20;white-space:nowrap;box-shadow:0 4px 12px rgba(0,100,255,.3);"></div>
                                 </div>
                             </div>
@@ -1809,7 +1809,7 @@
         // 시화호 조수간만의 차 — GIS 맵 우측 패널 버전 (RAW 데이터)
         // ════════════════════════════════════════════════════════
         (function(){
-            const HI=5, LO=-5;
+            const HI=5, LO=-3.5;
 
             const RAW2=[
                 {obsdt:"2026-04-09 00:00",seaRwl:-1.31,lakeRwl:-1.06},{obsdt:"2026-04-09 00:10",seaRwl:-1.44,lakeRwl:-1.15},
@@ -1863,13 +1863,13 @@
 
             function drawTank(ts){
                 const cv=document.getElementById('cv-tf-tank'); if(!cv) return;
-                const ctx=cv.getContext('2d'),W=120,H=280,T=ts/1000;
+                const ctx=cv.getContext('2d'),W=120,H=220,T=ts/1000;
                 const v=VISIBLE2[NOW_I2].seaRwl;
                 const pct=Math.max(0,Math.min(1,(v-LO)/(HI-LO)));
                 const c=tcol(v),[R,G,B]=rgb(c);
                 ctx.clearRect(0,0,W,H);
                 ctx.fillStyle='rgba(0,5,16,.97)'; ctx.fillRect(0,0,W,H);
-                const bx=12,by=18,bw=75,bh=230,sk=12;
+                const bx=12,by=18,bw=75,bh=175,sk=12;
                 ctx.strokeStyle='rgba(0,170,255,.45)'; ctx.lineWidth=1.6; ctx.strokeRect(bx,by,bw,bh);
                 ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(bx+sk,by-sk); ctx.lineTo(bx+bw+sk,by-sk); ctx.lineTo(bx+bw,by); ctx.stroke();
                 ctx.beginPath(); ctx.moveTo(bx+bw,by); ctx.lineTo(bx+bw+sk,by-sk); ctx.lineTo(bx+bw+sk,by-sk+bh); ctx.stroke();
@@ -1930,7 +1930,7 @@
                 const dzG=ctx.createLinearGradient(0,PT,0,dZy);
                 dzG.addColorStop(0,'rgba(255,30,60,.07)'); dzG.addColorStop(1,'rgba(255,30,60,0)');
                 ctx.fillStyle=dzG; ctx.fillRect(PL,PT,cW,Math.max(0,dZy-PT));
-                [-4,-2,0,2,4].forEach(vv=>{
+                [-3,-1,0,2,4].forEach(vv=>{
                     const y=PT+cH-((vv-LO)/(HI-LO))*cH;
                     const isMain=vv===0;
                     ctx.strokeStyle=isMain?'rgba(0,200,255,.18)':vv>1.0?'rgba(255,140,0,.07)':'rgba(0,180,255,.07)';
@@ -2533,7 +2533,7 @@
     <!-- ─── 시화호 조수 패널 (하드코딩 데이터, KHOA 스타일) ─── -->
     <script>
     (function(){
-        const HI=5, LO=-5;
+        const HI=5, LO=-3.5;
         const RAW=[
             {obsdt:"2026-04-09 00:00",seaRwl:-1.31,lakeRwl:-1.06},{obsdt:"2026-04-09 00:10",seaRwl:-1.44,lakeRwl:-1.15},
             {obsdt:"2026-04-09 00:20",seaRwl:-1.64,lakeRwl:-1.19},{obsdt:"2026-04-09 00:30",seaRwl:-1.79,lakeRwl:-1.27},
@@ -2586,13 +2586,13 @@
 
         function drawTank(ts){
             const cv=document.getElementById('tp-cv-tank'); if(!cv) return;
-            const ctx=cv.getContext('2d'),W=120,H=280,T=ts/1000;
+            const ctx=cv.getContext('2d'),W=120,H=220,T=ts/1000;
             const v=VISIBLE[NOW_I].seaRwl;
             const pct=Math.max(0,Math.min(1,(v-LO)/(HI-LO)));
             const c=tcol(v),[R,G,B]=rgb(c);
             ctx.clearRect(0,0,W,H);
             ctx.fillStyle='rgba(0,5,16,.97)'; ctx.fillRect(0,0,W,H);
-            const bx=12,by=18,bw=75,bh=230,sk=12;
+            const bx=12,by=18,bw=75,bh=175,sk=12;
             ctx.strokeStyle='rgba(0,170,255,.45)'; ctx.lineWidth=1.6; ctx.strokeRect(bx,by,bw,bh);
             ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(bx+sk,by-sk); ctx.lineTo(bx+bw+sk,by-sk); ctx.lineTo(bx+bw,by); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(bx+bw,by); ctx.lineTo(bx+bw+sk,by-sk); ctx.lineTo(bx+bw+sk,by-sk+bh); ctx.stroke();
@@ -2653,7 +2653,7 @@
             const dzG=ctx.createLinearGradient(0,PT,0,dZy);
             dzG.addColorStop(0,'rgba(255,30,60,.07)'); dzG.addColorStop(1,'rgba(255,30,60,0)');
             ctx.fillStyle=dzG; ctx.fillRect(PL,PT,cW,Math.max(0,dZy-PT));
-            [-4,-2,0,2,4].forEach(vv=>{
+            [-3,-1,0,2,4].forEach(vv=>{
                 const y=PT+cH-((vv-LO)/(HI-LO))*cH;
                 const isMain=vv===0;
                 ctx.strokeStyle=isMain?'rgba(0,200,255,.18)':vv>1.5?'rgba(255,140,0,.07)':'rgba(0,180,255,.07)';
