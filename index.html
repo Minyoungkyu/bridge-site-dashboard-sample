@@ -133,6 +133,16 @@
 
         /* [수정됨] 기상 패널 위치 중앙(left: 50%), 너비 축소(2400px), 간격 조정으로 침범 방지 */
         #bottom-weather-bar { position: absolute; bottom: 30px; right: 40px; width: 600px; top: 600px; background: rgba(0, 8, 20, 0.85); border: 2px solid rgba(0, 200, 255, 0.4); border-radius: 32px; z-index: 980; backdrop-filter: blur(15px); display: flex; flex-direction: column; align-items: stretch; justify-content: center; padding: 20px 24px; pointer-events: auto; box-shadow: 0 15px 40px rgba(0,0,0,0.5); gap: 12px; overflow: hidden; }
+        #traffic-icon-panel, #traffic-light-panel { position: absolute; right: 18px; left: 370px; z-index: 2; background: rgba(0,12,30,0.65); border: 1px solid rgba(0,200,255,0.3); border-radius: 18px; backdrop-filter: blur(6px); display: flex; flex-direction: column; padding: 12px 14px; }
+        #traffic-icon-panel { top: 26px; height: 180px; align-items: stretch; }
+        #traffic-light-panel { top: 220px; height: 245px; align-items: stretch; }
+        .tl-title { padding-bottom: 8px; border-bottom: 1px solid rgba(0,200,255,0.2); }
+        .tl-icon-section { flex: 1; display: flex; align-items: center; justify-content: center; padding: 6px 0; }
+        .tl-light-section { flex: 1; display: flex; align-items: center; justify-content: center; gap: 12px; padding-top: 8px; }
+        .traffic-light-dot { background: rgba(40,40,55,0.6); border: 2px solid rgba(255,255,255,0.08); }
+        .traffic-light-dot.active-red { background: radial-gradient(circle at 35% 35%, #ff7a8a, #ef4444 60%, #7f1d1d); border-color: #ef4444; box-shadow: 0 0 18px 2px rgba(239,68,68,0.85), inset 0 0 8px rgba(255,255,255,0.4); }
+        .traffic-light-dot.active-yellow { background: radial-gradient(circle at 35% 35%, #fde68a, #f59e0b 60%, #78350f); border-color: #f59e0b; box-shadow: 0 0 18px 2px rgba(245,158,11,0.85), inset 0 0 8px rgba(255,255,255,0.4); }
+        .traffic-light-dot.active-green { background: radial-gradient(circle at 35% 35%, #86efac, #10b981 60%, #064e3b); border-color: #10b981; box-shadow: 0 0 18px 2px rgba(16,185,129,0.85), inset 0 0 8px rgba(255,255,255,0.4); }
         .flag-cloth { position: absolute; left: 14px; top: 0px; width: 65px; height: 26px; background: repeating-linear-gradient(90deg, #f59e0b, #f59e0b 20px, #ffffff 20px, #ffffff 40px); clip-path: polygon(0 0, 100% 25%, 100% 75%, 0 100%); transform-origin: left center; animation: flutter 0.6s infinite alternate ease-in-out; }
         @keyframes flutter { 0% { transform: rotateZ(0deg); } 100% { transform: rotateZ(6deg) scaleX(0.95); } }
         .wave-svg { width: 200%; height: 100%; position: absolute; bottom: 0; left: 0; animation: wave-move 2.5s linear infinite; fill: #00AEEF; opacity: 0.8; }
@@ -166,7 +176,7 @@
             background: rgba(2, 6, 15, 0.99); backdrop-filter: blur(100px); 
             border-left: 20px solid #0054A6; z-index: 4500; transform: translateX(100%); opacity: 0; pointer-events: none;
             transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.7s; 
-            padding: 60px; display: flex; flex-direction: column; gap: 40px; box-shadow: -30px 0 50px rgba(0,0,0,0.8);
+            padding: 28px 60px 32px 60px; display: flex; flex-direction: column; gap: 20px; box-shadow: -30px 0 50px rgba(0,0,0,0.8);
         }
         #side-detail-widget.open { transform: translateX(0); opacity: 1; pointer-events: auto; } 
 
@@ -556,10 +566,11 @@
                         </div>
                         <!-- 메인 캔버스 -->
                         <div id="tf-main-col">
-                            <canvas id="cv-tf-main" style="width:95%;height:85%;display:block;margin:auto"></canvas>
+                            <canvas id="cv-tf-main" style="width:95%;height:98%;display:block;margin:auto"></canvas>
                             <div id="tf-tooltip" style="position:absolute;display:none;pointer-events:none;background:rgba(0,0,0,.92);border:1px solid rgba(0,200,255,.5);border-radius:6px;padding:6px 10px;font-family:Consolas,monospace;font-size:13px;color:#fff;z-index:20;white-space:nowrap;box-shadow:0 4px 12px rgba(0,100,255,.3);"></div>
                         </div>
                     </div>
+                    <div style="flex-shrink:0;text-align:right;padding:6px 18px 10px;font-size:13px;font-weight:700;color:#00f5ff;text-shadow:0 0 8px rgba(0,245,255,.5);letter-spacing:.06em;">제공기관: 한국수자원공사</div>
                 </div>
 
                 <!-- 이벤트 타임라인 제거됨 -->
@@ -625,6 +636,26 @@
                             <span class="text-slate-300 text-[16px] font-bold">월(03)</span><i data-lucide="sun" class="w-8 h-8 text-amber-400"></i><span class="text-[18px] font-black text-white">18/10°</span>
                         </div>
                     </div>
+
+                    <!-- 체감온도 · 상단 아이콘 패널 -->
+                    <div id="traffic-icon-panel">
+                        <p class="tl-title text-cyan-300 text-[16px] font-black tracking-wider text-center">체감온도</p>
+                        <div class="tl-icon-section">
+                            <div id="traffic-temp-icon" class="text-[64px] leading-none transition-all">😊</div>
+                        </div>
+                    </div>
+                    <!-- 무사고 체감온도계 · 하단 신호등 패널 -->
+                    <div id="traffic-light-panel">
+                        <p class="tl-title text-cyan-300 text-[16px] font-black tracking-wider text-center">체감온도계</p>
+                        <div class="tl-light-section">
+                            <div class="flex flex-col gap-1.5 p-2 bg-black/70 rounded-xl border-2 border-white/20 shadow-inner">
+                                <div id="light-red" class="traffic-light-dot w-8 h-8 rounded-full transition-all duration-500"></div>
+                                <div id="light-yellow" class="traffic-light-dot w-8 h-8 rounded-full transition-all duration-500"></div>
+                                <div id="light-green" class="traffic-light-dot w-8 h-8 rounded-full transition-all duration-500"></div>
+                            </div>
+                            <p id="traffic-status-label" class="text-[18px] font-black text-emerald-400 transition-colors whitespace-nowrap">정상 (안전)</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -650,26 +681,26 @@
 
             <!-- 상세 위젯 대시보드 -->
             <div id="side-detail-widget">
-                <div class="flex justify-between items-center border-b-4 border-white/10 pb-6 shrink-0">
-                    <div class="flex items-center gap-10">
-                        <div class="bg-white rounded-2xl p-4 shadow-2xl"><img src="https://www.dlenc.co.kr/images/common/logo.png" alt="건설사" class="h-10 object-contain"></div>
-                        <h2 class="text-[64px] font-black text-white title-blink" id="detail-title">현장 정밀 관제</h2>
+                <div class="flex justify-between items-center border-b-2 border-white/10 pb-2 shrink-0">
+                    <div class="flex items-center gap-6">
+                        <div class="bg-white rounded-xl p-2 shadow-2xl"><img src="https://www.dlenc.co.kr/images/common/logo.png" alt="건설사" class="h-7 object-contain"></div>
+                        <h2 class="text-[44px] font-black text-white title-blink" id="detail-title">현장 정밀 관제</h2>
                     </div>
-                    <button onclick="closeSiteDetail()" class="bg-white/10 hover:bg-rose-500 p-6 rounded-3xl transition-all"><i data-lucide="x" class="w-12 h-12 text-white"></i></button>
+                    <button onclick="closeSiteDetail()" class="bg-white/10 hover:bg-rose-500 p-3 rounded-2xl transition-all"><i data-lucide="x" class="w-8 h-8 text-white"></i></button>
                 </div>
                 
                 <div class="flex-1 grid grid-cols-12 gap-8 overflow-hidden">
                     
                     <!-- Left Side: Maps & 3D Bridge (col-span-6) -->
-                    <div class="col-span-6 flex flex-col gap-8 h-full">
-                        <div class="h-[50%] bg-black rounded-[40px] border-2 border-white/10 overflow-hidden relative shadow-2xl">
+                    <div class="col-span-6 flex flex-col gap-3 h-full">
+                        <div class="h-[712px] shrink-0 bg-black rounded-[40px] border-2 border-white/10 overflow-hidden relative shadow-2xl">
                             <div class="absolute top-6 left-6 z-[999] bg-black/70 backdrop-blur px-6 py-3 rounded-2xl border border-white/20 text-white font-black text-[22px] flex items-center gap-3 shadow-lg">
                                 <i data-lucide="crosshair" class="text-cyan-400"></i> 실시간 근로자/장비 추적 관제
                             </div>
                             <div id="detail-mini-map" class="w-full h-full"></div>
                         </div>
 
-                        <div class="h-[50%] bg-[#0a0e1a] rounded-[40px] border-2 border-[#1e3a8a] overflow-hidden relative shadow-2xl flex flex-col">
+                        <div class="h-[560px] shrink-0 bg-[#0a0e1a] rounded-[40px] border-2 border-[#1e3a8a] overflow-hidden relative shadow-2xl flex flex-col">
                             <div class="flex items-center gap-3 px-8 py-4 shrink-0">
                                 <h3 class="text-[30px] text-cyan-400 font-black flex items-center gap-3"><i data-lucide="trending-down"></i> 공정진행현황 및 위치관제</h3>
                                 <div id="bridge3d-status" class="text-[14px] text-slate-500 font-bold ml-4" style="display:none"></div>
@@ -680,6 +711,15 @@
                                     <div style="width:60px;height:60px;border:5px solid rgba(126,200,227,0.2);border-top-color:#7ec8e3;border-radius:50%;animation:bridge3d-spin 0.8s linear infinite;"></div>
                                     <p style="margin-top:18px;font-size:18px;color:#7ec8e3;font-weight:700;">3D 모델 로딩 중...</p>
                                 </div>
+                            </div>
+                            <div id="bridge3d-timeline" class="shrink-0 px-8 pt-3 pb-6 border-t border-white/10 bg-black/40">
+                                <div class="flex items-center gap-4 mb-2">
+                                    <div class="text-[13px] font-black text-cyan-300 whitespace-nowrap">공정 진행도</div>
+                                    <div id="bridge3d-month-display" class="text-[15px] font-black text-cyan-300 min-w-[100px] text-center">착공 전</div>
+                                    <div class="text-[13px] text-slate-400 ml-auto whitespace-nowrap">완료: <span id="bridge3d-progress-pct" class="text-cyan-300 font-black">0%</span></div>
+                                </div>
+                                <input type="range" id="bridge3d-timeline-slider" min="0" max="12" value="0" step="1" class="w-full">
+                                <div id="bridge3d-month-ticks" class="flex justify-between w-full text-[10px] text-slate-500 mt-1 px-[2px]"></div>
                             </div>
                         </div>
                     </div>
@@ -713,17 +753,18 @@
                                     </div>
                                 </div>
                             </div>
-                            <div style="flex:1;display:grid;grid-template-columns:150px 1fr;overflow:hidden;">
+                            <div style="flex:1;display:grid;grid-template-columns:150px 1fr;overflow:hidden;min-height:0;">
                                 <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-right:1px solid rgba(0,200,255,.12);padding:10px 0;">
                                     <canvas id="tp-cv-tank" width="120" height="220"></canvas>
                                     <div id="tp-tank-num" style="font-family:Consolas,monospace;font-size:22px;font-weight:900;text-shadow:0 0 14px currentColor;margin-top:6px;">---</div>
                                     <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px;">EL.m (해수위)</div>
                                 </div>
                                 <div id="tp-main-col" style="position:relative;overflow:hidden;">
-                                    <canvas id="tp-cv-main" style="width:95%;height:85%;display:block;margin:auto"></canvas>
+                                    <canvas id="tp-cv-main" style="width:95%;height:98%;display:block;margin:auto"></canvas>
                                     <div id="tp-tooltip" style="position:absolute;display:none;pointer-events:none;background:rgba(0,0,0,.92);border:1px solid rgba(0,200,255,.5);border-radius:6px;padding:6px 10px;font-family:Consolas,monospace;font-size:11px;color:#fff;z-index:20;white-space:nowrap;box-shadow:0 4px 12px rgba(0,100,255,.3);"></div>
                                 </div>
                             </div>
+                            <div style="flex-shrink:0;text-align:right;padding:6px 18px 10px;font-size:13px;font-weight:700;color:#00f5ff;text-shadow:0 0 8px rgba(0,245,255,.5);letter-spacing:.06em;">제공기관: 한국수자원공사</div>
                         </div>
 
                         <!-- 2.5. Worker Monitor (일별 투입 현황) -->
@@ -772,8 +813,20 @@
                             </div>
                         </div>
 
-                        <!-- 3. Hazardous/Confined Space -->
-                        <div class="bg-rose-950/30 rounded-[20px] border-2 border-rose-500/40 p-4 flex flex-col shadow-lg shrink-0">
+                        <!-- 하단: bridge.glb 미니 뷰어 (오버레이/펄스 없음, 카메라 고정) -->
+                        <div class="bg-[#0a0e1a] rounded-[20px] border-2 border-slate-700/50 h-[560px] shrink-0 overflow-hidden relative" id="bridge3d-mini-container">
+                            <div id="bridge3d-mini-loading" style="position:absolute;inset:0;z-index:10;background:rgba(10,14,26,0.95);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;transition:opacity 0.4s;">
+                                <div style="width:48px;height:48px;border:4px solid rgba(126,200,227,0.2);border-top-color:#7ec8e3;border-radius:50%;animation:bridge3d-spin 0.8s linear infinite;"></div>
+                                <div style="font-size:11px;color:#7ec8e3;font-weight:700;letter-spacing:.05em;">BRIDGE 3D 로딩 중...</div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Right Side: Compact Sensors, Equipment Table, Notifications, Buttons (col-span-3) -->
+                    <div class="col-span-3 flex flex-col gap-3 h-full justify-between">
+                        <!-- 3. Hazardous/Confined Space (moved from col-2) -->
+                        <!-- <div class="bg-rose-950/30 rounded-[20px] border-2 border-rose-500/40 p-4 flex flex-col shadow-lg shrink-0">
                             <h3 class="text-[18px] text-rose-400 font-black mb-3 flex items-center gap-2"><i data-lucide="alert-triangle" class="w-4 h-4"></i> 위험/밀폐구역 출입현황 (집중관제)</h3>
                             <div class="grid grid-cols-2 gap-3">
                                 <div class="bg-black/50 border border-rose-500/30 p-2.5 rounded-xl flex flex-col gap-1 relative overflow-hidden">
@@ -787,20 +840,8 @@
                                     <div class="text-[10px] text-slate-300 font-bold flex justify-between mt-1"><span>김덕수(비계) 외 3명</span><span class="text-blue-400">풍속 주의</span></div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
 
-                        <!-- 하단: bridge.glb 미니 뷰어 (오버레이/펄스 없음, 카메라 고정) -->
-                        <div class="bg-[#0a0e1a] rounded-[20px] border-2 border-slate-700/50 flex-1 overflow-hidden relative" id="bridge3d-mini-container" style="min-height:200px;">
-                            <div id="bridge3d-mini-loading" style="position:absolute;inset:0;z-index:10;background:rgba(10,14,26,0.95);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;transition:opacity 0.4s;">
-                                <div style="width:48px;height:48px;border:4px solid rgba(126,200,227,0.2);border-top-color:#7ec8e3;border-radius:50%;animation:bridge3d-spin 0.8s linear infinite;"></div>
-                                <div style="font-size:11px;color:#7ec8e3;font-weight:700;letter-spacing:.05em;">BRIDGE 3D 로딩 중...</div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <!-- Right Side: Compact Sensors, Equipment Table, Notifications, Buttons (col-span-3) -->
-                    <div class="col-span-3 flex flex-col gap-3 h-full justify-between">
                         <!-- Compacted Sensors -->
                         <div id="sensor-panel-container" class="bg-black/50 rounded-[20px] border-2 border-amber-500/30 p-4 flex flex-col shadow-lg shrink-0 transition-all duration-300">
                             <h3 class="text-[18px] text-amber-400 font-black mb-3 flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4"></i> 통합 계측기 실시간 현황</h3>
@@ -877,7 +918,7 @@
                         </div>
 
                         <!-- 4. 상세 장비작업 진행현황 -->
-                        <div class="bg-black/50 rounded-[20px] border-2 border-indigo-500/30 p-4 flex flex-col shadow-lg shrink-0 max-h-[300px] overflow-hidden gap-2">
+                        <!-- <div class="bg-black/50 rounded-[20px] border-2 border-indigo-500/30 p-4 flex flex-col shadow-lg shrink-0 max-h-[300px] overflow-hidden gap-2">
                             <h3 class="text-[18px] text-indigo-400 font-black mb-1 flex items-center gap-2"><i data-lucide="truck" class="w-4 h-4"></i> 상세 장비작업 진행현황</h3>
                             <div class="flex-1 overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden border border-white/10 rounded-lg">
                                 <table class="w-full text-left border-collapse text-[11px]">
@@ -915,10 +956,10 @@
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
+                        </div> -->
 
                         <!-- 5. 실시간 현장 위험 알림 -->
-                        <div class="bg-black/50 rounded-[20px] border-2 border-rose-500/30 p-4 flex flex-col shadow-lg flex-1 overflow-hidden gap-2">
+                        <!-- <div class="bg-black/50 rounded-[20px] border-2 border-rose-500/30 p-4 flex flex-col shadow-lg h-[400px] shrink-0 overflow-hidden gap-2">
                             <h3 class="text-[18px] text-rose-400 font-black mb-1 flex items-center gap-2"><i data-lucide="bell-ring" class="w-4 h-4"></i> 실시간 현장 위험 알림</h3>
                             
                             <div class="flex justify-between gap-2 mb-2">
@@ -972,6 +1013,104 @@
                                             <td class="py-2 px-1 text-slate-400 font-mono">07:44</td><td class="py-2 px-1 text-emerald-400 font-mono">07:56</td>
                                         </tr>
                                     </tbody>
+                                </table>
+                            </div>
+                        </div> -->
+
+                        <!-- 3.1 금일 전체 작업 -->
+                        <div class="bg-black/50 rounded-[20px] border-2 border-cyan-500/30 p-3 flex flex-col shadow-lg h-[275px] min-h-0 overflow-hidden gap-2">
+                            <div class="flex items-center justify-between gap-2 shrink-0">
+                                <h3 class="text-[16px] text-cyan-400 font-black flex items-center gap-2 whitespace-nowrap"><i data-lucide="clipboard-list" class="w-4 h-4"></i> 금일 전체 작업</h3>
+                                <div class="flex gap-1" id="work-tabs">
+                                    <button data-tab="all"     class="work-tab active text-[11px] font-black px-2.5 py-1 rounded-md bg-cyan-500/30 text-cyan-200 border border-cyan-400/60">전체</button>
+                                    <button data-tab="early"   class="work-tab text-[11px] font-bold px-2.5 py-1 rounded-md bg-white/5 text-slate-300 border border-white/10 hover:border-cyan-400/40">조출</button>
+                                    <button data-tab="regular" class="work-tab text-[11px] font-bold px-2.5 py-1 rounded-md bg-white/5 text-slate-300 border border-white/10 hover:border-cyan-400/40">정규</button>
+                                    <button data-tab="night"   class="work-tab text-[11px] font-bold px-2.5 py-1 rounded-md bg-white/5 text-slate-300 border border-white/10 hover:border-cyan-400/40">야간</button>
+                                    <button data-tab="extra"   class="work-tab text-[11px] font-bold px-2.5 py-1 rounded-md bg-white/5 text-slate-300 border border-white/10 hover:border-cyan-400/40">추가</button>
+                                </div>
+                            </div>
+                            <div class="flex-1 overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden border border-white/10 rounded-lg">
+                                <table class="w-full text-center border-collapse text-[11px]">
+                                    <thead class="sticky top-0 bg-[#001a33] z-10 text-slate-300 border-b border-white/20">
+                                        <tr>
+                                            <th class="py-1.5 px-1 font-bold">구분</th>
+                                            <th class="py-1.5 px-1 font-bold">업체명</th>
+                                            <th class="py-1.5 px-1 font-bold text-left">작업내용</th>
+                                            <th class="py-1.5 px-1 font-bold">작업위치</th>
+                                            <th class="py-1.5 px-1 font-bold" colspan="2">작업시간</th>
+                                            <th class="py-1.5 px-1 font-bold">출근<br>인원</th>
+                                            <th class="py-1.5 px-1 font-bold">TBM<br>완료</th>
+                                            <th class="py-1.5 px-1 font-bold" colspan="2">SPOT이행<br>(5건/7건)</th>
+                                        </tr>
+                                        <tr class="text-[9px] text-slate-400 border-b border-white/10">
+                                            <th></th><th></th><th></th><th></th>
+                                            <th class="py-0.5 font-bold">시작</th><th class="py-0.5 font-bold">종료</th>
+                                            <th></th><th></th>
+                                            <th class="py-0.5 font-bold">1차</th><th class="py-0.5 font-bold">2차</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="work-tbody" class="text-white font-bold"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 3.2 출역현황 -->
+                        <div class="bg-black/50 rounded-[20px] border-2 border-blue-500/30 p-3 flex flex-col shadow-lg h-[275px] min-h-0 overflow-hidden gap-2">
+                            <div class="flex items-center justify-between gap-2 shrink-0 flex-wrap">
+                                <h3 class="text-[16px] text-blue-400 font-black flex items-center gap-2 whitespace-nowrap"><i data-lucide="users" class="w-4 h-4"></i> 출역현황</h3>
+                                <div class="text-[11px] font-bold flex items-center gap-2">
+                                    <span class="text-rose-300">유소견자: <span class="text-white font-black">4</span>명</span>
+                                    <span class="text-white/20">|</span>
+                                    <span class="text-emerald-300">신규자: <span class="text-white font-black">2</span>명</span>
+                                    <span class="text-white/20">|</span>
+                                    <span class="text-amber-300">외국인: <span class="text-white font-black">5</span>명</span>
+                                </div>
+                            </div>
+                            <div class="flex-1 overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden border border-white/10 rounded-lg">
+                                <table class="w-full text-center border-collapse text-[11px]">
+                                    <thead class="sticky top-0 bg-[#001a33] z-10 text-slate-300 border-b border-white/20">
+                                        <tr>
+                                            <th class="py-1.5 px-1 font-bold">업체명</th>
+                                            <th class="py-1.5 px-1 font-bold">공종</th>
+                                            <th class="py-1.5 px-1 font-bold">직종</th>
+                                            <th class="py-1.5 px-1 font-bold">작업자</th>
+                                            <th class="py-1.5 px-1 font-bold">나이</th>
+                                            <th class="py-1.5 px-1 font-bold">신규</th>
+                                            <th class="py-1.5 px-1 font-bold">외국인</th>
+                                            <th class="py-1.5 px-1 font-bold">유소견자</th>
+                                            <th class="py-1.5 px-1 font-bold text-left">현위치</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="attend-tbody" class="text-white font-bold"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 3.3 장비작업 현황 -->
+                        <div class="bg-black/50 rounded-[20px] border-2 border-indigo-500/30 p-3 flex flex-col shadow-lg h-[275px] min-h-0 overflow-hidden gap-2">
+                            <div class="flex items-center justify-between gap-2 shrink-0 flex-wrap">
+                                <h3 class="text-[16px] text-indigo-400 font-black flex items-center gap-2 whitespace-nowrap"><i data-lucide="truck" class="w-4 h-4"></i> 장비작업 현황</h3>
+                                <div class="text-[11px] font-bold flex items-center gap-2">
+                                    <span class="text-slate-300">기타장비: <span class="text-white font-black">6</span></span>
+                                    <span class="text-white/20">|</span>
+                                    <span class="text-cyan-300">살수차: <span class="text-white font-black">2</span></span>
+                                    <span class="text-white/20">|</span>
+                                    <span class="text-amber-300">카고 크레인: <span class="text-white font-black">3</span></span>
+                                </div>
+                            </div>
+                            <div class="flex-1 overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden border border-white/10 rounded-lg">
+                                <table class="w-full text-center border-collapse text-[11px]">
+                                    <thead class="sticky top-0 bg-[#001a33] z-10 text-slate-300 border-b border-white/20">
+                                        <tr>
+                                            <th class="py-1.5 px-1 font-bold">장비</th>
+                                            <th class="py-1.5 px-1 font-bold">업체명</th>
+                                            <th class="py-1.5 px-1 font-bold text-left">세부작업</th>
+                                            <th class="py-1.5 px-1 font-bold">작업위치</th>
+                                            <th class="py-1.5 px-1 font-bold">운전원</th>
+                                            <th class="py-1.5 px-1 font-bold">신호수</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="equip-tbody" class="text-white font-bold"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -1081,12 +1220,12 @@
         ];
 
         var siteData = [
-            { id: 1, name: '1공구', company: 'DL이앤씨', siteFullName: '송산-시화 연결도로', coords: [37.291938, 126.752789], color: '#06b6d4', workers: 142, vehicles: 24, progress: 85, safetyScore: 95, majorTask: '시화호 횡단교량 주탑 가설', tbm: { total: 142, main: 30, sub: 112, interest: 3, old: 2, foreign: 1 }, ptw: '고소작업 2건, 밀폐작업 1건' },
-            { id: 2, name: '2공구', company: 'OO건설', siteFullName: '서해안 벨트 도로망', coords: [37.3235, 126.6811], color: '#10b981', workers: 58, vehicles: 12, progress: 62, safetyScore: 91, majorTask: '상하수도 관로 부설 작업', tbm: { total: 58, main: 15, sub: 43, interest: 2, old: 1, foreign: 1 }, ptw: '굴착작업 1건' },
-            { id: 3, name: '3공구', company: 'OO건설', siteFullName: 'MTV 지하차도 건설', coords: [37.3300, 126.7200], color: '#f43f5e', workers: 32, vehicles: 8, progress: 45, safetyScore: 88, majorTask: '밀폐구역 노후관 교체 공사', tbm: { total: 32, main: 10, sub: 22, interest: 5, old: 3, foreign: 2 }, ptw: '밀폐공간 용접 3건' },
-            { id: 4, name: '4공구', company: 'OO건설', siteFullName: '시화 MTV 교량 확장', coords: [37.2800, 126.8000], color: '#eab308', workers: 28, vehicles: 18, progress: 58, safetyScore: 93, majorTask: '교량 상판 거더 거치 작업', tbm: { total: 28, main: 8, sub: 20, interest: 1, old: 1, foreign: 0 }, ptw: '중량물 취급 2건' },
-            { id: 5, name: '5공구', company: 'OO건설', siteFullName: '수변 공원 조성 공사', coords: [37.2950, 126.7020], color: '#00AEEF', workers: 45, vehicles: 15, progress: 90, safetyScore: 96, majorTask: '수변 데크 기초 타설 작업', tbm: { total: 45, main: 12, sub: 33, interest: 0, old: 0, foreign: 0 }, ptw: '해상작업 1건' },
-            { id: 6, name: '6공구', company: 'OO건설', siteFullName: '폐기물 처리 플랜트', coords: [37.2650, 126.8350], color: '#3b82f6', workers: 15, vehicles: 5, progress: 15, safetyScore: 85, majorTask: '습지 복원 현장 파일 항타', tbm: { total: 15, main: 5, sub: 10, interest: 4, old: 2, foreign: 2 }, ptw: '항타/항발기 작업 1건' }
+            { id: 1, name: '1공구', company: 'DL이앤씨', siteFullName: '송산-시화 연결도로', coords: [37.291938, 126.752789], color: '#06b6d4', workers: 142, vehicles: 24, progress: 85, safetyScore: 95, noAccidentDays: 182, majorTask: '시화호 횡단교량 주탑 가설', tbm: { total: 142, main: 30, sub: 112, interest: 3, old: 2, foreign: 1 }, ptw: '고소작업 2건, 밀폐작업 1건' },
+            { id: 2, name: '2공구', company: 'OO건설', siteFullName: '서해안 벨트 도로망', coords: [37.3235, 126.6811], color: '#10b981', workers: 58, vehicles: 12, progress: 62, safetyScore: 91, noAccidentDays: 95, majorTask: '상하수도 관로 부설 작업', tbm: { total: 58, main: 15, sub: 43, interest: 2, old: 1, foreign: 1 }, ptw: '굴착작업 1건' },
+            { id: 3, name: '3공구', company: 'OO건설', siteFullName: 'MTV 지하차도 건설', coords: [37.3300, 126.7200], color: '#f43f5e', workers: 32, vehicles: 8, progress: 45, safetyScore: 88, noAccidentDays: 47, majorTask: '밀폐구역 노후관 교체 공사', tbm: { total: 32, main: 10, sub: 22, interest: 5, old: 3, foreign: 2 }, ptw: '밀폐공간 용접 3건' },
+            { id: 4, name: '4공구', company: 'OO건설', siteFullName: '시화 MTV 교량 확장', coords: [37.2800, 126.8000], color: '#eab308', workers: 28, vehicles: 18, progress: 58, safetyScore: 93, noAccidentDays: 128, majorTask: '교량 상판 거더 거치 작업', tbm: { total: 28, main: 8, sub: 20, interest: 1, old: 1, foreign: 0 }, ptw: '중량물 취급 2건' },
+            { id: 5, name: '5공구', company: 'OO건설', siteFullName: '수변 공원 조성 공사', coords: [37.2950, 126.7020], color: '#00AEEF', workers: 45, vehicles: 15, progress: 90, safetyScore: 96, noAccidentDays: 254, majorTask: '수변 데크 기초 타설 작업', tbm: { total: 45, main: 12, sub: 33, interest: 0, old: 0, foreign: 0 }, ptw: '해상작업 1건' },
+            { id: 6, name: '6공구', company: 'OO건설', siteFullName: '폐기물 처리 플랜트', coords: [37.2650, 126.8350], color: '#3b82f6', workers: 15, vehicles: 5, progress: 15, safetyScore: 85, noAccidentDays: 63, majorTask: '습지 복원 현장 파일 항타', tbm: { total: 15, main: 5, sub: 10, interest: 4, old: 2, foreign: 2 }, ptw: '항타/항발기 작업 1건' }
         ];
 
         lucide.createIcons();
@@ -1136,9 +1275,9 @@
                         </div>
                     </div>
                     <div class="w-[95px] flex flex-col items-center justify-center bg-emerald-900/40 shrink-0 font-black h-full">
-                        <p class="text-[16px] text-emerald-400 font-black mb-2">안전점수</p>
+                        <p class="text-[14px] text-emerald-400 font-black mb-1 whitespace-nowrap">무사고</p>
                         <div class="flex items-baseline justify-center">
-                            <span class="text-[32px] text-white font-mono font-black leading-none">${site.safetyScore}</span><span class="text-[14px] text-emerald-500 ml-0.5">점</span>
+                            <span class="text-[32px] text-white font-mono font-black leading-none">${site.noAccidentDays}</span><span class="text-[14px] text-emerald-500 ml-0.5">일</span>
                         </div>
                     </div>`;
                 container.appendChild(panel);
@@ -1242,6 +1381,136 @@
             }
         }
 
+        const WORK_DATA = [
+            { type: 'regular', typeLabel: '정규', typeColor: 'text-cyan-300',    company: '다음이앤비',     task: '교량 상부공(FCM) 작업 - 세그먼트 접합', loc: '상부공',   start: '07:00', end: '18:00', attend: 14, tbm: 14, spot1: 'Y', spot2: 'Y' },
+            { type: 'regular', typeLabel: '정규', typeColor: 'text-cyan-300',    company: '지에이이노디스', task: '관로작업 - 관로 부설(상수)',            loc: 'MTV6로',   start: '07:00', end: '18:00', attend: 11, tbm: 11, spot1: 'Y', spot2: '-' },
+            { type: 'early',   typeLabel: '조출', typeColor: 'text-amber-300',   company: '한진건설',       task: '해상 크레인 장비 준비',                loc: '주탑',     start: '05:00', end: '07:00', attend: 6,  tbm: 6,  spot1: 'Y', spot2: 'Y' },
+            { type: 'night',   typeLabel: '야간', typeColor: 'text-indigo-300',  company: '국제엔지니어링', task: '주탑 야간 조명 시설 점검',             loc: 'P2 주탑', start: '19:00', end: '24:00', attend: 4,  tbm: 4,  spot1: 'Y', spot2: 'Y' },
+            { type: 'regular', typeLabel: '정규', typeColor: 'text-cyan-300',    company: '현대중공업',     task: '케이블 가설 및 장력 조정',             loc: '주탑',     start: '08:00', end: '17:30', attend: 9,  tbm: 9,  spot1: 'Y', spot2: '-' },
+            { type: 'extra',   typeLabel: '추가', typeColor: 'text-rose-300',    company: '다음이앤비',     task: '긴급 보강 철근 배근',                  loc: '접속교',   start: '13:00', end: '18:00', attend: 5,  tbm: 5,  spot1: '-', spot2: '-' },
+            { type: 'regular', typeLabel: '정규', typeColor: 'text-cyan-300',    company: '대림산업',       task: '교각 받침 조립 및 설치',               loc: 'P3',       start: '07:30', end: '17:00', attend: 8,  tbm: 7,  spot1: 'Y', spot2: 'Y' },
+            { type: 'night',   typeLabel: '야간', typeColor: 'text-indigo-300',  company: '지에이이노디스', task: '야간 콘크리트 양생 모니터링',          loc: 'P2',       start: '22:00', end: '06:00', attend: 3,  tbm: 3,  spot1: 'Y', spot2: 'Y' },
+            { type: 'early',   typeLabel: '조출', typeColor: 'text-amber-300',   company: '남해건설',       task: '자재 하역 및 반입 준비',               loc: '시점',     start: '05:30', end: '07:00', attend: 4,  tbm: 4,  spot1: 'Y', spot2: '-' },
+            { type: 'regular', typeLabel: '정규', typeColor: 'text-cyan-300',    company: '서진건설',       task: '가설 비계 설치',                       loc: '종점',     start: '08:00', end: '18:00', attend: 7,  tbm: 7,  spot1: 'Y', spot2: 'Y' }
+        ];
+
+        function initWorkTable() {
+            const tbody = document.getElementById('work-tbody'); if (!tbody) return;
+            function render(filter) {
+                const rows = filter === 'all' ? WORK_DATA : WORK_DATA.filter(r => r.type === filter);
+                tbody.innerHTML = rows.map(r => `
+                    <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                        <td class="py-1.5 px-1 ${r.typeColor} font-black">${r.typeLabel}</td>
+                        <td class="py-1.5 px-1 text-slate-300 truncate max-w-[90px]">${r.company}</td>
+                        <td class="py-1.5 px-1 text-left text-white truncate max-w-[130px]" title="${r.task}">${r.task}</td>
+                        <td class="py-1.5 px-1 text-indigo-300">${r.loc}</td>
+                        <td class="py-1.5 px-1 text-slate-400 font-mono">${r.start}</td>
+                        <td class="py-1.5 px-1 text-slate-400 font-mono">${r.end}</td>
+                        <td class="py-1.5 px-1 text-blue-300 font-mono">${r.attend}</td>
+                        <td class="py-1.5 px-1 text-emerald-300 font-mono">${r.tbm}</td>
+                        <td class="py-1.5 px-1 ${r.spot1 === 'Y' ? 'text-emerald-400' : 'text-slate-500'} font-mono">${r.spot1}</td>
+                        <td class="py-1.5 px-1 ${r.spot2 === 'Y' ? 'text-emerald-400' : 'text-slate-500'} font-mono">${r.spot2}</td>
+                    </tr>`).join('');
+            }
+            render('all');
+            document.querySelectorAll('#work-tabs .work-tab').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#work-tabs .work-tab').forEach(b => {
+                        b.classList.remove('active','bg-cyan-500/30','text-cyan-200','border-cyan-400/60');
+                        b.classList.add('bg-white/5','text-slate-300','border-white/10');
+                    });
+                    btn.classList.add('active','bg-cyan-500/30','text-cyan-200','border-cyan-400/60');
+                    btn.classList.remove('bg-white/5','text-slate-300','border-white/10');
+                    render(btn.dataset.tab);
+                });
+            });
+        }
+
+        const ATTEND_DATA = [
+            { company: '다음이앤비',     field: '기타', job: '협력업체',  name: '신기업',     age: 44, newbie: 'N', foreign: 'N', risk: 'Y', loc: 'N/A' },
+            { company: '다음이앤비',     field: '기타', job: '협력업체',  name: '이성호',     age: 56, newbie: 'N', foreign: 'N', risk: 'Y', loc: '송산 시점부 주차' },
+            { company: '지에이이노디스', field: '기타', job: '보통인부',  name: '마음나영',   age: 39, newbie: 'Y', foreign: 'N', risk: 'N', loc: '거더 제작장' },
+            { company: '지에이이노디스', field: '기타', job: '철근공',    name: '언제 라온', age: 32, newbie: 'N', foreign: 'Y', risk: 'N', loc: 'SEG 상부-상판' },
+            { company: '한진건설',       field: '가설', job: '비계공',    name: '박영호',     age: 51, newbie: 'N', foreign: 'N', risk: 'Y', loc: 'P2 주탑' },
+            { company: '국제엔지니어링', field: '토공', job: '굴착공',    name: '정수민',     age: 28, newbie: 'Y', foreign: 'N', risk: 'N', loc: 'P1 시점' },
+            { company: '현대중공업',     field: '강구조', job: '용접공', name: 'NGUYEN V.',    age: 34, newbie: 'N', foreign: 'Y', risk: 'N', loc: '주탑 상단' },
+            { company: '대림산업',       field: '기타', job: '일반인부',  name: '김철호',     age: 47, newbie: 'N', foreign: 'N', risk: 'Y', loc: 'P3 종점' },
+            { company: '지에이이노디스', field: '관로', job: '배관공',    name: 'SAN LIN',    age: 41, newbie: 'N', foreign: 'Y', risk: 'N', loc: 'MTV6로' },
+            { company: '남해건설',       field: '토공', job: '덤프기사',  name: '이종민',     age: 58, newbie: 'N', foreign: 'N', risk: 'N', loc: 'P1 시점' },
+            { company: '서진건설',       field: '가설', job: '비계공',    name: 'RAHMAN',     age: 29, newbie: 'N', foreign: 'Y', risk: 'N', loc: '종점 가설' },
+            { company: '다음이앤비',     field: '기타', job: '목수',      name: '황준영',     age: 36, newbie: 'N', foreign: 'N', risk: 'N', loc: 'P2 주탑' },
+            { company: '현대중공업',     field: '강구조', job: '용접공', name: 'BAYAR',        age: 31, newbie: 'N', foreign: 'Y', risk: 'N', loc: '주탑 상단' }
+        ];
+
+        function initAttendTable() {
+            const tbody = document.getElementById('attend-tbody'); if (!tbody) return;
+            tbody.innerHTML = ATTEND_DATA.map(r => `
+                <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <td class="py-1.5 px-1 text-slate-300 truncate max-w-[90px]">${r.company}</td>
+                    <td class="py-1.5 px-1 text-slate-400">${r.field}</td>
+                    <td class="py-1.5 px-1 text-cyan-300">${r.job}</td>
+                    <td class="py-1.5 px-1 text-white">${r.name}</td>
+                    <td class="py-1.5 px-1 text-slate-400 font-mono">${r.age}</td>
+                    <td class="py-1.5 px-1 ${r.newbie === 'Y' ? 'text-emerald-400' : 'text-slate-500'} font-mono font-black">${r.newbie}</td>
+                    <td class="py-1.5 px-1 ${r.foreign === 'Y' ? 'text-amber-400' : 'text-slate-500'} font-mono font-black">${r.foreign}</td>
+                    <td class="py-1.5 px-1 ${r.risk === 'Y' ? 'text-rose-400' : 'text-slate-500'} font-mono font-black">${r.risk}</td>
+                    <td class="py-1.5 px-1 text-left text-indigo-300 truncate max-w-[130px]" title="${r.loc}">${r.loc}</td>
+                </tr>`).join('');
+        }
+
+        const EQUIP_DATA = [
+            { eq: '굴착기',      company: '지에이이노디스', detail: '-',                            loc: '-',      driver: '(출문)',    sig: '-' },
+            { eq: '지게차',      company: '다음이앤비',     detail: '16세그 거푸집 제작 이동',      loc: '상부공', driver: '학용준',    sig: '-' },
+            { eq: '카고크레인',  company: '지에이이노디스', detail: '-',                            loc: '-',      driver: '(출문)',    sig: '박경수' },
+            { eq: '굴착기',      company: '지에이이노디스', detail: '-',                            loc: '-',      driver: '(출문)',    sig: '-' },
+            { eq: '살수차',      company: '지에이이노디스', detail: '현장 분진 살수 작업',          loc: 'MTV6로', driver: '김영길',    sig: '-' },
+            { eq: '카고크레인',  company: '한진건설',       detail: '자재 인양',                    loc: 'P2 주탑',driver: '정기석',    sig: '박찬호' },
+            { eq: '덤프트럭',    company: '남해건설',       detail: '토사 반출',                    loc: 'P1 시점',driver: '이승준',    sig: '-' },
+            { eq: '믹서트럭',    company: '대림산업',       detail: '콘크리트 운반',                loc: 'P3',     driver: '최정훈',    sig: '-' },
+            { eq: '살수차',      company: '다음이앤비',     detail: '진입로 분진 저감',             loc: '시점',   driver: '윤대석',    sig: '-' },
+            { eq: '고소작업차',  company: '국제엔지니어링', detail: '조명등 점검',                  loc: 'P2 주탑',driver: '김철민',    sig: '정은호' },
+            { eq: '카고크레인',  company: '현대중공업',     detail: '케이블 자재 이송',             loc: '주탑',   driver: '(출문)',    sig: '-' },
+            { eq: '지게차',      company: '서진건설',       detail: '비계 자재 이동',               loc: '종점',   driver: '전병규',    sig: '-' }
+        ];
+
+        function initEquipTable() {
+            const tbody = document.getElementById('equip-tbody'); if (!tbody) return;
+            tbody.innerHTML = EQUIP_DATA.map(r => `
+                <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <td class="py-1.5 px-1 text-indigo-300 font-black">${r.eq}</td>
+                    <td class="py-1.5 px-1 text-slate-300 truncate max-w-[90px]">${r.company}</td>
+                    <td class="py-1.5 px-1 text-left text-white truncate max-w-[140px]" title="${r.detail}">${r.detail}</td>
+                    <td class="py-1.5 px-1 text-cyan-300">${r.loc}</td>
+                    <td class="py-1.5 px-1 text-slate-300">${r.driver}</td>
+                    <td class="py-1.5 px-1 text-slate-400">${r.sig}</td>
+                </tr>`).join('');
+        }
+
+        function initTrafficLight() {
+            const states = [
+                { id: 'light-green',  cls: 'active-green',  label: '정상 (안전)', color: '#34d399', icon: '😊' },
+                { id: 'light-yellow', cls: 'active-yellow', label: '주의 (휴식)', color: '#fbbf24', icon: '😓' },
+                { id: 'light-red',    cls: 'active-red',    label: '위험 (경고)', color: '#f87171', icon: '🥵' }
+            ];
+            let idx = 0;
+            const labelEl = document.getElementById('traffic-status-label');
+            const iconEl = document.getElementById('traffic-temp-icon');
+            function tick() {
+                const s = states[idx];
+                ['light-red','light-yellow','light-green'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.remove('active-red','active-yellow','active-green');
+                });
+                const activeEl = document.getElementById(s.id);
+                if (activeEl) activeEl.classList.add(s.cls);
+                if (labelEl) { labelEl.textContent = s.label; labelEl.style.color = s.color; }
+                if (iconEl) iconEl.textContent = s.icon;
+                idx = (idx + 1) % states.length;
+            }
+            tick();
+            setInterval(tick, 2500);
+        }
+
         function initTBM() {
             const list = document.getElementById('tbm-dashboard-list'); if(!list) return;
             list.innerHTML = '';
@@ -1253,13 +1522,19 @@
                     <div class="absolute top-5 right-6 bg-emerald-500/20 border border-emerald-400 text-emerald-300 px-4 py-1.5 rounded-lg text-lg font-bold shadow-[0_0_15px_rgba(16,185,129,0.2)] z-10">
                         TBM 완료
                     </div>
-                    <div class="w-[280px] flex flex-col justify-center gap-3 border-r-2 border-white/10 pr-4 shrink-0">
+                    <div class="w-[280px] flex flex-col justify-center gap-2 border-r-2 border-white/10 pr-4 shrink-0">
                         <div class="flex items-center gap-3">
                             <div class="w-5 h-5 rounded-full shadow-[0_0_15px_${site.color}] shrink-0" style="background: ${site.color}"></div>
                             <span class="text-[32px] font-black text-cyan-300 leading-none truncate">${site.company || '협력사'}</span>
                         </div>
                         <div class="flex flex-col gap-1">
                             <span class="text-[22px] font-bold text-white truncate">${site.siteFullName}</span>
+                        </div>
+                        <div class="flex items-center gap-2 mt-1 bg-emerald-900/30 border border-emerald-500/40 rounded-lg px-3 py-1.5 w-fit">
+                            <i data-lucide="shield-check" class="w-5 h-5 text-emerald-400 shrink-0"></i>
+                            <span class="text-emerald-300 text-[16px] font-bold">무사고</span>
+                            <span class="text-emerald-300 text-[22px] font-black font-mono">${site.noAccidentDays}</span>
+                            <span class="text-emerald-400 text-[14px] font-bold">일</span>
                         </div>
                     </div>
                     <div class="flex-1 pl-6 flex flex-col justify-center gap-5 overflow-hidden">
@@ -1869,10 +2144,8 @@
                 const c=tcol(v),[R,G,B]=rgb(c);
                 ctx.clearRect(0,0,W,H);
                 ctx.fillStyle='rgba(0,5,16,.97)'; ctx.fillRect(0,0,W,H);
-                const bx=12,by=18,bw=75,bh=175,sk=12;
+                const bx=18,by=18,bw=75,bh=175;
                 ctx.strokeStyle='rgba(0,170,255,.45)'; ctx.lineWidth=1.6; ctx.strokeRect(bx,by,bw,bh);
-                ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(bx+sk,by-sk); ctx.lineTo(bx+bw+sk,by-sk); ctx.lineTo(bx+bw,by); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(bx+bw,by); ctx.lineTo(bx+bw+sk,by-sk); ctx.lineTo(bx+bw+sk,by-sk+bh); ctx.stroke();
                 const wH=bh*pct, wTop=by+bh-wH;
                 ctx.save(); ctx.beginPath(); ctx.rect(bx+1,by,bw-2,bh); ctx.clip();
                 const wg=ctx.createLinearGradient(bx,wTop,bx,by+bh);
@@ -1893,22 +2166,17 @@
                     x===bx?ctx.moveTo(x,wy):ctx.lineTo(x,wy);
                 }
                 ctx.stroke(); ctx.shadowBlur=0; ctx.restore();
-                const tg=ctx.createLinearGradient(bx,wTop-sk,bx+sk,wTop-sk);
-                tg.addColorStop(0,`rgba(${R},${G},${B},.45)`); tg.addColorStop(1,`rgba(${R},${G},${B},.16)`);
-                ctx.fillStyle=tg;
-                ctx.beginPath(); ctx.moveTo(bx,wTop); ctx.lineTo(bx+bw,wTop); ctx.lineTo(bx+bw+sk,wTop-sk); ctx.lineTo(bx+sk,wTop-sk); ctx.closePath(); ctx.fill();
-                ctx.strokeStyle=`rgba(${R},${G},${B},.7)`; ctx.lineWidth=1.4; ctx.shadowColor=c; ctx.shadowBlur=6; ctx.stroke(); ctx.shadowBlur=0;
                 [[3,'#ff2244'],[1.0,'#ff8c00'],[-1,'#00ccff']].forEach(([vv,cc])=>{
                     const ly=by+bh-bh*((vv-LO)/(HI-LO));
                     ctx.strokeStyle=cc; ctx.lineWidth=.9; ctx.setLineDash([3,4]); ctx.globalAlpha=.45;
                     ctx.beginPath(); ctx.moveTo(bx,ly); ctx.lineTo(bx+bw,ly); ctx.stroke();
                     ctx.setLineDash([]); ctx.globalAlpha=1;
                     ctx.fillStyle=cc; ctx.font='bold 9px Consolas,monospace'; ctx.textAlign='left';
-                    ctx.fillText(vv>0?'+'+vv:vv,bx+bw+sk+4,ly+3);
+                    ctx.fillText(vv>0?'+'+vv:vv,bx+bw+4,ly+3);
                 });
                 const arY=by+bh-bh*pct;
                 ctx.strokeStyle=c; ctx.lineWidth=1.8; ctx.shadowColor=c; ctx.shadowBlur=6;
-                ctx.beginPath(); ctx.moveTo(bx+bw,arY); ctx.lineTo(bx+bw+sk+8,arY); ctx.stroke(); ctx.shadowBlur=0;
+                ctx.beginPath(); ctx.moveTo(bx+bw,arY); ctx.lineTo(bx+bw+12,arY); ctx.stroke(); ctx.shadowBlur=0;
                 const ne=document.getElementById('tf-num');
                 if(ne){ne.textContent=(v>=0?'+':'')+v.toFixed(2); ne.style.color=c;}
             }
@@ -2079,8 +2347,12 @@
                 mainMap = L.map('gis-map', { zoomControl: false, attributionControl: false }).setView([37.2919, 126.7527], 13);
                 L.tileLayer(satLayerUrl).addTo(mainMap);
                 
-                initHUD(); 
-                initTBM(); 
+                initHUD();
+                initTBM();
+                initTrafficLight();
+                initWorkTable();
+                initAttendTable();
+                initEquipTable();
                 initWorkerMonitor(); 
                 changeVmsLayout(16); 
                 resizeDashboard();
@@ -2128,6 +2400,25 @@
         #bridge3d-container .progress-bar-fill { height: 100%; background: #00FFFF; border-radius: 2px; box-shadow: 0 0 6px #00FFFF; }
         @keyframes bridge3d-spin { to { transform: rotate(360deg); } }
         #bridge3d-loading.hidden { opacity: 0; pointer-events: none; }
+
+        #bridge3d-timeline-slider {
+            -webkit-appearance: none; appearance: none;
+            height: 6px; border-radius: 3px; outline: none;
+            background: linear-gradient(to right, #7ec8e3 0%, #555 0%);
+        }
+        #bridge3d-timeline-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 18px; height: 18px; border-radius: 50%;
+            background: #7ec8e3; cursor: pointer;
+            box-shadow: 0 0 8px rgba(126, 200, 227, 0.6);
+        }
+        #bridge3d-timeline-slider::-moz-range-thumb {
+            width: 18px; height: 18px; border-radius: 50%;
+            background: #7ec8e3; cursor: pointer; border: none;
+            box-shadow: 0 0 8px rgba(126, 200, 227, 0.6);
+        }
+        #bridge3d-month-ticks span { cursor: pointer; }
+        #bridge3d-month-ticks span:hover { color: #7ec8e3; }
     </style>
 
     <!-- 3D BIM 교량 뷰어 (GLB + 오버레이) -->
@@ -2194,6 +2485,151 @@
         let baseCameraDist = 1;
         const clock = new THREE.Clock();
 
+        // 공정 시각화용
+        const TOTAL_MONTHS = 12;
+        const GRAY_MAT = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.6, metalness: 0.1 });
+        const DONE_MAT = new THREE.MeshStandardMaterial({ color: 0x7ec8e3, roughness: 0.4, metalness: 0.2 });
+        const PLAN_MAT = new THREE.MeshStandardMaterial({ color: 0x90d4a8, roughness: 0.4, metalness: 0.2 });
+        let allMeshes = [];
+        let currentMonth = 0;
+
+        function getMeshType(name) {
+            if (!name) return '';
+            const match = name.match(/Ifc\w+\/([^:]+)/);
+            return match ? match[1].replace(/\s*\d+$/, '').trim() : '';
+        }
+
+        function distributeByAxis(meshes, axis, monthStart, monthEnd, reverse) {
+            if (meshes.length === 0) return;
+            meshes.forEach(m => {
+                const box = new THREE.Box3().setFromObject(m);
+                m._axisPos = box.getCenter(new THREE.Vector3())[axis];
+            });
+            meshes.sort((a, b) => reverse ? b._axisPos - a._axisPos : a._axisPos - b._axisPos);
+            const span = monthEnd - monthStart + 1;
+            const perMonth = Math.ceil(meshes.length / span);
+            meshes.forEach((m, i) => {
+                const month = Math.min(Math.floor(i / perMonth) + monthStart, monthEnd);
+                allMeshes.push({ mesh: m, month });
+            });
+        }
+
+        function assignMonths(group, partMap) {
+            allMeshes = [];
+            const groupBox = new THREE.Box3().setFromObject(group);
+            const groupSize = groupBox.getSize(new THREE.Vector3());
+            const mainAxis = (groupSize.z > groupSize.x) ? 'z' : 'x';
+            const groupCenter = groupBox.getCenter(new THREE.Vector3());
+
+            const main = partMap['bridge.glb'];
+            const left = partMap['bridge_left_cut.glb'] || partMap['bridge_left.glb'];
+            const right = partMap['bridge_right_cut.glb'] || partMap['bridge_right_1.glb'];
+            const right2 = partMap['bridge_right_2.glb'];
+
+            const mainCats = { foundation: [], column: [], structure: [], deck: [], finish: [] };
+            if (main) {
+                main.traverse(child => {
+                    if (!child.isMesh) return;
+                    const type = getMeshType(child.name);
+                    if (/말뚝|기초앙카/.test(type)) mainCats.foundation.push(child);
+                    else if (/기둥|교량 받침|D\d+/.test(type)) mainCats.column.push(child);
+                    else if (/Railing|윈드슈/.test(type)) mainCats.finish.push(child);
+                    else if (/Floor|Structural Framing/.test(type)) mainCats.deck.push(child);
+                    else mainCats.structure.push(child);
+                });
+            }
+
+            distributeByAxis(mainCats.foundation, mainAxis, 1, 1, false);
+            distributeByAxis(mainCats.column, mainAxis, 1, 2, false);
+            distributeByAxis(mainCats.structure, mainAxis, 1, 4, false);
+
+            if (mainCats.deck.length > 0) {
+                mainCats.deck.forEach(m => {
+                    const box = new THREE.Box3().setFromObject(m);
+                    m._distFromCenter = Math.abs(box.getCenter(new THREE.Vector3())[mainAxis] - groupCenter[mainAxis]);
+                });
+                mainCats.deck.sort((a, b) => a._distFromCenter - b._distFromCenter);
+                const perMonth = Math.ceil(mainCats.deck.length / 5);
+                mainCats.deck.forEach((m, i) => {
+                    const month = Math.min(Math.floor(i / perMonth) + 5, 9);
+                    allMeshes.push({ mesh: m, month });
+                });
+            }
+            mainCats.finish.forEach(m => { allMeshes.push({ mesh: m, month: 12 }); });
+
+            if (left) {
+                const leftBox = new THREE.Box3().setFromObject(left);
+                const leftCenter = leftBox.getCenter(new THREE.Vector3())[mainAxis];
+                const leftReverse = leftCenter > groupCenter[mainAxis];
+                const leftMeshes = [];
+                left.traverse(child => { if (child.isMesh) leftMeshes.push(child); });
+                distributeByAxis(leftMeshes, mainAxis, 4, 12, leftReverse);
+            }
+
+            const rightMeshes = [];
+            if (right2) right2.traverse(child => { if (child.isMesh) rightMeshes.push(child); });
+            if (right) right.traverse(child => { if (child.isMesh) rightMeshes.push(child); });
+            if (rightMeshes.length > 0) {
+                const rBox = right2
+                    ? new THREE.Box3().setFromObject(right2)
+                    : new THREE.Box3().setFromObject(right);
+                const rightEnd = rBox.getCenter(new THREE.Vector3())[mainAxis];
+                const rightReverse = rightEnd > groupCenter[mainAxis];
+                distributeByAxis(rightMeshes, mainAxis, 4, 12, rightReverse);
+            }
+
+            allMeshes.forEach(entry => { entry.mesh.material = GRAY_MAT; });
+        }
+
+        function applyMonth(month) {
+            const total = allMeshes.length;
+            let doneCount = 0;
+            const nextMonth = month + 1;
+            allMeshes.forEach(entry => {
+                if (entry.month <= month && month > 0) {
+                    entry.mesh.material = DONE_MAT;
+                    doneCount++;
+                } else if (entry.month === nextMonth) {
+                    entry.mesh.material = PLAN_MAT;
+                } else {
+                    entry.mesh.material = GRAY_MAT;
+                }
+            });
+            const pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
+            const monthEl = document.getElementById('bridge3d-month-display');
+            const pctEl = document.getElementById('bridge3d-progress-pct');
+            if (monthEl) monthEl.textContent = month === 0 ? '착공 전' : month + '개월차';
+            if (pctEl) pctEl.textContent = pct + '%';
+            const sliderPct = (month / TOTAL_MONTHS) * 100;
+            const slider = document.getElementById('bridge3d-timeline-slider');
+            if (slider) slider.style.background = `linear-gradient(to right, #7ec8e3 ${sliderPct}%, #555 ${sliderPct}%)`;
+        }
+
+        function initTimeline() {
+            const slider = document.getElementById('bridge3d-timeline-slider');
+            if (!slider) return;
+            slider.max = TOTAL_MONTHS;
+            slider.addEventListener('input', () => {
+                currentMonth = parseInt(slider.value);
+                applyMonth(currentMonth);
+            });
+            const ticksEl = document.getElementById('bridge3d-month-ticks');
+            if (ticksEl) {
+                const labels = ['착공 전'];
+                for (let i = 1; i <= TOTAL_MONTHS; i++) labels.push(i + '개월');
+                labels.forEach((lbl, i) => {
+                    const span = document.createElement('span');
+                    span.textContent = lbl;
+                    span.addEventListener('click', () => {
+                        slider.value = i;
+                        currentMonth = i;
+                        applyMonth(i);
+                    });
+                    ticksEl.appendChild(span);
+                });
+            }
+        }
+
         function resizeViewer() {
             if (!container.clientWidth || !container.clientHeight) return;
             camera.aspect = container.clientWidth / container.clientHeight;
@@ -2244,8 +2680,8 @@
 
         function addJunctionMarkers(partMap) {
             const main = partMap['bridge.glb'];
-            const left = partMap['bridge_left_cut.glb'];
-            const right1 = partMap['bridge_right_cut.glb'];
+            const left = partMap['bridge_left.glb'];
+            const right1 = partMap['bridge_right_1.glb'];
             if (!main) return;
             const mainBox = new THREE.Box3().setFromObject(main);
             const mainCenter = mainBox.getCenter(new THREE.Vector3());
@@ -2270,45 +2706,37 @@
                     jz += (dx / len) * perpOffset;
                 }
 
-                // 3D 화살표 (접속교→메인 방향)
-                const arrowDir = new THREE.Vector3(
-                    mainCenter.x - oCenter.x,
-                    0,
-                    mainCenter.z - oCenter.z
-                ).normalize();
                 const arrowLen = 12;
                 const arrowColor = new THREE.Color('#00f5ff');
-
-                // 화살표 몸통 (얇은 박스)
-                const shaftLen = arrowLen * 0.65;
-                const shaftGeo = new THREE.BoxGeometry(shaftLen, 0.3, 1.5);
                 const arrowMat = new THREE.MeshBasicMaterial({
                     color: arrowColor, transparent: true, opacity: 0.85,
                     side: THREE.DoubleSide, depthWrite: false
                 });
+
+                // 화살표 몸통 (수직 박스)
+                const shaftLen = arrowLen * 0.55;
+                const shaftGeo = new THREE.BoxGeometry(1.2, shaftLen, 1.2);
                 const shaft = new THREE.Mesh(shaftGeo, arrowMat);
 
-                // 화살표 머리 (삼각형 콘)
-                const headGeo = new THREE.ConeGeometry(2.5, arrowLen * 0.35, 3);
+                // 화살표 머리 (아래쪽 방향 콘)
+                const headLen = arrowLen * 0.4;
+                const headGeo = new THREE.ConeGeometry(2.2, headLen, 4);
                 const head = new THREE.Mesh(headGeo, arrowMat.clone());
-                head.position.set(shaftLen / 2 + arrowLen * 0.35 / 2, 0, 0);
-                head.rotation.z = -Math.PI / 2;
+                head.rotation.z = Math.PI;
+                head.position.set(0, -shaftLen / 2 - headLen / 2, 0);
 
-                // 화살표 그룹
                 const arrowGroup = new THREE.Group();
                 arrowGroup.add(shaft);
                 arrowGroup.add(head);
-                arrowGroup.position.set(jx, DECK_Y + 1, jz);
-                // 방향 회전 + 추가 보정
-                const angle = Math.atan2(arrowDir.x, arrowDir.z);
-                arrowGroup.rotation.y = -angle + Math.PI / 2 + (extraRotY || 0);
+                const arrowY = DECK_Y + 18;
+                arrowGroup.position.set(jx, arrowY, jz);
                 scene.add(arrowGroup);
 
-                // 화살표 위 투명 클릭 영역
+                // 화살표 클릭 영역
                 const arrowOuter = document.createElement('div');
                 arrowOuter.style.pointerEvents = 'auto';
                 const arrowHit = document.createElement('div');
-                arrowHit.style.cssText = 'pointer-events:auto;cursor:pointer;width:60px;height:30px;';
+                arrowHit.style.cssText = 'pointer-events:auto;cursor:pointer;width:50px;height:26px;';
                 arrowHit.addEventListener('click', (e) => {
                     e.stopPropagation();
                     if (window._miniBridgeViewer && window._miniBridgeViewer.setView) {
@@ -2319,16 +2747,16 @@
                 });
                 arrowOuter.appendChild(arrowHit);
                 const arrowClickObj = new CSS2DObject(arrowOuter);
-                arrowClickObj.position.set(jx, DECK_Y + 1, jz);
+                arrowClickObj.position.set(jx, arrowY, jz);
                 scene.add(arrowClickObj);
 
-                const jy = DECK_Y + 18;
+                const jy = DECK_Y + 30;
 
                 // 클릭 가능한 CSS2D 버튼
                 const outer = document.createElement('div');
                 outer.style.pointerEvents = 'auto';
                 const inner = document.createElement('div');
-                inner.style.cssText = 'pointer-events:auto;cursor:pointer;background:rgba(0,15,30,.92);border:2px solid #00f5ff;border-radius:10px;padding:6px 12px;font-size:11px;font-weight:900;color:#00f5ff;text-shadow:0 0 6px rgba(0,245,255,.7);box-shadow:0 0 14px rgba(0,245,255,.5);white-space:nowrap;letter-spacing:.05em;transition:transform .15s,background .15s;';
+                inner.style.cssText = 'pointer-events:auto;cursor:pointer;background:rgba(0,15,30,.92);border:1.5px solid #00f5ff;border-radius:7px;padding:3px 8px;font-size:9px;font-weight:900;color:#00f5ff;text-shadow:0 0 5px rgba(0,245,255,.7);box-shadow:0 0 10px rgba(0,245,255,.45);white-space:nowrap;letter-spacing:.04em;transition:transform .15s,background .15s;';
                 inner.textContent = '🎯 ' + label + ' 뷰';
                 inner.addEventListener('mouseenter', () => { inner.style.background='rgba(0,245,255,.2)'; });
                 inner.addEventListener('mouseleave', () => { inner.style.background='rgba(0,15,30,.92)'; });
@@ -2460,25 +2888,29 @@
 
             const partMap = {};
 
-            // ── 좌측 접속교 ──
-            try {
-                const g = await new Promise((res, rej) => loader.load('bridge_left_cut.glb', res, undefined, rej));
-                g.scene.position.set(65, 0, -100);   // ← 좌측 모델 위치 조정
-                partMap['bridge_left_cut.glb'] = g.scene;
-            } catch (e) { console.warn('좌측 로드 실패:', e); }
-
-            // ── 메인 교량 (위치 고정) ──
+            // ── 메인 교량 ──
             try {
                 const g = await new Promise((res, rej) => loader.load('bridge.glb', res, undefined, rej));
                 partMap['bridge.glb'] = g.scene;
             } catch (e) { console.warn('메인 로드 실패:', e); }
 
-            // ── 우측 접속교 ──
+            // ── 좌측 접속교 ──
             try {
-                const g = await new Promise((res, rej) => loader.load('bridge_right_cut.glb', res, undefined, rej));
-                g.scene.position.set(-130, 0, 200);   // ← 우측 모델 위치 조정
-                partMap['bridge_right_cut.glb'] = g.scene;
-            } catch (e) { console.warn('우측 로드 실패:', e); }
+                const g = await new Promise((res, rej) => loader.load('bridge_left.glb', res, undefined, rej));
+                partMap['bridge_left.glb'] = g.scene;
+            } catch (e) { console.warn('좌측 로드 실패:', e); }
+
+            // ── 우측 접속교 1 ──
+            try {
+                const g = await new Promise((res, rej) => loader.load('bridge_right_1.glb', res, undefined, rej));
+                partMap['bridge_right_1.glb'] = g.scene;
+            } catch (e) { console.warn('우측1 로드 실패:', e); }
+
+            // ── 우측 접속교 2 ──
+            try {
+                const g = await new Promise((res, rej) => loader.load('bridge_right_2.glb', res, undefined, rej));
+                partMap['bridge_right_2.glb'] = g.scene;
+            } catch (e) { console.warn('우측2 로드 실패:', e); }
 
             const object = new THREE.Group();
             Object.values(partMap).forEach(o => object.add(o));
@@ -2514,8 +2946,10 @@
                 controls.enableDamping = _wasDamp;
             });
 
-            addOverlays(object);
             addJunctionMarkers(partMap);
+            assignMonths(object, partMap);
+            initTimeline();
+            applyMonth(0);
 
             let meshCount = 0;
             object.traverse(c => { if (c.isMesh) meshCount++; });
@@ -2592,10 +3026,8 @@
             const c=tcol(v),[R,G,B]=rgb(c);
             ctx.clearRect(0,0,W,H);
             ctx.fillStyle='rgba(0,5,16,.97)'; ctx.fillRect(0,0,W,H);
-            const bx=12,by=18,bw=75,bh=175,sk=12;
+            const bx=18,by=18,bw=75,bh=175;
             ctx.strokeStyle='rgba(0,170,255,.45)'; ctx.lineWidth=1.6; ctx.strokeRect(bx,by,bw,bh);
-            ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(bx+sk,by-sk); ctx.lineTo(bx+bw+sk,by-sk); ctx.lineTo(bx+bw,by); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(bx+bw,by); ctx.lineTo(bx+bw+sk,by-sk); ctx.lineTo(bx+bw+sk,by-sk+bh); ctx.stroke();
             const wH=bh*pct, wTop=by+bh-wH;
             ctx.save(); ctx.beginPath(); ctx.rect(bx+1,by,bw-2,bh); ctx.clip();
             const wg=ctx.createLinearGradient(bx,wTop,bx,by+bh);
@@ -2616,22 +3048,17 @@
                 x===bx?ctx.moveTo(x,wy):ctx.lineTo(x,wy);
             }
             ctx.stroke(); ctx.shadowBlur=0; ctx.restore();
-            const tg=ctx.createLinearGradient(bx,wTop-sk,bx+sk,wTop-sk);
-            tg.addColorStop(0,`rgba(${R},${G},${B},.45)`); tg.addColorStop(1,`rgba(${R},${G},${B},.16)`);
-            ctx.fillStyle=tg;
-            ctx.beginPath(); ctx.moveTo(bx,wTop); ctx.lineTo(bx+bw,wTop); ctx.lineTo(bx+bw+sk,wTop-sk); ctx.lineTo(bx+sk,wTop-sk); ctx.closePath(); ctx.fill();
-            ctx.strokeStyle=`rgba(${R},${G},${B},.7)`; ctx.lineWidth=1.4; ctx.shadowColor=c; ctx.shadowBlur=6; ctx.stroke(); ctx.shadowBlur=0;
             [[3,'#ff2244'],[1.0,'#ff8c00'],[-1,'#00ccff']].forEach(([vv,cc])=>{
                 const ly=by+bh-bh*((vv-LO)/(HI-LO));
                 ctx.strokeStyle=cc; ctx.lineWidth=.9; ctx.setLineDash([3,4]); ctx.globalAlpha=.45;
                 ctx.beginPath(); ctx.moveTo(bx,ly); ctx.lineTo(bx+bw,ly); ctx.stroke();
                 ctx.setLineDash([]); ctx.globalAlpha=1;
                 ctx.fillStyle=cc; ctx.font='bold 9px Consolas,monospace'; ctx.textAlign='left';
-                ctx.fillText(vv>0?'+'+vv:vv,bx+bw+sk+4,ly+3);
+                ctx.fillText(vv>0?'+'+vv:vv,bx+bw+4,ly+3);
             });
             const arY=by+bh-bh*pct;
             ctx.strokeStyle=c; ctx.lineWidth=1.8; ctx.shadowColor=c; ctx.shadowBlur=6;
-            ctx.beginPath(); ctx.moveTo(bx+bw,arY); ctx.lineTo(bx+bw+sk+8,arY); ctx.stroke(); ctx.shadowBlur=0;
+            ctx.beginPath(); ctx.moveTo(bx+bw,arY); ctx.lineTo(bx+bw+12,arY); ctx.stroke(); ctx.shadowBlur=0;
             const ne=document.getElementById('tp-tank-num');
             ne.textContent=(v>=0?'+':'')+v.toFixed(2); ne.style.color=c;
         }
@@ -2803,11 +3230,12 @@
     })();
     </script>
 
-    <!-- ─── 미니 bridge.glb 뷰어 (오버레이/펄스/조작 없음) ─── -->
+    <!-- ─── 미니 bridge.glb 뷰어 (오버레이/펄스 없음) ─── -->
     <script type="module">
         import * as THREE from 'three';
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
         import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
         const miniContainer = document.getElementById('bridge3d-mini-container');
         if (miniContainer) {
@@ -2816,9 +3244,12 @@
             scene.background = new THREE.Color(0x0a0e1a);
 
             const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 100000);
-            camera.position.set(1.055, 196.377, -14.214);
             const TARGET = new THREE.Vector3(1.055, 26.654, -14.214);
-            camera.up.set(0.819, 0, 0.574);
+            camera.up.set(0, 1, 0);
+            // 탑뷰: 타겟 바로 위에서 약간 기울인 위치. XZ 오프셋 방향이 뷰포트 회전을 결정
+            // (0.819, 0, 0.574) 방향으로 살짝 이동 → Image 7과 동일한 교량 대각선 구도
+            const H = 170, R = 12;
+            camera.position.set(TARGET.x + 0.819 * R, TARGET.y + H, TARGET.z + 0.574 * R);
             camera.lookAt(TARGET);
 
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -2826,8 +3257,13 @@
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
             renderer.toneMappingExposure = 1.2;
-            renderer.domElement.style.pointerEvents = 'none';
             container.appendChild(renderer.domElement);
+
+            const controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.08;
+            controls.target.copy(TARGET);
+            controls.update();
 
             scene.add(new THREE.AmbientLight(0xffffff, 0.6));
             const dLight = new THREE.DirectionalLight(0xffffff, 1.2);
@@ -2917,8 +3353,9 @@
                     }
                     camera.up.lerpVectors(animTarget.fromUp, animTarget.toUp, e).normalize();
                     if (animTarget.t >= 1) animTarget = null;
+                    controls.target.copy(TARGET);
                 }
-                camera.lookAt(TARGET);
+                controls.update();
                 renderer.render(scene, camera);
             }
             animate();
