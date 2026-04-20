@@ -143,10 +143,23 @@
         .traffic-light-dot.active-red { background: radial-gradient(circle at 35% 35%, #ff7a8a, #ef4444 60%, #7f1d1d); border-color: #ef4444; box-shadow: 0 0 18px 2px rgba(239,68,68,0.85), inset 0 0 8px rgba(255,255,255,0.4); }
         .traffic-light-dot.active-yellow { background: radial-gradient(circle at 35% 35%, #fde68a, #f59e0b 60%, #78350f); border-color: #f59e0b; box-shadow: 0 0 18px 2px rgba(245,158,11,0.85), inset 0 0 8px rgba(255,255,255,0.4); }
         .traffic-light-dot.active-green { background: radial-gradient(circle at 35% 35%, #86efac, #10b981 60%, #064e3b); border-color: #10b981; box-shadow: 0 0 18px 2px rgba(16,185,129,0.85), inset 0 0 8px rgba(255,255,255,0.4); }
-        .flag-cloth { position: absolute; left: 14px; top: 0px; width: 65px; height: 26px; background: repeating-linear-gradient(90deg, #f59e0b, #f59e0b 20px, #ffffff 20px, #ffffff 40px); clip-path: polygon(0 0, 100% 25%, 100% 75%, 0 100%); transform-origin: left center; animation: flutter 0.6s infinite alternate ease-in-out; }
-        @keyframes flutter { 0% { transform: rotateZ(0deg); } 100% { transform: rotateZ(6deg) scaleX(0.95); } }
-        .wave-svg { width: 200%; height: 100%; position: absolute; bottom: 0; left: 0; animation: wave-move 2.5s linear infinite; fill: #00AEEF; opacity: 0.8; }
-        @keyframes wave-move { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .flag-cloth { position: absolute; left: 14px; top: 0px; width: 65px; height: 26px; background: repeating-linear-gradient(90deg, #f59e0b, #f59e0b 20px, #ffffff 20px, #ffffff 40px); clip-path: polygon(0 0, 100% 25%, 100% 75%, 0 100%); transform-origin: left center; }
+        .flag-cloth.wind-weak    { animation: flutter-weak    1.20s infinite alternate ease-in-out; }
+        .flag-cloth.wind-mid     { animation: flutter-mid     0.55s infinite alternate ease-in-out; }
+        .flag-cloth.wind-strong  { animation: flutter-strong  0.28s infinite alternate ease-in-out; }
+        .flag-cloth.wind-extreme { animation: flutter-extreme 0.15s infinite alternate ease-in-out; }
+        @keyframes flutter-weak    { 0% { transform: rotateZ(-1deg); }  100% { transform: rotateZ(4deg)  scaleX(0.98); } }
+        @keyframes flutter-mid     { 0% { transform: rotateZ(0deg); }   100% { transform: rotateZ(9deg)  scaleX(0.95); } }
+        @keyframes flutter-strong  { 0% { transform: rotateZ(3deg); }   100% { transform: rotateZ(16deg) scaleX(0.90); } }
+        @keyframes flutter-extreme { 0% { transform: rotateZ(-4deg); }  100% { transform: rotateZ(24deg) scaleX(0.82); } }
+
+        .wave-svg { width: 200%; height: 100%; position: absolute; bottom: 0; left: 0; fill: #00AEEF; opacity: 0.85; transition: fill .6s; }
+        .wave-svg path { transition: d 0.8s cubic-bezier(.2,.8,.2,1); }
+        .wave-svg.wave-calm  { animation: wave-slide 4.0s  linear infinite; }
+        .wave-svg.wave-mid   { animation: wave-slide 2.5s  linear infinite; }
+        .wave-svg.wave-rough { animation: wave-slide 1.2s  linear infinite; }
+        .wave-svg.wave-high  { animation: wave-slide 0.55s linear infinite; opacity: 1; filter: drop-shadow(0 0 6px rgba(239,68,68,0.8)); }
+        @keyframes wave-slide { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
         /* 좌측 TBM 리스트 */
         .tbm-site-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 20px 30px; display: flex; flex-direction: row; gap: 20px; position: relative; overflow: hidden; flex: 1; align-items: stretch; }
@@ -468,6 +481,93 @@
         #btn-vip:hover { background: rgba(0,200,255,0.25); box-shadow: 0 0 16px rgba(0,200,255,0.4); }
         #btn-vip.on { background: rgba(0,200,255,0.3); border-color: #00f5ff; }
 
+        /* ==== 사이드 패널 차트 뷰 ==== */
+        .view-pane { min-height: 0; }
+        .view-switch .vsw-btn { transition: all .2s; letter-spacing: .03em; }
+        .view-switch .vsw-btn:not(.active):hover { background: rgba(255,255,255,0.06); }
+
+        /* KPI mini cards */
+        .kpi-mini {
+            background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+            border: 1px solid var(--kpi-border, rgba(255,255,255,0.1));
+            border-radius: 10px;
+            padding: 6px 8px;
+            display: flex; flex-direction: column; gap: 2px;
+            position: relative; overflow: hidden;
+        }
+        .kpi-mini::before {
+            content: ''; position: absolute; top: 0; right: 0; width: 2px; height: 100%;
+            background: var(--kpi-accent, #06b6d4);
+            box-shadow: 0 0 12px var(--kpi-accent, #06b6d4);
+        }
+        .kpi-mini .kpi-label { font-size: 9px; color: rgba(255,255,255,.45); letter-spacing: .05em; font-weight: 700; text-transform: uppercase; }
+        .kpi-mini .kpi-value { font-size: 18px; font-weight: 900; color: var(--kpi-accent, #06b6d4); text-shadow: 0 0 10px currentColor; line-height: 1; font-family: Consolas, monospace; }
+        .kpi-mini .kpi-sub { font-size: 9px; color: rgba(255,255,255,.5); font-weight: 700; }
+
+        /* Gantt timeline */
+        .gantt-wrap { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 2px; }
+        .gantt-ruler { position: relative; height: 12px; padding-left: 40px; border-bottom: 1px dashed rgba(255,255,255,.08); }
+        .gantt-ruler .tick { position: absolute; top: 0; font-size: 8px; color: rgba(255,255,255,.4); font-family: Consolas, monospace; transform: translateX(-50%); }
+        .gantt-ruler .tick::after { content: ''; position: absolute; top: 10px; left: 50%; width: 1px; height: 4px; background: rgba(255,255,255,.15); }
+        .gantt-row { display: flex; align-items: center; gap: 4px; height: 20px; }
+        .gantt-row .row-lab { width: 36px; font-size: 10px; font-weight: 900; text-align: right; padding-right: 4px; letter-spacing: .05em; }
+        .gantt-row .row-track { position: relative; flex: 1; height: 16px; background: linear-gradient(90deg, rgba(255,255,255,.02), rgba(255,255,255,.04)); border-radius: 4px; overflow: hidden; }
+        .gantt-row .row-track::before {
+            content: ''; position: absolute; inset: 0;
+            background-image: repeating-linear-gradient(90deg, transparent 0, transparent calc(25% - 1px), rgba(255,255,255,.08) calc(25% - 1px), rgba(255,255,255,.08) 25%);
+        }
+        .gantt-bar {
+            position: absolute; top: 2px; height: 12px; border-radius: 3px;
+            display: flex; align-items: center; padding: 0 4px;
+            font-size: 8px; font-weight: 900; color: #000;
+            text-shadow: 0 0 3px rgba(255,255,255,.4);
+            white-space: nowrap; overflow: hidden;
+            box-shadow: 0 0 6px var(--bar-glow, currentColor), inset 0 1px 0 rgba(255,255,255,.3);
+            animation: gantt-slide .6s cubic-bezier(.2,.8,.2,1);
+        }
+        @keyframes gantt-slide { from { transform: scaleX(0); transform-origin: left; opacity: 0; } to { transform: scaleX(1); opacity: 1; } }
+
+        /* Donut chart */
+        .donut-wrap { position: relative; display: flex; align-items: center; justify-content: center; }
+        .donut-svg { transform: rotate(-90deg); filter: drop-shadow(0 0 8px rgba(96,165,250,.3)); }
+        .donut-svg circle { fill: none; stroke-width: 12; transition: stroke-dasharray .8s cubic-bezier(.2,.8,.2,1); }
+        .donut-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
+        .donut-center .dc-val { font-family: Consolas, monospace; font-size: 24px; font-weight: 900; color: #fff; text-shadow: 0 0 12px rgba(96,165,250,.8); line-height: 1; }
+        .donut-center .dc-lab { font-size: 8px; color: rgba(255,255,255,.5); letter-spacing: .1em; margin-top: 2px; font-weight: 700; }
+
+        /* Horizontal bars */
+        .hbar-row { display: flex; align-items: center; gap: 6px; height: 16px; font-size: 10px; }
+        .hbar-row .hbl { width: 52px; color: rgba(255,255,255,.7); font-weight: 700; text-align: right; white-space: nowrap; overflow: hidden; }
+        .hbar-row .hbt { flex: 1; height: 10px; background: rgba(255,255,255,.05); border-radius: 2px; overflow: hidden; position: relative; }
+        .hbar-row .hbf { height: 100%; background: linear-gradient(90deg, var(--bar-from, #06b6d4), var(--bar-to, #0ea5e9)); border-radius: 2px; box-shadow: 0 0 6px var(--bar-from, #06b6d4); animation: hbar-grow .7s cubic-bezier(.2,.8,.2,1); transform-origin: left; }
+        .hbar-row .hbv { width: 22px; font-family: Consolas, monospace; font-weight: 900; color: #fff; font-size: 10px; text-align: right; }
+        @keyframes hbar-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+        /* Vertical age bars */
+        .vbar-group { display: flex; align-items: flex-end; justify-content: space-between; height: 100%; gap: 6px; padding: 0 4px; }
+        .vbar-col { display: flex; flex-direction: column; align-items: center; gap: 3px; flex: 1; height: 100%; justify-content: flex-end; min-width: 0; }
+        .vbar-col .vbv { font-family: Consolas, monospace; font-size: 13px; font-weight: 900; color: #fff; text-shadow: 0 0 6px currentColor; line-height: 1; }
+        .vbar-col .vbt { width: 100%; max-width: 42px; background: linear-gradient(180deg, rgba(96,165,250,.95) 0%, rgba(59,130,246,.8) 50%, rgba(59,130,246,.2) 100%); border-radius: 4px 4px 0 0; border-top: 1px solid rgba(255,255,255,.4); box-shadow: 0 0 10px rgba(59,130,246,.6), inset 0 1px 0 rgba(255,255,255,.3); animation: vbar-rise .7s cubic-bezier(.2,.8,.2,1); transform-origin: bottom; position: relative; }
+        .vbar-col .vbt::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: linear-gradient(180deg, rgba(59,130,246,.3), rgba(59,130,246,.6)); border-radius: 0 0 4px 4px; }
+        .vbar-col .vbl { font-size: 9px; color: rgba(255,255,255,.6); font-weight: 800; letter-spacing: .05em; padding: 1px 3px; background: rgba(255,255,255,.04); border-radius: 3px; }
+        @keyframes vbar-rise { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+
+        /* Radial gauge */
+        .gauge-wrap { position: relative; display: flex; align-items: center; justify-content: center; }
+        .gauge-svg circle { fill: none; }
+        .gauge-svg .g-track { stroke: rgba(255,255,255,.06); stroke-width: 10; }
+        .gauge-svg .g-fill { stroke: url(#gaugeGrad); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset .9s cubic-bezier(.2,.8,.2,1); filter: drop-shadow(0 0 8px rgba(167,139,250,.7)); }
+        .gauge-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .gauge-center .gc-pct { font-family: Consolas, monospace; font-size: 26px; font-weight: 900; color: #a78bfa; text-shadow: 0 0 14px rgba(167,139,250,.9); line-height: 1; }
+        .gauge-center .gc-lab { font-size: 9px; color: rgba(255,255,255,.5); letter-spacing: .1em; font-weight: 700; margin-top: 2px; }
+
+        /* Strip stat footer */
+        .stat-strip { display: flex; gap: 6px; padding: 4px 6px; background: linear-gradient(90deg, rgba(6,182,212,.08), rgba(6,182,212,.02)); border: 1px solid rgba(6,182,212,.15); border-radius: 8px; font-size: 10px; font-weight: 700; color: rgba(255,255,255,.7); justify-content: space-around; align-items: center; }
+        .stat-strip b { color: #fff; font-family: Consolas, monospace; font-weight: 900; text-shadow: 0 0 6px currentColor; margin: 0 2px; }
+
+        /* Section label inside chart view */
+        .sec-lab { font-size: 9px; color: rgba(255,255,255,.45); font-weight: 800; letter-spacing: .1em; text-transform: uppercase; padding: 2px 4px; border-left: 2px solid currentColor; }
+
     </style>
 </head>
 <body>
@@ -602,18 +702,18 @@
 
                     <div class="flex items-center gap-4 border-l border-white/20 pl-6 shrink-0 mt-4">
                         <div class="flex flex-col text-right">
-                            <p class="text-emerald-400 text-[36px] font-black">북서 5.2m/s</p>
+                            <p id="wx-wind-text" class="text-emerald-400 text-[36px] font-black transition-colors duration-500">북서 5.2m/s</p>
                             <p class="text-slate-300 text-[18px] uppercase font-bold">풍향/풍속</p>
                         </div>
-                        <div class="relative w-20 h-16"><div class="flag-cloth"></div></div>
+                        <div class="relative w-20 h-16"><div id="wx-flag" class="flag-cloth wind-mid"></div></div>
                     </div>
 
                     <div class="flex items-center gap-4 border-l border-white/20 pl-6 shrink-0">
                         <div class="flex flex-col text-right">
-                            <p class="text-blue-400 text-[36px] font-black">파고 1.2m</p>
+                            <p id="wx-wave-text" class="text-blue-400 text-[36px] font-black transition-colors duration-500">파고 1.2m</p>
                             <p class="text-slate-300 text-[18px] uppercase font-bold text-center">해상 파고</p>
                         </div>
-                        <div class="relative w-24 h-16 overflow-hidden rounded-xl"><svg class="wave-svg" viewBox="0 0 240 28" preserveAspectRatio="none"><path d="M0 15 Q15 8,30 15 Q45 22,60 15 Q75 8,90 15 Q105 22,120 15 Q135 8,150 15 Q165 22,180 15 Q195 8,210 15 Q225 22,240 15 V28 H0 Z"/></svg></div>
+                        <div class="relative w-24 h-16 overflow-hidden rounded-xl"><svg id="wx-wave-svg" class="wave-svg wave-mid" viewBox="0 0 240 28" preserveAspectRatio="none"><path d="M0 15 Q15 8,30 15 Q45 22,60 15 Q75 8,90 15 Q105 22,120 15 Q135 8,150 15 Q165 22,180 15 Q195 8,210 15 Q225 22,240 15 V28 H0 Z"/></svg></div>
                     </div>
 
                     <div class="grid grid-cols-3 gap-3 border-t border-white/10 pt-3 shrink-0">
@@ -637,12 +737,16 @@
                         </div>
                     </div>
 
-                    <!-- 체감온도 · 상단 아이콘 패널 -->
+                    <!-- 시간별 강수확률 · 상단 패널 (기상청 단기예보 POP, 3h × 8슬롯) -->
                     <div id="traffic-icon-panel">
-                        <p class="tl-title text-cyan-300 text-[16px] font-black tracking-wider text-center">체감온도</p>
-                        <div class="tl-icon-section">
-                            <div id="traffic-temp-icon" class="text-[64px] leading-none transition-all">😊</div>
+                        <p class="tl-title text-cyan-300 text-[15px] font-black tracking-wider text-center">시간별 강수확률</p>
+                        <div class="text-[10px] font-bold text-slate-400 text-center mt-1">
+                            최대 <span id="rain-max" class="text-amber-400 font-black">--%</span>
+                            <span class="text-white/30 mx-1">·</span>
+                            <span id="rain-max-time" class="text-white font-black">--시</span>
                         </div>
+                        <div id="rain-bars" class="flex-1 flex items-end gap-[2px] mt-1 px-0.5" style="min-height:0;"></div>
+                        <div id="rain-xaxis" class="flex text-[8px] text-slate-500 font-bold mt-0.5 gap-[2px] px-0.5"></div>
                     </div>
                     <!-- 무사고 체감온도계 · 하단 신호등 패널 -->
                     <div id="traffic-light-panel">
@@ -1018,18 +1122,24 @@
                         </div> -->
 
                         <!-- 3.1 금일 전체 작업 -->
-                        <div class="bg-black/50 rounded-[20px] border-2 border-cyan-500/30 p-3 flex flex-col shadow-lg h-[275px] min-h-0 overflow-hidden gap-2">
+                        <div class="bg-black/50 rounded-[20px] border-2 border-cyan-500/30 p-3 flex flex-col shadow-lg h-[275px] min-h-0 overflow-hidden gap-2" data-panel-root="work">
                             <div class="flex items-center justify-between gap-2 shrink-0">
                                 <h3 class="text-[16px] text-cyan-400 font-black flex items-center gap-2 whitespace-nowrap"><i data-lucide="clipboard-list" class="w-4 h-4"></i> 금일 전체 작업</h3>
-                                <div class="flex gap-1" id="work-tabs">
-                                    <button data-tab="all"     class="work-tab active text-[11px] font-black px-2.5 py-1 rounded-md bg-cyan-500/30 text-cyan-200 border border-cyan-400/60">전체</button>
-                                    <button data-tab="early"   class="work-tab text-[11px] font-bold px-2.5 py-1 rounded-md bg-white/5 text-slate-300 border border-white/10 hover:border-cyan-400/40">조출</button>
-                                    <button data-tab="regular" class="work-tab text-[11px] font-bold px-2.5 py-1 rounded-md bg-white/5 text-slate-300 border border-white/10 hover:border-cyan-400/40">정규</button>
-                                    <button data-tab="night"   class="work-tab text-[11px] font-bold px-2.5 py-1 rounded-md bg-white/5 text-slate-300 border border-white/10 hover:border-cyan-400/40">야간</button>
-                                    <button data-tab="extra"   class="work-tab text-[11px] font-bold px-2.5 py-1 rounded-md bg-white/5 text-slate-300 border border-white/10 hover:border-cyan-400/40">추가</button>
+                                <div class="flex items-center gap-2">
+                                    <div class="flex gap-1" id="work-tabs">
+                                        <button data-tab="all"     class="work-tab active text-[11px] font-black px-2.5 py-1 rounded-md bg-cyan-500/30 text-cyan-200 border border-cyan-400/60">전체</button>
+                                        <button data-tab="early"   class="work-tab text-[11px] font-bold px-2.5 py-1 rounded-md bg-white/5 text-slate-300 border border-white/10 hover:border-cyan-400/40">조출</button>
+                                        <button data-tab="regular" class="work-tab text-[11px] font-bold px-2.5 py-1 rounded-md bg-white/5 text-slate-300 border border-white/10 hover:border-cyan-400/40">정규</button>
+                                        <button data-tab="night"   class="work-tab text-[11px] font-bold px-2.5 py-1 rounded-md bg-white/5 text-slate-300 border border-white/10 hover:border-cyan-400/40">야간</button>
+                                        <button data-tab="extra"   class="work-tab text-[11px] font-bold px-2.5 py-1 rounded-md bg-white/5 text-slate-300 border border-white/10 hover:border-cyan-400/40">추가</button>
+                                    </div>
+                                    <div class="view-switch flex gap-0.5 bg-black/50 rounded-md p-0.5 border border-cyan-400/20" data-panel="work">
+                                        <button data-view="table" class="vsw-btn active text-[10px] font-black px-2 py-0.5 rounded bg-cyan-500/30 text-cyan-100">표</button>
+                                        <button data-view="chart" class="vsw-btn text-[10px] font-bold px-2 py-0.5 rounded text-slate-400 hover:text-cyan-200">차트</button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="flex-1 overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden border border-white/10 rounded-lg">
+                            <div id="work-table-view" class="view-pane flex-1 overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden border border-white/10 rounded-lg">
                                 <table class="w-full text-center border-collapse text-[11px]">
                                     <thead class="sticky top-0 bg-[#001a33] z-10 text-slate-300 border-b border-white/20">
                                         <tr>
@@ -1039,34 +1149,40 @@
                                             <th class="py-1.5 px-1 font-bold">작업위치</th>
                                             <th class="py-1.5 px-1 font-bold" colspan="2">작업시간</th>
                                             <th class="py-1.5 px-1 font-bold">출근<br>인원</th>
-                                            <th class="py-1.5 px-1 font-bold">TBM<br>완료</th>
                                             <th class="py-1.5 px-1 font-bold" colspan="2">SPOT이행<br>(5건/7건)</th>
                                         </tr>
                                         <tr class="text-[9px] text-slate-400 border-b border-white/10">
                                             <th></th><th></th><th></th><th></th>
                                             <th class="py-0.5 font-bold">시작</th><th class="py-0.5 font-bold">종료</th>
-                                            <th></th><th></th>
+                                            <th></th>
                                             <th class="py-0.5 font-bold">1차</th><th class="py-0.5 font-bold">2차</th>
                                         </tr>
                                     </thead>
                                     <tbody id="work-tbody" class="text-white font-bold"></tbody>
                                 </table>
                             </div>
+                            <div id="work-chart-view" class="view-pane flex-1 flex-col gap-1.5 overflow-hidden" style="display:none;"></div>
                         </div>
 
                         <!-- 3.2 출역현황 -->
-                        <div class="bg-black/50 rounded-[20px] border-2 border-blue-500/30 p-3 flex flex-col shadow-lg h-[275px] min-h-0 overflow-hidden gap-2">
+                        <div class="bg-black/50 rounded-[20px] border-2 border-blue-500/30 p-3 flex flex-col shadow-lg h-[275px] min-h-0 overflow-hidden gap-2" data-panel-root="attend">
                             <div class="flex items-center justify-between gap-2 shrink-0 flex-wrap">
                                 <h3 class="text-[16px] text-blue-400 font-black flex items-center gap-2 whitespace-nowrap"><i data-lucide="users" class="w-4 h-4"></i> 출역현황</h3>
-                                <div class="text-[11px] font-bold flex items-center gap-2">
-                                    <span class="text-rose-300">유소견자: <span class="text-white font-black">4</span>명</span>
-                                    <span class="text-white/20">|</span>
-                                    <span class="text-emerald-300">신규자: <span class="text-white font-black">2</span>명</span>
-                                    <span class="text-white/20">|</span>
-                                    <span class="text-amber-300">외국인: <span class="text-white font-black">5</span>명</span>
+                                <div class="flex items-center gap-2">
+                                    <div class="text-[11px] font-bold flex items-center gap-2">
+                                        <span class="text-rose-300">유소견자: <span class="text-white font-black">4</span>명</span>
+                                        <span class="text-white/20">|</span>
+                                        <span class="text-emerald-300">신규자: <span class="text-white font-black">2</span>명</span>
+                                        <span class="text-white/20">|</span>
+                                        <span class="text-amber-300">외국인: <span class="text-white font-black">5</span>명</span>
+                                    </div>
+                                    <div class="view-switch flex gap-0.5 bg-black/50 rounded-md p-0.5 border border-blue-400/20" data-panel="attend">
+                                        <button data-view="table" class="vsw-btn active text-[10px] font-black px-2 py-0.5 rounded bg-blue-500/30 text-blue-100">표</button>
+                                        <button data-view="chart" class="vsw-btn text-[10px] font-bold px-2 py-0.5 rounded text-slate-400 hover:text-blue-200">차트</button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="flex-1 overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden border border-white/10 rounded-lg">
+                            <div id="attend-table-view" class="view-pane flex-1 overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden border border-white/10 rounded-lg">
                                 <table class="w-full text-center border-collapse text-[11px]">
                                     <thead class="sticky top-0 bg-[#001a33] z-10 text-slate-300 border-b border-white/20">
                                         <tr>
@@ -1084,21 +1200,28 @@
                                     <tbody id="attend-tbody" class="text-white font-bold"></tbody>
                                 </table>
                             </div>
+                            <div id="attend-chart-view" class="view-pane flex-1 flex-col gap-1.5 overflow-hidden" style="display:none;"></div>
                         </div>
 
                         <!-- 3.3 장비작업 현황 -->
-                        <div class="bg-black/50 rounded-[20px] border-2 border-indigo-500/30 p-3 flex flex-col shadow-lg h-[275px] min-h-0 overflow-hidden gap-2">
+                        <div class="bg-black/50 rounded-[20px] border-2 border-indigo-500/30 p-3 flex flex-col shadow-lg h-[275px] min-h-0 overflow-hidden gap-2" data-panel-root="equip">
                             <div class="flex items-center justify-between gap-2 shrink-0 flex-wrap">
                                 <h3 class="text-[16px] text-indigo-400 font-black flex items-center gap-2 whitespace-nowrap"><i data-lucide="truck" class="w-4 h-4"></i> 장비작업 현황</h3>
-                                <div class="text-[11px] font-bold flex items-center gap-2">
-                                    <span class="text-slate-300">기타장비: <span class="text-white font-black">6</span></span>
-                                    <span class="text-white/20">|</span>
-                                    <span class="text-cyan-300">살수차: <span class="text-white font-black">2</span></span>
-                                    <span class="text-white/20">|</span>
-                                    <span class="text-amber-300">카고 크레인: <span class="text-white font-black">3</span></span>
+                                <div class="flex items-center gap-2">
+                                    <div class="text-[11px] font-bold flex items-center gap-2">
+                                        <span class="text-slate-300">기타장비: <span class="text-white font-black">6</span></span>
+                                        <span class="text-white/20">|</span>
+                                        <span class="text-cyan-300">살수차: <span class="text-white font-black">2</span></span>
+                                        <span class="text-white/20">|</span>
+                                        <span class="text-amber-300">카고 크레인: <span class="text-white font-black">3</span></span>
+                                    </div>
+                                    <div class="view-switch flex gap-0.5 bg-black/50 rounded-md p-0.5 border border-indigo-400/20" data-panel="equip">
+                                        <button data-view="table" class="vsw-btn active text-[10px] font-black px-2 py-0.5 rounded bg-indigo-500/30 text-indigo-100">표</button>
+                                        <button data-view="chart" class="vsw-btn text-[10px] font-bold px-2 py-0.5 rounded text-slate-400 hover:text-indigo-200">차트</button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="flex-1 overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden border border-white/10 rounded-lg">
+                            <div id="equip-table-view" class="view-pane flex-1 overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden border border-white/10 rounded-lg">
                                 <table class="w-full text-center border-collapse text-[11px]">
                                     <thead class="sticky top-0 bg-[#001a33] z-10 text-slate-300 border-b border-white/20">
                                         <tr>
@@ -1113,6 +1236,7 @@
                                     <tbody id="equip-tbody" class="text-white font-bold"></tbody>
                                 </table>
                             </div>
+                            <div id="equip-chart-view" class="view-pane flex-1 flex-col gap-1.5 overflow-hidden" style="display:none;"></div>
                         </div>
 
                         <!-- Buttons -->
@@ -1407,7 +1531,6 @@
                         <td class="py-1.5 px-1 text-slate-400 font-mono">${r.start}</td>
                         <td class="py-1.5 px-1 text-slate-400 font-mono">${r.end}</td>
                         <td class="py-1.5 px-1 text-blue-300 font-mono">${r.attend}</td>
-                        <td class="py-1.5 px-1 text-emerald-300 font-mono">${r.tbm}</td>
                         <td class="py-1.5 px-1 ${r.spot1 === 'Y' ? 'text-emerald-400' : 'text-slate-500'} font-mono">${r.spot1}</td>
                         <td class="py-1.5 px-1 ${r.spot2 === 'Y' ? 'text-emerald-400' : 'text-slate-500'} font-mono">${r.spot2}</td>
                     </tr>`).join('');
@@ -1486,6 +1609,354 @@
                 </tr>`).join('');
         }
 
+        /* ============== 사이드 패널 차트 뷰 렌더러 ============== */
+        const SHIFT_CFG = {
+            early:   { label: '조출', color: '#fbbf24', glow: 'rgba(251,191,36,.6)' },
+            regular: { label: '정규', color: '#22d3ee', glow: 'rgba(34,211,238,.6)' },
+            night:   { label: '야간', color: '#818cf8', glow: 'rgba(129,140,248,.6)' },
+            extra:   { label: '추가', color: '#fb7185', glow: 'rgba(251,113,133,.6)' }
+        };
+        function parseHM(s) { const [h, m] = s.split(':').map(Number); return h + (m || 0) / 60; }
+
+        function renderWorkChart() {
+            const host = document.getElementById('work-chart-view'); if (!host) return;
+
+            const SHIFT_STYLE = { regular: '#22d3ee', early: '#fbbf24', extra: '#fb7185', night: '#818cf8' };
+
+            // 위치별 집계
+            const locMap = {};
+            WORK_DATA.forEach(r => {
+                if (!locMap[r.loc]) locMap[r.loc] = { total: 0, count: 0, byShift: {} };
+                locMap[r.loc].total += r.attend;
+                locMap[r.loc].count += 1;
+                locMap[r.loc].byShift[r.type] = (locMap[r.loc].byShift[r.type] || 0) + r.attend;
+            });
+            const locEntries = Object.entries(locMap);
+            const totalPpl = WORK_DATA.reduce((a, r) => a + r.attend, 0);
+            const sorted = [...locEntries].sort((a, b) => b[1].total - a[1].total);
+            const maxLoc = sorted[0];
+            const avgCount = (totalPpl / locEntries.length).toFixed(1);
+
+            // 교량 구조상 위치 좌표 (viewBox 600x145)
+            const LOC_POS = {
+                '시점':    { x:  40, y: 96 },
+                '접속교':  { x: 108, y: 96 },
+                'P2':      { x: 198, y: 96 },
+                'P2 주탑': { x: 198, y: 52 },
+                '주탑':    { x: 308, y: 30 },
+                '상부공':  { x: 390, y: 72 },
+                'P3':      { x: 450, y: 96 },
+                'MTV6로':  { x: 490, y: 128 },
+                '종점':    { x: 562, y: 96 }
+            };
+
+            const DECK_Y = 94;
+            const bridgeSvg = `
+                <rect x="0" y="${DECK_Y}" width="600" height="55" fill="url(#wkBgGrad)"/>
+                <line x1="12" y1="${DECK_Y}" x2="588" y2="${DECK_Y}" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+                <line x1="12" y1="${DECK_Y + 3}" x2="588" y2="${DECK_Y + 3}" stroke="rgba(255,255,255,0.12)" stroke-width="0.8" vector-effect="non-scaling-stroke"/>
+                <!-- 주탑 pylon -->
+                <polygon points="302,${DECK_Y} 314,${DECK_Y} 311,22 305,22" fill="rgba(167,139,250,0.1)" stroke="rgba(167,139,250,0.45)" stroke-width="0.8" vector-effect="non-scaling-stroke"/>
+                <line x1="308" y1="22" x2="308" y2="${DECK_Y}" stroke="rgba(167,139,250,0.35)" stroke-width="0.5" vector-effect="non-scaling-stroke"/>
+                <line x1="302" y1="60" x2="314" y2="60" stroke="rgba(167,139,250,0.4)" stroke-width="0.6" vector-effect="non-scaling-stroke"/>
+                <line x1="300" y1="78" x2="316" y2="78" stroke="rgba(167,139,250,0.4)" stroke-width="0.6" vector-effect="non-scaling-stroke"/>
+                <!-- 케이블 (stay cables) -->
+                <line x1="308" y1="22" x2="50"  y2="${DECK_Y}" stroke="rgba(34,211,238,0.18)" stroke-width="0.5" vector-effect="non-scaling-stroke"/>
+                <line x1="308" y1="22" x2="120" y2="${DECK_Y}" stroke="rgba(34,211,238,0.22)" stroke-width="0.5" vector-effect="non-scaling-stroke"/>
+                <line x1="308" y1="22" x2="200" y2="${DECK_Y}" stroke="rgba(34,211,238,0.28)" stroke-width="0.5" vector-effect="non-scaling-stroke"/>
+                <line x1="308" y1="22" x2="260" y2="${DECK_Y}" stroke="rgba(34,211,238,0.3)"  stroke-width="0.5" vector-effect="non-scaling-stroke"/>
+                <line x1="308" y1="22" x2="360" y2="${DECK_Y}" stroke="rgba(34,211,238,0.3)"  stroke-width="0.5" vector-effect="non-scaling-stroke"/>
+                <line x1="308" y1="22" x2="420" y2="${DECK_Y}" stroke="rgba(34,211,238,0.28)" stroke-width="0.5" vector-effect="non-scaling-stroke"/>
+                <line x1="308" y1="22" x2="490" y2="${DECK_Y}" stroke="rgba(34,211,238,0.22)" stroke-width="0.5" vector-effect="non-scaling-stroke"/>
+                <line x1="308" y1="22" x2="560" y2="${DECK_Y}" stroke="rgba(34,211,238,0.18)" stroke-width="0.5" vector-effect="non-scaling-stroke"/>
+                <!-- 교각 (piers) -->
+                <rect x="196" y="${DECK_Y}" width="4" height="22" fill="rgba(255,255,255,0.18)"/>
+                <rect x="448" y="${DECK_Y}" width="4" height="20" fill="rgba(255,255,255,0.18)"/>
+                <!-- 시점/종점 bank markers -->
+                <rect x="12" y="${DECK_Y - 2}" width="18" height="30" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+                <rect x="570" y="${DECK_Y - 2}" width="18" height="30" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+            `;
+
+            // 버블
+            const maxTotal = maxLoc[1].total;
+            const bubbles = sorted.map(([name, data], idx) => {
+                const pos = LOC_POS[name] || { x: 300, y: 90 };
+                const r = Math.max(8, 5 + Math.sqrt(data.total) * 3.2);
+                const dominant = Object.entries(data.byShift).sort((a, b) => b[1] - a[1])[0][0];
+                const color = SHIFT_STYLE[dominant];
+                const isTop = data.total === maxTotal;
+                const labelY = pos.y > 110 ? pos.y - r - 5 : pos.y + r + 11;
+                return `
+                    <g style="animation:bubble-in .55s cubic-bezier(.2,.8,.2,1);animation-delay:${idx * 0.06}s;animation-fill-mode:backwards;">
+                        <circle cx="${pos.x}" cy="${pos.y}" r="${r + 6}" fill="${color}" opacity="0.1"/>
+                        <circle cx="${pos.x}" cy="${pos.y}" r="${r + 2}" fill="${color}" opacity="0.22"/>
+                        <circle cx="${pos.x}" cy="${pos.y}" r="${r}" fill="${color}" fill-opacity="0.35" stroke="${color}" stroke-width="${isTop ? 1.8 : 1.2}" vector-effect="non-scaling-stroke" style="filter:drop-shadow(0 0 ${isTop ? 8 : 5}px ${color});"/>
+                        <text x="${pos.x}" y="${pos.y + 4}" text-anchor="middle" fill="#fff" font-size="12" font-weight="900" style="text-shadow:0 0 3px rgba(0,0,0,0.95);">${data.total}</text>
+                        <text x="${pos.x}" y="${labelY}" text-anchor="middle" fill="${color}" font-size="9" font-weight="800" style="text-shadow:0 0 5px rgba(0,0,0,0.9);letter-spacing:.02em;"><title>${name} · ${data.count}건 · ${data.total}명</title>${name}</text>
+                    </g>`;
+            }).join('');
+
+            const kpiHtml = `
+                <div class="kpi-mini" style="--kpi-accent:#22d3ee;--kpi-border:#22d3ee33;">
+                    <div class="kpi-label">작업 위치</div>
+                    <div class="flex items-baseline gap-1"><span class="kpi-value">${locEntries.length}</span><span class="text-[8px] text-slate-400 font-bold">곳</span></div>
+                </div>
+                <div class="kpi-mini" style="--kpi-accent:#67e8f9;--kpi-border:#67e8f933;">
+                    <div class="kpi-label">총 배치</div>
+                    <div class="flex items-baseline gap-1"><span class="kpi-value">${totalPpl}</span><span class="text-[8px] text-slate-400 font-bold">명</span></div>
+                </div>
+                <div class="kpi-mini" style="--kpi-accent:#fb7185;--kpi-border:#fb718533;">
+                    <div class="kpi-label">최다 위치</div>
+                    <div class="flex items-baseline gap-1"><span class="kpi-value" style="font-size:15px;">${maxLoc[0]}</span><span class="text-[8px] text-slate-400 font-bold">${maxLoc[1].total}명</span></div>
+                </div>
+                <div class="kpi-mini" style="--kpi-accent:#fbbf24;--kpi-border:#fbbf2433;">
+                    <div class="kpi-label">평균</div>
+                    <div class="flex items-baseline gap-1"><span class="kpi-value">${avgCount}</span><span class="text-[8px] text-slate-400 font-bold">명/위치</span></div>
+                </div>`;
+
+            const legendHtml = ['regular','early','night','extra'].map(t => {
+                const c = SHIFT_STYLE[t];
+                return `<span class="flex items-center gap-1 text-[9px] font-bold"><span style="width:8px;height:8px;background:${c};border-radius:50%;box-shadow:0 0 5px ${c};"></span><span style="color:${c};">${SHIFT_CFG[t].label}</span></span>`;
+            }).join('');
+
+            host.innerHTML = `
+                <div class="grid grid-cols-4 gap-1.5 shrink-0">${kpiHtml}</div>
+                <div class="flex flex-col gap-0.5 flex-1 min-h-0">
+                    <div class="flex items-center justify-between shrink-0 flex-wrap gap-2">
+                        <div class="sec-lab" style="color:#22d3ee;">작업위치별 인원 배치도 · 주 교대 색상</div>
+                        <div class="flex items-center gap-3">${legendHtml}</div>
+                    </div>
+                    <div class="flex-1 min-h-0 relative">
+                        <svg viewBox="0 0 600 150" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:100%;overflow:visible;">
+                            <defs>
+                                <linearGradient id="wkBgGrad" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="rgba(6,182,212,0.1)"/>
+                                    <stop offset="100%" stop-color="rgba(6,182,212,0.01)"/>
+                                </linearGradient>
+                            </defs>
+                            ${bridgeSvg}
+                            ${bubbles}
+                        </svg>
+                    </div>
+                </div>`;
+        }
+
+        const _wkAreaKF = document.createElement('style');
+        _wkAreaKF.textContent = '@keyframes wk-area-in{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}@keyframes bubble-in{from{opacity:0;}to{opacity:1;}}';
+        document.head.appendChild(_wkAreaKF);
+
+        function renderAttendChart() {
+            const host = document.getElementById('attend-chart-view'); if (!host) return;
+            const total = ATTEND_DATA.length;
+            const newCount = ATTEND_DATA.filter(r => r.newbie === 'Y').length;
+            const foreignCount = ATTEND_DATA.filter(r => r.foreign === 'Y').length;
+            const riskCount = ATTEND_DATA.filter(r => r.risk === 'Y').length;
+
+            const fieldMap = {};
+            ATTEND_DATA.forEach(r => { fieldMap[r.field] = (fieldMap[r.field] || 0) + 1; });
+            const fieldList = Object.entries(fieldMap).sort((a, b) => b[1] - a[1]);
+            const FIELD_COLORS = ['#60a5fa', '#f59e0b', '#34d399', '#f472b6', '#a78bfa', '#22d3ee'];
+
+            const ageBins = { '20대': 0, '30대': 0, '40대': 0, '50대': 0, '60+': 0 };
+            ATTEND_DATA.forEach(r => {
+                if (r.age < 30) ageBins['20대']++;
+                else if (r.age < 40) ageBins['30대']++;
+                else if (r.age < 50) ageBins['40대']++;
+                else if (r.age < 60) ageBins['50대']++;
+                else ageBins['60+']++;
+            });
+            const ageMax = Math.max(...Object.values(ageBins), 1);
+
+            const R = 38, C = 2 * Math.PI * R;
+            let acc = 0;
+            const segsHtml = fieldList.map(([name, cnt], i) => {
+                const frac = cnt / total;
+                const dash = C * frac;
+                const offset = -C * acc;
+                acc += frac;
+                return `<circle cx="50" cy="50" r="${R}" stroke="${FIELD_COLORS[i % FIELD_COLORS.length]}" stroke-dasharray="${dash} ${C - dash}" stroke-dashoffset="${offset}" style="filter:drop-shadow(0 0 4px ${FIELD_COLORS[i % FIELD_COLORS.length]});"/>`;
+            }).join('');
+
+            const legendHtml = fieldList.map(([name, cnt], i) => `
+                <div class="flex items-center gap-1 text-[9px]">
+                    <span style="width:7px;height:7px;background:${FIELD_COLORS[i % FIELD_COLORS.length]};border-radius:2px;box-shadow:0 0 4px currentColor;color:${FIELD_COLORS[i % FIELD_COLORS.length]};"></span>
+                    <span class="text-slate-300 font-bold">${name}</span>
+                    <span class="text-white font-black font-mono ml-auto">${cnt}</span>
+                </div>`).join('');
+
+            const ageBarsHtml = Object.entries(ageBins).map(([lab, v]) => {
+                const h = v === 0 ? 3 : (v / ageMax * 82);
+                return `<div class="vbar-col">
+                    <div class="vbv" style="color:#60a5fa;">${v}</div>
+                    <div class="vbt" style="height:${h}%;"></div>
+                    <div class="vbl">${lab}</div>
+                </div>`;
+            }).join('');
+
+            // 특성 비율 (신규/외국인/유소견)
+            const traits = [
+                { label: '신규 채용', val: newCount, color: '#34d399' },
+                { label: '외국인',   val: foreignCount, color: '#fbbf24' },
+                { label: '유소견자', val: riskCount, color: '#fb7185' }
+            ];
+            const traitBars = traits.map(t => {
+                const pct = Math.round(t.val / total * 100);
+                return `<div class="flex items-center gap-1.5 text-[9px]">
+                    <span class="font-bold" style="width:52px;color:${t.color};text-shadow:0 0 4px currentColor;">${t.label}</span>
+                    <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                        <div class="h-full rounded-full" style="width:${pct}%;background:linear-gradient(90deg,${t.color},${t.color}aa);box-shadow:0 0 5px ${t.color};animation:hbar-grow .7s cubic-bezier(.2,.8,.2,1);transform-origin:left;"></div>
+                    </div>
+                    <span class="font-mono font-black text-white w-12 text-right">${t.val}<span class="text-slate-500 text-[8px] ml-0.5">/ ${pct}%</span></span>
+                </div>`;
+            }).join('');
+
+            host.innerHTML = `
+                <div class="grid grid-cols-4 gap-1.5 shrink-0">
+                    <div class="kpi-mini" style="--kpi-accent:#60a5fa;--kpi-border:#60a5fa33;">
+                        <div class="kpi-label">총원</div>
+                        <div class="flex items-baseline gap-1"><span class="kpi-value">${total}</span><span class="text-[8px] text-slate-400 font-bold">명</span></div>
+                    </div>
+                    <div class="kpi-mini" style="--kpi-accent:#34d399;--kpi-border:#34d39933;">
+                        <div class="kpi-label">신규</div>
+                        <div class="flex items-baseline gap-1"><span class="kpi-value">${newCount}</span><span class="text-[8px] text-slate-400 font-bold">명</span></div>
+                    </div>
+                    <div class="kpi-mini" style="--kpi-accent:#fbbf24;--kpi-border:#fbbf2433;">
+                        <div class="kpi-label">외국인</div>
+                        <div class="flex items-baseline gap-1"><span class="kpi-value">${foreignCount}</span><span class="text-[8px] text-slate-400 font-bold">명</span></div>
+                    </div>
+                    <div class="kpi-mini" style="--kpi-accent:#fb7185;--kpi-border:#fb718533;">
+                        <div class="kpi-label">유소견</div>
+                        <div class="flex items-baseline gap-1"><span class="kpi-value">${riskCount}</span><span class="text-[8px] text-slate-400 font-bold">명</span></div>
+                    </div>
+                </div>
+                <div class="flex gap-3 flex-1 min-h-0">
+                    <div class="flex flex-col gap-1.5 shrink-0" style="width:176px;">
+                        <div class="sec-lab" style="color:#60a5fa;">공종 분포 · ${fieldList.length}종</div>
+                        <div class="flex items-center gap-2">
+                            <div class="donut-wrap shrink-0" style="width:100px;height:100px;">
+                                <svg class="donut-svg" width="100" height="100" viewBox="0 0 100 100">${segsHtml}</svg>
+                                <div class="donut-center"><div class="dc-val">${total}</div><div class="dc-lab">TOTAL</div></div>
+                            </div>
+                            <div class="flex-1 flex flex-col gap-[3px] min-w-0">${legendHtml}</div>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col gap-1 min-h-0 min-w-0">
+                        <div class="sec-lab" style="color:#60a5fa;">연령대 분포</div>
+                        <div class="flex-1 min-h-0"><div class="vbar-group">${ageBarsHtml}</div></div>
+                    </div>
+                </div>`;
+        }
+
+        function renderEquipChart() {
+            const host = document.getElementById('equip-chart-view'); if (!host) return;
+            const total = EQUIP_DATA.length;
+            const idle = EQUIP_DATA.filter(r => r.driver === '(출문)').length;
+            const active = total - idle;
+            const activePct = Math.round(active / total * 100);
+
+            const typeMap = {};
+            EQUIP_DATA.forEach(r => { typeMap[r.eq] = (typeMap[r.eq] || 0) + 1; });
+            const typeList = Object.entries(typeMap).sort((a, b) => b[1] - a[1]);
+            const typeMax = Math.max(...typeList.map(t => t[1]), 1);
+            const EQ_GRAD = [
+                ['#a78bfa', '#7c3aed'], ['#22d3ee', '#0891b2'], ['#fbbf24', '#d97706'],
+                ['#34d399', '#059669'], ['#fb7185', '#e11d48'], ['#f472b6', '#be185d'], ['#60a5fa', '#2563eb']
+            ];
+
+            const barsHtml = typeList.map(([name, cnt], i) => {
+                const [from, to] = EQ_GRAD[i % EQ_GRAD.length];
+                const w = (cnt / typeMax * 100).toFixed(1);
+                return `<div class="hbar-row">
+                    <div class="hbl">${name}</div>
+                    <div class="hbt"><div class="hbf" style="width:${w}%;--bar-from:${from};--bar-to:${to};"></div></div>
+                    <div class="hbv">${cnt}</div>
+                </div>`;
+            }).join('');
+
+            const R = 38, C = 2 * Math.PI * R;
+            const fillDash = C;
+            const fillOffset = C * (1 - activePct / 100);
+
+            host.innerHTML = `
+                <div class="grid grid-cols-3 gap-1.5 shrink-0">
+                    <div class="kpi-mini" style="--kpi-accent:#a78bfa;--kpi-border:#a78bfa33;">
+                        <div class="kpi-label">총 장비</div>
+                        <div class="flex items-baseline gap-1"><span class="kpi-value">${total}</span><span class="text-[8px] text-slate-400 font-bold">대</span></div>
+                    </div>
+                    <div class="kpi-mini" style="--kpi-accent:#34d399;--kpi-border:#34d39933;">
+                        <div class="kpi-label">가동중</div>
+                        <div class="flex items-baseline gap-1"><span class="kpi-value">${active}</span><span class="text-[8px] text-slate-400 font-bold">대</span></div>
+                    </div>
+                    <div class="kpi-mini" style="--kpi-accent:#f87171;--kpi-border:#f8717133;">
+                        <div class="kpi-label">대기</div>
+                        <div class="flex items-baseline gap-1"><span class="kpi-value">${idle}</span><span class="text-[8px] text-slate-400 font-bold">대</span></div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-5 gap-2 flex-1 min-h-0">
+                    <div class="col-span-2 flex flex-col gap-1 min-h-0">
+                        <div class="sec-lab" style="color:#a78bfa;">가동률</div>
+                        <div class="flex-1 min-h-0 flex items-center justify-center">
+                            <div class="gauge-wrap" style="width:110px;height:110px;">
+                                <svg class="gauge-svg" width="110" height="110" viewBox="0 0 100 100" style="transform:rotate(-90deg);">
+                                    <defs>
+                                        <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="1">
+                                            <stop offset="0%" stop-color="#a78bfa"/>
+                                            <stop offset="100%" stop-color="#22d3ee"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <circle class="g-track" cx="50" cy="50" r="${R}"/>
+                                    <circle class="g-fill" cx="50" cy="50" r="${R}" stroke-dasharray="${fillDash}" stroke-dashoffset="${fillOffset}"/>
+                                </svg>
+                                <div class="gauge-center">
+                                    <div class="gc-pct">${activePct}<span style="font-size:14px;">%</span></div>
+                                    <div class="gc-lab">${active}/${total}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-span-3 flex flex-col gap-1 min-h-0">
+                        <div class="sec-lab" style="color:#a78bfa;">장비 종류별 · ${typeList.length}종</div>
+                        <div class="flex-1 min-h-0 flex flex-col justify-center gap-1 overflow-hidden">${barsHtml}</div>
+                    </div>
+                </div>`;
+        }
+
+        function initPanelViewSwitch() {
+            const RENDERERS = { work: renderWorkChart, attend: renderAttendChart, equip: renderEquipChart };
+            document.querySelectorAll('.view-switch').forEach(group => {
+                const panel = group.dataset.panel;
+                const root = document.querySelector(`[data-panel-root="${panel}"]`);
+                if (!root) return;
+                const tableView = root.querySelector(`#${panel}-table-view`);
+                const chartView = root.querySelector(`#${panel}-chart-view`);
+                const workTabs = root.querySelector('#work-tabs');
+                const activeCls = {
+                    work:   ['bg-cyan-500/30', 'text-cyan-100'],
+                    attend: ['bg-blue-500/30', 'text-blue-100'],
+                    equip:  ['bg-indigo-500/30', 'text-indigo-100']
+                }[panel];
+                group.querySelectorAll('.vsw-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const view = btn.dataset.view;
+                        group.querySelectorAll('.vsw-btn').forEach(b => {
+                            b.classList.remove('active', ...activeCls);
+                            b.classList.add('text-slate-400');
+                        });
+                        btn.classList.add('active', ...activeCls);
+                        btn.classList.remove('text-slate-400');
+                        if (view === 'table') {
+                            tableView.style.display = ''; chartView.style.display = 'none';
+                            if (workTabs) workTabs.style.display = '';
+                        } else {
+                            tableView.style.display = 'none'; chartView.style.display = 'flex';
+                            if (workTabs) workTabs.style.display = 'none';
+                            RENDERERS[panel]?.();
+                        }
+                    });
+                });
+            });
+        }
+
         function initTrafficLight() {
             const states = [
                 { id: 'light-green',  cls: 'active-green',  label: '정상 (안전)', color: '#34d399', icon: '😊' },
@@ -1519,9 +1990,6 @@
                 card.style.setProperty('--site-color', site.color);
                 
                 card.innerHTML = `
-                    <div class="absolute top-5 right-6 bg-emerald-500/20 border border-emerald-400 text-emerald-300 px-4 py-1.5 rounded-lg text-lg font-bold shadow-[0_0_15px_rgba(16,185,129,0.2)] z-10">
-                        TBM 완료
-                    </div>
                     <div class="w-[280px] flex flex-col justify-center gap-2 border-r-2 border-white/10 pr-4 shrink-0">
                         <div class="flex items-center gap-3">
                             <div class="w-5 h-5 rounded-full shadow-[0_0_15px_${site.color}] shrink-0" style="background: ${site.color}"></div>
@@ -1538,7 +2006,7 @@
                         </div>
                     </div>
                     <div class="flex-1 pl-6 flex flex-col justify-center gap-5 overflow-hidden">
-                        <div class="text-[24px] font-black text-emerald-400 flex items-center gap-2 bg-black/20 p-3 rounded-xl border border-white/5 pr-36">
+                        <div class="text-[24px] font-black text-emerald-400 flex items-center gap-2 bg-black/20 p-3 rounded-xl border border-white/5">
                             <i data-lucide="check-circle-2" class="w-6 h-6 shrink-0"></i> 
                             <span class="shrink-0">금일주요작업내용:</span> 
                             <span class="text-white ml-1 truncate">${site.majorTask}</span>
@@ -2079,6 +2547,145 @@
             resetAutoPlay();
         }
 
+        // 해면 path 생성 — body 평균선(y=16) 고정, 파고별로 amp만 가변.
+        // 3겹 사인파(주파 6 / 중간 14 / 잔물결 30) + power 샤프닝 + 비대칭 bias +
+        // 저주파 엔벨로프(돌풍)로 카오스한 실제 해양파 형상 합성.
+        // 모든 주파수는 짝수 → viewBox 120 단위 주기 → translateX -50% 루프 이음매 없음.
+        const WAVE_AMPS = { calm: 0.6, mid: 1.5, rough: 3.5, high: 6.0 };
+
+        function buildWavePath(amp) {
+            const M = 16;
+            const STEPS = 80;
+            const parts = [`M0 ${M.toFixed(2)}`];
+            for (let i = 1; i <= STEPS; i++) {
+                const x  = 240 * i / STEPS;
+                const ph = (i / STEPS) * Math.PI * 2;
+
+                const raw = Math.sin(ph * 6  + 0.2)
+                          + Math.sin(ph * 14 + 1.6) * 0.40
+                          + Math.sin(ph * 30 + 3.1) * 0.15;
+
+                const sharp = Math.sign(raw) * Math.pow(Math.abs(raw), 0.75);
+                const bias  = sharp > 0 ? sharp * 1.20 : sharp * 0.65;
+                const env   = 1 + 0.22 * Math.sin(ph * 2 - 0.5);
+
+                const y = M - bias * amp * env;
+                parts.push(`L${x.toFixed(1)} ${y.toFixed(2)}`);
+            }
+            parts.push('V28 H0 Z');
+            return parts.join(' ');
+        }
+
+        // TODO: 기상청 실황(SKY/PTY/WSD/VEC) + KHOA 파고로 교체. 현재는 샘플 로테이션
+        const WEATHER_SCENARIOS = [
+            { wind: 1.8,  dirName: '남',   dirDeg: 180, wave: 0.3 },
+            { wind: 4.5,  dirName: '북동', dirDeg: 45,  wave: 0.9 },
+            { wind: 7.2,  dirName: '북서', dirDeg: 315, wave: 1.5 },
+            { wind: 11.5, dirName: '서',   dirDeg: 270, wave: 2.8 },
+            { wind: 5.2,  dirName: '북서', dirDeg: 315, wave: 1.2 }
+        ];
+
+        function applyWeatherAnimations({ wind, dirName, wave }) {
+            const textW = document.getElementById('wx-wind-text');
+            const flag  = document.getElementById('wx-flag');
+            const textV = document.getElementById('wx-wave-text');
+            const waveSvg = document.getElementById('wx-wave-svg');
+            if (!textW || !flag || !waveSvg) return;
+
+            textW.textContent = `${dirName} ${wind.toFixed(1)}m/s`;
+
+            const windClasses = ['wind-weak','wind-mid','wind-strong','wind-extreme'];
+            flag.classList.remove(...windClasses);
+            flag.classList.add(
+                wind < 3  ? 'wind-weak'
+              : wind < 7  ? 'wind-mid'
+              : wind < 11 ? 'wind-strong'
+              :             'wind-extreme'
+            );
+
+            const windColorClasses = ['text-sky-400','text-emerald-400','text-amber-400','text-rose-400'];
+            textW.classList.remove(...windColorClasses);
+            textW.classList.add(
+                wind < 3  ? 'text-sky-400'
+              : wind < 7  ? 'text-emerald-400'
+              : wind < 11 ? 'text-amber-400'
+              :             'text-rose-400'
+            );
+
+            textV.textContent = `파고 ${wave.toFixed(1)}m`;
+            const waveClasses = ['wave-calm','wave-mid','wave-rough','wave-high'];
+            waveSvg.classList.remove(...waveClasses);
+            const waveKey = wave < 0.5 ? 'calm' : wave < 1.3 ? 'mid' : wave < 2.2 ? 'rough' : 'high';
+            waveSvg.classList.add('wave-' + waveKey);
+            const wavePath = waveSvg.querySelector('path');
+            if (wavePath) {
+                wavePath.setAttribute('fill',
+                    wave < 1.3 ? '#00AEEF' : wave < 2.2 ? '#f59e0b' : '#ef4444'
+                );
+                wavePath.setAttribute('d', buildWavePath(WAVE_AMPS[waveKey]));
+            }
+
+            const waveColorClasses = ['text-blue-400','text-amber-400','text-rose-400'];
+            textV.classList.remove(...waveColorClasses);
+            textV.classList.add(
+                wave < 1.3 ? 'text-blue-400'
+              : wave < 2.2 ? 'text-amber-400'
+              :              'text-rose-400'
+            );
+        }
+
+        function initWeatherSim() {
+            let idx = 0;
+            applyWeatherAnimations(WEATHER_SCENARIOS[idx]);
+            setInterval(() => {
+                idx = (idx + 1) % WEATHER_SCENARIOS.length;
+                applyWeatherAnimations(WEATHER_SCENARIOS[idx]);
+            }, 6000);
+        }
+
+        function initRainForecast() {
+            const bars = document.getElementById('rain-bars');
+            const xaxis = document.getElementById('rain-xaxis');
+            if (!bars || !xaxis) return;
+
+            // TODO: 기상청 단기예보 API(getVilageFcst) POP 값으로 교체. 현재는 더미
+            const now = new Date();
+            const baseHour = Math.floor(now.getHours() / 3) * 3;
+            const hours = Array.from({ length: 8 }, (_, i) => (baseHour + i * 3) % 24);
+            const pops  = [10, 20, 40, 60, 80, 70, 40, 20];
+
+            const maxVal = Math.max(...pops);
+            const maxIdx = pops.indexOf(maxVal);
+            document.getElementById('rain-max').textContent = maxVal + '%';
+            document.getElementById('rain-max-time').textContent = hours[maxIdx] + '시';
+
+            bars.innerHTML = '';
+            xaxis.innerHTML = '';
+            pops.forEach((p, i) => {
+                const color = p >= 80 ? '#fb923c'
+                            : p >= 60 ? '#facc15'
+                            : p >= 30 ? '#22d3ee'
+                            : p >= 10 ? '#64748b'
+                            : '#334155';
+                const barH = Math.max(p, 4);
+                const isCurrent = i === 0;
+                const showVal = p >= 50;
+
+                const col = document.createElement('div');
+                col.style.cssText = 'flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0;gap:1px;';
+                col.innerHTML = `
+                    ${showVal ? `<div style="font-size:8px;font-weight:900;color:${color};text-shadow:0 0 3px currentColor;line-height:1;">${p}</div>` : ''}
+                    <div style="width:100%;height:${barH}%;background:linear-gradient(180deg,${color},${color}88);border-radius:2px 2px 0 0;box-shadow:0 0 5px ${color}99${isCurrent ? ',inset 0 0 0 1px #00f5ff' : ''};transition:height .7s cubic-bezier(.2,.8,.2,1);"></div>
+                `;
+                bars.appendChild(col);
+
+                const lbl = document.createElement('span');
+                lbl.style.cssText = 'flex:1;text-align:center;min-width:0;' + (isCurrent ? 'color:#00f5ff;font-weight:900;' : '');
+                lbl.textContent = String(hours[i]).padStart(2, '0');
+                xaxis.appendChild(lbl);
+            });
+        }
+
 
         // ════════════════════════════════════════════════════════
         // 시화호 조수간만의 차 — GIS 맵 우측 패널 버전 (RAW 데이터)
@@ -2136,10 +2743,35 @@
 
             let mainGeom2=null, hoverIdx2=-1;
 
+            // ─── 해수위 더미 시뮬레이션: 8가지 시나리오를 5초 주기로 로테이션, 애니 루프에서 선형 보간 ───
+            // TODO: KHOA 조위관측소 실시간 API 연동 시 이 변수만 교체
+            const TIDE_SIM = [-2.4, -0.5, 0.8, 1.8, 2.6, 3.3, 1.2, -1.8];
+            let simIdx = 0;
+            let simSeaTarget = TIDE_SIM[0];
+            let simSea = simSeaTarget;
+            let simLakeTarget = -1.2;
+            let simLake = simLakeTarget;
+
+            // 해수위 구간별 수면 파라미터 (사인파 2중첩: 진폭·주파수·속도)
+            // 저조 → 잔잔한 거울면, 위험 → 격랑
+            function tideWaveParams(v) {
+                if (v > 3)   return { a1: 8.5, a2: 4.0, f1: 4.8, f2: 11.0, s1: 4.5, s2: 6.8 };
+                if (v > 1.0) return { a1: 5.5, a2: 2.4, f1: 3.8, f2: 8.5,  s1: 2.8, s2: 4.3 };
+                if (v > -1)  return { a1: 3.0, a2: 1.3, f1: 3.2, f2: 6.5,  s1: 1.8, s2: 2.8 };
+                return       { a1: 0.7, a2: 0.25,f1: 2.0, f2: 4.5,  s1: 0.6, s2: 1.1 };
+            }
+
+            function stepTideSim() {
+                simIdx = (simIdx + 1) % TIDE_SIM.length;
+                simSeaTarget = TIDE_SIM[simIdx];
+                simLakeTarget = -1.2 + Math.sin(simIdx * 0.9) * 0.8;
+            }
+
             function drawTank(ts){
                 const cv=document.getElementById('cv-tf-tank'); if(!cv) return;
                 const ctx=cv.getContext('2d'),W=120,H=220,T=ts/1000;
-                const v=VISIBLE2[NOW_I2].seaRwl;
+                const v=simSea;
+                const wp=tideWaveParams(v);
                 const pct=Math.max(0,Math.min(1,(v-LO)/(HI-LO)));
                 const c=tcol(v),[R,G,B]=rgb(c);
                 ctx.clearRect(0,0,W,H);
@@ -2155,14 +2787,14 @@
                 ctx.fillStyle=wg;
                 ctx.beginPath(); ctx.moveTo(bx,by+bh);
                 for(let x=bx;x<=bx+bw;x+=2){
-                    const wy=wTop+Math.sin((x/bw*3.2+T*2.2)*2*Math.PI)*4+Math.sin((x/bw*6.5+T*3.4)*2*Math.PI)*1.8;
+                    const wy=wTop+Math.sin((x/bw*wp.f1+T*wp.s1)*2*Math.PI)*wp.a1+Math.sin((x/bw*wp.f2+T*wp.s2)*2*Math.PI)*wp.a2;
                     ctx.lineTo(x,wy);
                 }
                 ctx.lineTo(bx+bw,by+bh); ctx.closePath(); ctx.fill();
                 ctx.strokeStyle=`rgba(${R},${G},${B},.78)`; ctx.lineWidth=2; ctx.shadowColor=c; ctx.shadowBlur=8;
                 ctx.beginPath();
                 for(let x=bx;x<=bx+bw;x+=2){
-                    const wy=wTop+Math.sin((x/bw*3.2+T*2.2)*2*Math.PI)*4+Math.sin((x/bw*6.5+T*3.4)*2*Math.PI)*1.8;
+                    const wy=wTop+Math.sin((x/bw*wp.f1+T*wp.s1)*2*Math.PI)*wp.a1+Math.sin((x/bw*wp.f2+T*wp.s2)*2*Math.PI)*wp.a2;
                     x===bx?ctx.moveTo(x,wy):ctx.lineTo(x,wy);
                 }
                 ctx.stroke(); ctx.shadowBlur=0; ctx.restore();
@@ -2293,14 +2925,13 @@
             }
 
             function updateChips(){
-                const last=VISIBLE2[NOW_I2], prev=DATA2[Math.max(0,NOW_I2-1)];
-                const v=last.seaRwl, c=tcol(v);
+                const v=simSea, c=tcol(v);
                 const el=id=>document.getElementById(id);
                 if(el('tf-val')){el('tf-val').textContent=(v>=0?'+':'')+v.toFixed(2); el('tf-val').style.color=c;}
-                if(el('tf-lake')){el('tf-lake').textContent=(last.lakeRwl>=0?'+':'')+last.lakeRwl.toFixed(2);}
-                const dv=v-prev.seaRwl;
+                if(el('tf-lake')){el('tf-lake').textContent=(simLake>=0?'+':'')+simLake.toFixed(2);}
+                const dv=simSeaTarget-simSea;
                 if(el('tf-dir')){
-                    if(Math.abs(dv)<0.01){el('tf-dir').textContent='─ 정체';el('tf-dir').style.color='#888';}
+                    if(Math.abs(dv)<0.02){el('tf-dir').textContent='─ 정체';el('tf-dir').style.color='#888';}
                     else if(dv>0){el('tf-dir').textContent='▲ 상승';el('tf-dir').style.color='#ff8c00';}
                     else{el('tf-dir').textContent='▼ 하강';el('tf-dir').style.color='#00ccff';}
                 }
@@ -2337,7 +2968,19 @@
 
             updateChips();
             attachHover();
-            function loop(ts){ drawTank(ts); drawMain(ts); requestAnimationFrame(loop); }
+            setInterval(stepTideSim, 5000);
+            function loop(ts){
+                // 해수위 선형 보간 (5초 타깃 전환이 부드럽게 이어지도록)
+                simSea  += (simSeaTarget  - simSea ) * 0.025;
+                simLake += (simLakeTarget - simLake) * 0.025;
+                // 주 차트 NOW 포인트도 시뮬값에 동기화 (마지막 한 점만 변경, 과거값은 유지)
+                VISIBLE2[NOW_I2].seaRwl  = simSea;
+                VISIBLE2[NOW_I2].lakeRwl = simLake;
+                drawTank(ts);
+                drawMain(ts);
+                updateChips();
+                requestAnimationFrame(loop);
+            }
             requestAnimationFrame(loop);
         })();
 
@@ -2353,8 +2996,11 @@
                 initWorkTable();
                 initAttendTable();
                 initEquipTable();
-                initWorkerMonitor(); 
-                changeVmsLayout(16); 
+                initPanelViewSwitch();
+                initWorkerMonitor();
+                initRainForecast();
+                initWeatherSim();
+                changeVmsLayout(16);
                 resizeDashboard();
                 
                 setTimeout(() => { 
