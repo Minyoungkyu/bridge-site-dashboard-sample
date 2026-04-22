@@ -488,7 +488,7 @@
 
         /* KPI mini cards */
         .kpi-mini {
-            background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+            background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(0,0,0,0.55));
             border: 1px solid var(--kpi-border, rgba(255,255,255,0.1));
             border-radius: 10px;
             padding: 6px 8px;
@@ -532,8 +532,8 @@
         .donut-svg { transform: rotate(-90deg); filter: drop-shadow(0 0 8px rgba(96,165,250,.3)); }
         .donut-svg circle { fill: none; stroke-width: 12; transition: stroke-dasharray .8s cubic-bezier(.2,.8,.2,1); }
         .donut-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
-        .donut-center .dc-val { font-family: Consolas, monospace; font-size: 24px; font-weight: 900; color: #fff; text-shadow: 0 0 12px rgba(96,165,250,.8); line-height: 1; }
-        .donut-center .dc-lab { font-size: 8px; color: rgba(255,255,255,.5); letter-spacing: .1em; margin-top: 2px; font-weight: 700; }
+        .donut-center .dc-val { font-family: Consolas, monospace; font-size: 18px; font-weight: 900; color: #fff; text-shadow: 0 0 12px rgba(96,165,250,.8); line-height: 1; }
+        .donut-center .dc-lab { font-size: 7px; color: rgba(255,255,255,.5); letter-spacing: .1em; margin-top: 1px; font-weight: 700; }
 
         /* Horizontal bars */
         .hbar-row { display: flex; align-items: center; gap: 6px; height: 16px; font-size: 10px; }
@@ -558,8 +558,8 @@
         .gauge-svg .g-track { stroke: rgba(255,255,255,.06); stroke-width: 10; }
         .gauge-svg .g-fill { stroke: url(#gaugeGrad); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset .9s cubic-bezier(.2,.8,.2,1); filter: drop-shadow(0 0 8px rgba(167,139,250,.7)); }
         .gauge-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .gauge-center .gc-pct { font-family: Consolas, monospace; font-size: 26px; font-weight: 900; color: #a78bfa; text-shadow: 0 0 14px rgba(167,139,250,.9); line-height: 1; }
-        .gauge-center .gc-lab { font-size: 9px; color: rgba(255,255,255,.5); letter-spacing: .1em; font-weight: 700; margin-top: 2px; }
+        .gauge-center .gc-pct { font-family: Consolas, monospace; font-size: 20px; font-weight: 900; color: #a78bfa; text-shadow: 0 0 14px rgba(167,139,250,.9); line-height: 1; }
+        .gauge-center .gc-lab { font-size: 8px; color: rgba(255,255,255,.5); letter-spacing: .1em; font-weight: 700; margin-top: 1px; }
 
         /* Strip stat footer */
         .stat-strip { display: flex; gap: 6px; padding: 4px 6px; background: linear-gradient(90deg, rgba(6,182,212,.08), rgba(6,182,212,.02)); border: 1px solid rgba(6,182,212,.15); border-radius: 8px; font-size: 10px; font-weight: 700; color: rgba(255,255,255,.7); justify-content: space-around; align-items: center; }
@@ -947,8 +947,8 @@
                         </div> -->
 
                         <!-- Compacted Sensors -->
-                        <div id="sensor-panel-container" class="bg-black/50 rounded-[20px] border-2 border-amber-500/30 p-4 flex flex-col shadow-lg shrink-0 transition-all duration-300">
-                            <h3 class="text-[18px] text-amber-400 font-black mb-3 flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4"></i> 통합 계측기 실시간 현황</h3>
+                        <div id="sensor-panel-container" class="bg-black/50 rounded-[20px] border-2 border-amber-500/30 p-3 flex flex-col shadow-lg shrink-0 h-[310px] overflow-y-auto [&::-webkit-scrollbar]:hidden transition-all duration-300">
+                            <h3 class="text-[16px] text-amber-400 font-black mb-2 flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4"></i> 통합 계측기 실시간 현황</h3>
                             <div class="flex flex-col gap-2">
                                 <div class="grid grid-cols-3 gap-2">
                                     <div id="target-sensor-1" class="bg-[#1e1b4b] rounded-xl p-2.5 flex flex-col border border-amber-500/20 transition-colors hover:border-amber-400 cursor-pointer">
@@ -1122,7 +1122,7 @@
                         </div> -->
 
                         <!-- 3.1 금일 전체 작업 -->
-                        <div class="bg-black/50 rounded-[20px] border-2 border-cyan-500/30 p-3 flex flex-col shadow-lg h-[275px] min-h-0 overflow-hidden gap-2" data-panel-root="work">
+                        <div class="bg-black/50 rounded-[20px] border-2 border-cyan-500/30 p-3 flex flex-col shadow-lg h-[220px] min-h-0 overflow-hidden gap-2" data-panel-root="work">
                             <div class="flex items-center justify-between gap-2 shrink-0">
                                 <h3 class="text-[16px] text-cyan-400 font-black flex items-center gap-2 whitespace-nowrap"><i data-lucide="clipboard-list" class="w-4 h-4"></i> 금일 전체 작업</h3>
                                 <div class="flex items-center gap-2">
@@ -1149,11 +1149,13 @@
                                             <th class="py-1.5 px-1 font-bold">작업위치</th>
                                             <th class="py-1.5 px-1 font-bold" colspan="2">작업시간</th>
                                             <th class="py-1.5 px-1 font-bold">출근<br>인원</th>
+                                            <th class="py-1.5 px-1 font-bold">TBM<br>완료</th>
                                             <th class="py-1.5 px-1 font-bold" colspan="2">SPOT이행<br>(5건/7건)</th>
                                         </tr>
                                         <tr class="text-[9px] text-slate-400 border-b border-white/10">
                                             <th></th><th></th><th></th><th></th>
                                             <th class="py-0.5 font-bold">시작</th><th class="py-0.5 font-bold">종료</th>
+                                            <th></th>
                                             <th></th>
                                             <th class="py-0.5 font-bold">1차</th><th class="py-0.5 font-bold">2차</th>
                                         </tr>
@@ -1164,8 +1166,44 @@
                             <div id="work-chart-view" class="view-pane flex-1 flex-col gap-1.5 overflow-hidden" style="display:none;"></div>
                         </div>
 
+                        <!-- 3.1.5 TBM 관리 -->
+                        <div class="bg-black/50 rounded-[20px] border-2 border-violet-500/30 p-3 flex flex-col shadow-lg h-[190px] min-h-0 overflow-hidden gap-2" data-panel-root="tbm">
+                            <div class="flex items-center justify-between gap-2 shrink-0 flex-wrap">
+                                <h3 class="text-[16px] text-violet-300 font-black flex items-center gap-2 whitespace-nowrap"><i data-lucide="clipboard-check" class="w-4 h-4"></i> TBM 관리</h3>
+                                <div class="flex items-center gap-2">
+                                    <div class="text-[11px] font-bold flex items-center gap-2">
+                                        <span class="text-emerald-300">실시: <span id="tbm-kpi-done" class="text-white font-black">--</span>명</span>
+                                        <span class="text-white/20">|</span>
+                                        <span class="text-rose-300">미실시: <span id="tbm-kpi-miss" class="text-white font-black">--</span>명</span>
+                                    </div>
+                                    <div class="view-switch flex gap-0.5 bg-black/50 rounded-md p-0.5 border border-violet-400/20" data-panel="tbm">
+                                        <button data-view="table" class="vsw-btn active text-[10px] font-black px-2 py-0.5 rounded bg-violet-500/30 text-violet-100">표</button>
+                                        <button data-view="chart" class="vsw-btn text-[10px] font-bold px-2 py-0.5 rounded text-slate-400 hover:text-violet-200">차트</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="tbm-table-view" class="view-pane flex-1 overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden border border-white/10 rounded-lg">
+                                <table class="w-full text-center border-collapse text-[11px]">
+                                    <thead class="sticky top-0 bg-[#001a33] z-10 text-slate-300 border-b border-white/20">
+                                        <tr>
+                                            <th class="py-1.5 px-1 font-bold">구분</th>
+                                            <th class="py-1.5 px-1 font-bold">업체명</th>
+                                            <th class="py-1.5 px-1 font-bold">공종</th>
+                                            <th class="py-1.5 px-1 font-bold">직종</th>
+                                            <th class="py-1.5 px-1 font-bold">작업자</th>
+                                            <th class="py-1.5 px-1 font-bold text-left">현위치</th>
+                                            <th class="py-1.5 px-1 font-bold">출근시간</th>
+                                            <th class="py-1.5 px-1 font-bold">TBM시간</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbm-tbody" class="text-white font-bold"></tbody>
+                                </table>
+                            </div>
+                            <div id="tbm-chart-view" class="view-pane flex-1 flex-col gap-1.5 overflow-hidden" style="display:none;"></div>
+                        </div>
+
                         <!-- 3.2 출역현황 -->
-                        <div class="bg-black/50 rounded-[20px] border-2 border-blue-500/30 p-3 flex flex-col shadow-lg h-[275px] min-h-0 overflow-hidden gap-2" data-panel-root="attend">
+                        <div class="bg-black/50 rounded-[20px] border-2 border-blue-500/30 p-3 flex flex-col shadow-lg h-[220px] min-h-0 overflow-hidden gap-2" data-panel-root="attend">
                             <div class="flex items-center justify-between gap-2 shrink-0 flex-wrap">
                                 <h3 class="text-[16px] text-blue-400 font-black flex items-center gap-2 whitespace-nowrap"><i data-lucide="users" class="w-4 h-4"></i> 출역현황</h3>
                                 <div class="flex items-center gap-2">
@@ -1204,7 +1242,7 @@
                         </div>
 
                         <!-- 3.3 장비작업 현황 -->
-                        <div class="bg-black/50 rounded-[20px] border-2 border-indigo-500/30 p-3 flex flex-col shadow-lg h-[275px] min-h-0 overflow-hidden gap-2" data-panel-root="equip">
+                        <div class="bg-black/50 rounded-[20px] border-2 border-indigo-500/30 p-3 flex flex-col shadow-lg h-[220px] min-h-0 overflow-hidden gap-2" data-panel-root="equip">
                             <div class="flex items-center justify-between gap-2 shrink-0 flex-wrap">
                                 <h3 class="text-[16px] text-indigo-400 font-black flex items-center gap-2 whitespace-nowrap"><i data-lucide="truck" class="w-4 h-4"></i> 장비작업 현황</h3>
                                 <div class="flex items-center gap-2">
@@ -1531,6 +1569,7 @@
                         <td class="py-1.5 px-1 text-slate-400 font-mono">${r.start}</td>
                         <td class="py-1.5 px-1 text-slate-400 font-mono">${r.end}</td>
                         <td class="py-1.5 px-1 text-blue-300 font-mono">${r.attend}</td>
+                        <td class="py-1.5 px-1 ${r.tbm === r.attend ? 'text-emerald-400' : 'text-amber-400'} font-mono">${r.tbm}</td>
                         <td class="py-1.5 px-1 ${r.spot1 === 'Y' ? 'text-emerald-400' : 'text-slate-500'} font-mono">${r.spot1}</td>
                         <td class="py-1.5 px-1 ${r.spot2 === 'Y' ? 'text-emerald-400' : 'text-slate-500'} font-mono">${r.spot2}</td>
                     </tr>`).join('');
@@ -1607,6 +1646,132 @@
                     <td class="py-1.5 px-1 text-slate-300">${r.driver}</td>
                     <td class="py-1.5 px-1 text-slate-400">${r.sig}</td>
                 </tr>`).join('');
+        }
+
+        const TBM_DATA = [
+            { type: '정규', typeColor: 'text-cyan-300',   company: '재영전기',       field: '기타',    job: '신호수',   name: '김상익',    loc: '시화 종점부-지상존',  checkIn: '08:04', tbmTime: '08:03' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '재영전기',       field: '기타',    job: '전공',     name: '주병준',    loc: '시화 종점부-게이트2', checkIn: '06:24', tbmTime: '07:19' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '재영전기',       field: '기타',    job: '전공',     name: '진천복',    loc: '시화 종점부-지상존',  checkIn: '06:12', tbmTime: '07:19' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '재영전기',       field: '기타',    job: '운전원',   name: '이종아',    loc: '시화 종점부-지상존',  checkIn: '06:18', tbmTime: '07:19' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '재영전기',       field: '기타',    job: '전공',     name: '김종욱',    loc: '시화 종점부-지상존',  checkIn: '06:33', tbmTime: '07:19' },
+            { type: '조출', typeColor: 'text-amber-300',  company: '한진건설',       field: '가설',    job: '비계공',   name: '박영호',    loc: 'P2 주탑',             checkIn: '05:15', tbmTime: '05:45' },
+            { type: '조출', typeColor: 'text-amber-300',  company: '한진건설',       field: '가설',    job: '비계공',   name: '김덕수',    loc: 'P2 주탑',             checkIn: '05:20', tbmTime: '05:45' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '국제엔지니어링', field: '토공',    job: '굴착공',   name: '정수민',    loc: 'P1 시점',             checkIn: '07:10', tbmTime: '07:30' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '현대중공업',     field: '강구조',  job: '용접공',   name: 'NGUYEN V.', loc: '주탑 상단',           checkIn: '07:25', tbmTime: '07:30' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '대림산업',       field: '토공',    job: '형틀공',   name: '최영수',    loc: 'P3 종점부',           checkIn: '07:18', tbmTime: '07:30' },
+            { type: '야간', typeColor: 'text-indigo-300', company: '지에이이노디스', field: '콘크리트', job: '양생공',  name: '한동욱',    loc: 'P2',                  checkIn: '21:45', tbmTime: '22:00' },
+            { type: '야간', typeColor: 'text-indigo-300', company: '국제엔지니어링', field: '전기',    job: '전공',     name: '오성민',    loc: 'P2 주탑',             checkIn: '18:50', tbmTime: '19:00' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '남해건설',       field: '가설',    job: '비계공',   name: '장민석',    loc: '접속교',              checkIn: '07:05', tbmTime: '07:30' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '서진건설',       field: '가설',    job: '보통인부', name: '김재호',    loc: '종점 가설지',         checkIn: '07:45', tbmTime: null   },
+            { type: '조출', typeColor: 'text-amber-300',  company: '남해건설',       field: '기타',    job: '보통인부', name: '이정우',    loc: '시점',                checkIn: '05:40', tbmTime: '05:45' },
+            { type: '추가', typeColor: 'text-rose-300',   company: '다음이앤비',     field: '가설',    job: '보통인부', name: '류승범',    loc: '접속교',              checkIn: '12:55', tbmTime: null   },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '다음이앤비',     field: '가설',    job: '신호수',   name: '김민수',    loc: '상부공',              checkIn: '07:20', tbmTime: '07:30' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '다음이앤비',     field: '기타',    job: '협력업체', name: '이성호',    loc: '송산 시점부',         checkIn: '07:55', tbmTime: '08:00' }
+        ];
+
+        function initTbmTable() {
+            const tbody = document.getElementById('tbm-tbody'); if (!tbody) return;
+            tbody.innerHTML = TBM_DATA.map(r => `
+                <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <td class="py-1.5 px-1 ${r.typeColor} font-black">${r.type}</td>
+                    <td class="py-1.5 px-1 text-slate-300 truncate max-w-[90px]">${r.company}</td>
+                    <td class="py-1.5 px-1 text-slate-400">${r.field}</td>
+                    <td class="py-1.5 px-1 text-cyan-300">${r.job}</td>
+                    <td class="py-1.5 px-1 text-white">${r.name}</td>
+                    <td class="py-1.5 px-1 text-left text-indigo-300 truncate max-w-[140px]" title="${r.loc}">${r.loc}</td>
+                    <td class="py-1.5 px-1 text-slate-400 font-mono">${r.checkIn}</td>
+                    <td class="py-1.5 px-1 ${r.tbmTime ? 'text-emerald-400' : 'text-rose-400'} font-mono font-black">${r.tbmTime || '미실시'}</td>
+                </tr>`).join('');
+            const done = TBM_DATA.filter(r => r.tbmTime).length;
+            const miss = TBM_DATA.length - done;
+            const doneEl = document.getElementById('tbm-kpi-done'); if (doneEl) doneEl.textContent = done;
+            const missEl = document.getElementById('tbm-kpi-miss'); if (missEl) missEl.textContent = miss;
+        }
+
+        function renderTbmChart() {
+            const host = document.getElementById('tbm-chart-view'); if (!host) return;
+            const total = TBM_DATA.length;
+            const done = TBM_DATA.filter(r => r.tbmTime).length;
+            const miss = total - done;
+            const pct = Math.round(done / total * 100);
+
+            const typeMap = {};
+            TBM_DATA.forEach(r => { typeMap[r.type] = (typeMap[r.type] || 0) + 1; });
+            const TYPE_COLOR = { '정규': '#22d3ee', '조출': '#fbbf24', '야간': '#818cf8', '추가': '#fb7185' };
+            const typeOrder = ['조출', '정규', '야간', '추가'];
+            const typeEntries = typeOrder.filter(k => typeMap[k]).map(k => [k, typeMap[k]]);
+            const typeMax = Math.max(...typeEntries.map(e => e[1]), 1);
+
+            const fieldMap = {};
+            TBM_DATA.forEach(r => { fieldMap[r.field] = (fieldMap[r.field] || 0) + 1; });
+            const fieldEntries = Object.entries(fieldMap).sort((a, b) => b[1] - a[1]);
+            const fieldMax = Math.max(...fieldEntries.map(e => e[1]), 1);
+            const FIELD_COLORS = ['#a78bfa', '#60a5fa', '#34d399', '#f472b6', '#fbbf24', '#22d3ee'];
+
+            const R = 36, C = 2 * Math.PI * R;
+            const doneDash = C * (done / total);
+
+            host.innerHTML = `
+                <div class="flex-1 grid grid-cols-12 gap-1.5 min-h-0 overflow-hidden">
+                    <div class="col-span-4 bg-black/40 border border-violet-500/20 rounded-lg p-1.5 flex flex-col items-center justify-center gap-1">
+                        <div class="text-[9px] text-violet-300 font-black tracking-wider">TBM 실시현황</div>
+                        <div class="relative">
+                            <svg width="78" height="78" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="${R}" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="12"/>
+                                <circle cx="50" cy="50" r="${R}" fill="none" stroke="#10b981" stroke-width="12"
+                                        stroke-dasharray="${doneDash} ${C}" stroke-dashoffset="0"
+                                        transform="rotate(-90 50 50)" stroke-linecap="round"
+                                        style="filter:drop-shadow(0 0 6px rgba(16,185,129,.5));"/>
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <div class="text-[8px] text-slate-400 font-bold leading-none">실시율</div>
+                                <div class="text-[18px] font-black text-emerald-400 leading-none">${pct}<span class="text-[10px]">%</span></div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 text-[9px] font-black">
+                            <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span><span class="text-slate-300">실시 ${done}</span></div>
+                            <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span><span class="text-slate-300">미실시 ${miss}</span></div>
+                        </div>
+                    </div>
+
+                    <div class="col-span-4 bg-black/40 border border-violet-500/20 rounded-lg p-2 flex flex-col gap-1 overflow-hidden">
+                        <div class="text-[10px] text-violet-300 font-black tracking-wider">구분별 인원</div>
+                        <div class="flex-1 flex flex-col justify-center gap-1">
+                            ${typeEntries.map(([name, cnt]) => {
+                                const w = (cnt / typeMax * 100).toFixed(1);
+                                const color = TYPE_COLOR[name] || '#94a3b8';
+                                return `
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-7 text-[10px] font-black" style="color:${color}">${name}</div>
+                                        <div class="flex-1 bg-white/5 rounded-sm h-3 relative overflow-hidden">
+                                            <div class="h-full rounded-sm" style="width:${w}%;background:linear-gradient(90deg,${color}99,${color});box-shadow:0 0 6px ${color}99;"></div>
+                                        </div>
+                                        <div class="w-5 text-right text-[10px] font-black text-white">${cnt}</div>
+                                    </div>`;
+                            }).join('')}
+                        </div>
+                        <div class="text-[9px] text-slate-500 font-bold text-right">전체 ${total}명</div>
+                    </div>
+
+                    <div class="col-span-4 bg-black/40 border border-violet-500/20 rounded-lg p-2 flex flex-col gap-1 overflow-hidden">
+                        <div class="text-[10px] text-violet-300 font-black tracking-wider">공종별 분포</div>
+                        <div class="flex-1 flex flex-col justify-center gap-0.5">
+                            ${fieldEntries.map(([name, cnt], i) => {
+                                const w = (cnt / fieldMax * 100).toFixed(1);
+                                const color = FIELD_COLORS[i % FIELD_COLORS.length];
+                                return `
+                                    <div class="flex items-center gap-1.5">
+                                        <div class="w-9 text-[9px] font-black truncate" style="color:${color}" title="${name}">${name}</div>
+                                        <div class="flex-1 bg-white/5 rounded-sm h-2.5 relative overflow-hidden">
+                                            <div class="h-full rounded-sm" style="width:${w}%;background:${color};box-shadow:0 0 4px ${color}aa;"></div>
+                                        </div>
+                                        <div class="w-4 text-right text-[9px] font-black text-white">${cnt}</div>
+                                    </div>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         /* ============== 사이드 패널 차트 뷰 렌더러 ============== */
@@ -1833,8 +1998,8 @@
                     <div class="flex flex-col gap-1.5 shrink-0" style="width:176px;">
                         <div class="sec-lab" style="color:#60a5fa;">공종 분포 · ${fieldList.length}종</div>
                         <div class="flex items-center gap-2">
-                            <div class="donut-wrap shrink-0" style="width:100px;height:100px;">
-                                <svg class="donut-svg" width="100" height="100" viewBox="0 0 100 100">${segsHtml}</svg>
+                            <div class="donut-wrap shrink-0" style="width:80px;height:80px;">
+                                <svg class="donut-svg" width="80" height="80" viewBox="0 0 100 100">${segsHtml}</svg>
                                 <div class="donut-center"><div class="dc-val">${total}</div><div class="dc-lab">TOTAL</div></div>
                             </div>
                             <div class="flex-1 flex flex-col gap-[3px] min-w-0">${legendHtml}</div>
@@ -1896,8 +2061,8 @@
                     <div class="col-span-2 flex flex-col gap-1 min-h-0">
                         <div class="sec-lab" style="color:#a78bfa;">가동률</div>
                         <div class="flex-1 min-h-0 flex items-center justify-center">
-                            <div class="gauge-wrap" style="width:110px;height:110px;">
-                                <svg class="gauge-svg" width="110" height="110" viewBox="0 0 100 100" style="transform:rotate(-90deg);">
+                            <div class="gauge-wrap" style="width:85px;height:85px;">
+                                <svg class="gauge-svg" width="85" height="85" viewBox="0 0 100 100" style="transform:rotate(-90deg);">
                                     <defs>
                                         <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="1">
                                             <stop offset="0%" stop-color="#a78bfa"/>
@@ -1908,7 +2073,7 @@
                                     <circle class="g-fill" cx="50" cy="50" r="${R}" stroke-dasharray="${fillDash}" stroke-dashoffset="${fillOffset}"/>
                                 </svg>
                                 <div class="gauge-center">
-                                    <div class="gc-pct">${activePct}<span style="font-size:14px;">%</span></div>
+                                    <div class="gc-pct">${activePct}<span style="font-size:11px;">%</span></div>
                                     <div class="gc-lab">${active}/${total}</div>
                                 </div>
                             </div>
@@ -1922,7 +2087,7 @@
         }
 
         function initPanelViewSwitch() {
-            const RENDERERS = { work: renderWorkChart, attend: renderAttendChart, equip: renderEquipChart };
+            const RENDERERS = { work: renderWorkChart, attend: renderAttendChart, equip: renderEquipChart, tbm: renderTbmChart };
             document.querySelectorAll('.view-switch').forEach(group => {
                 const panel = group.dataset.panel;
                 const root = document.querySelector(`[data-panel-root="${panel}"]`);
@@ -1933,7 +2098,8 @@
                 const activeCls = {
                     work:   ['bg-cyan-500/30', 'text-cyan-100'],
                     attend: ['bg-blue-500/30', 'text-blue-100'],
-                    equip:  ['bg-indigo-500/30', 'text-indigo-100']
+                    equip:  ['bg-indigo-500/30', 'text-indigo-100'],
+                    tbm:    ['bg-violet-500/30', 'text-violet-100']
                 }[panel];
                 group.querySelectorAll('.vsw-btn').forEach(btn => {
                     btn.addEventListener('click', () => {
@@ -1990,6 +2156,9 @@
                 card.style.setProperty('--site-color', site.color);
                 
                 card.innerHTML = `
+                    <div class="absolute top-5 right-6 bg-emerald-500/20 border border-emerald-400 text-emerald-300 px-4 py-1.5 rounded-lg text-lg font-bold shadow-[0_0_15px_rgba(16,185,129,0.2)] z-10">
+                        TBM 완료
+                    </div>
                     <div class="w-[280px] flex flex-col justify-center gap-2 border-r-2 border-white/10 pr-4 shrink-0">
                         <div class="flex items-center gap-3">
                             <div class="w-5 h-5 rounded-full shadow-[0_0_15px_${site.color}] shrink-0" style="background: ${site.color}"></div>
@@ -2006,9 +2175,9 @@
                         </div>
                     </div>
                     <div class="flex-1 pl-6 flex flex-col justify-center gap-5 overflow-hidden">
-                        <div class="text-[24px] font-black text-emerald-400 flex items-center gap-2 bg-black/20 p-3 rounded-xl border border-white/5">
-                            <i data-lucide="check-circle-2" class="w-6 h-6 shrink-0"></i> 
-                            <span class="shrink-0">금일주요작업내용:</span> 
+                        <div class="text-[24px] font-black text-emerald-400 flex items-center gap-2 bg-black/20 p-3 rounded-xl border border-white/5 pr-36">
+                            <i data-lucide="check-circle-2" class="w-6 h-6 shrink-0"></i>
+                            <span class="shrink-0">금일주요작업내용:</span>
                             <span class="text-white ml-1 truncate">${site.majorTask}</span>
                         </div>
                         <div class="flex items-center justify-between gap-2 px-2">
@@ -2996,6 +3165,7 @@
                 initWorkTable();
                 initAttendTable();
                 initEquipTable();
+                initTbmTable();
                 initPanelViewSwitch();
                 initWorkerMonitor();
                 initRainForecast();
