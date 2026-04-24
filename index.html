@@ -536,9 +536,9 @@
         .donut-center .dc-lab { font-size: 7px; color: rgba(255,255,255,.5); letter-spacing: .1em; margin-top: 1px; font-weight: 700; }
 
         /* Horizontal bars */
-        .hbar-row { display: flex; align-items: center; gap: 6px; height: 16px; font-size: 10px; }
+        .hbar-row { display: flex; align-items: center; gap: 6px; height: 11px; font-size: 9px; }
         .hbar-row .hbl { width: 52px; color: rgba(255,255,255,.7); font-weight: 700; text-align: right; white-space: nowrap; overflow: hidden; }
-        .hbar-row .hbt { flex: 1; height: 10px; background: rgba(255,255,255,.05); border-radius: 2px; overflow: hidden; position: relative; }
+        .hbar-row .hbt { flex: 1; height: 7px; background: rgba(255,255,255,.05); border-radius: 2px; overflow: hidden; position: relative; }
         .hbar-row .hbf { height: 100%; background: linear-gradient(90deg, var(--bar-from, #06b6d4), var(--bar-to, #0ea5e9)); border-radius: 2px; box-shadow: 0 0 6px var(--bar-from, #06b6d4); animation: hbar-grow .7s cubic-bezier(.2,.8,.2,1); transform-origin: left; }
         .hbar-row .hbv { width: 22px; font-family: Consolas, monospace; font-weight: 900; color: #fff; font-size: 10px; text-align: right; }
         @keyframes hbar-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
@@ -558,7 +558,7 @@
         .gauge-svg .g-track { stroke: rgba(255,255,255,.06); stroke-width: 10; }
         .gauge-svg .g-fill { stroke: url(#gaugeGrad); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset .9s cubic-bezier(.2,.8,.2,1); filter: drop-shadow(0 0 8px rgba(167,139,250,.7)); }
         .gauge-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .gauge-center .gc-pct { font-family: Consolas, monospace; font-size: 20px; font-weight: 900; color: #a78bfa; text-shadow: 0 0 14px rgba(167,139,250,.9); line-height: 1; }
+        .gauge-center .gc-pct { font-family: Consolas, monospace; font-size: 16px; font-weight: 900; color: #a78bfa; text-shadow: 0 0 14px rgba(167,139,250,.9); line-height: 1; }
         .gauge-center .gc-lab { font-size: 8px; color: rgba(255,255,255,.5); letter-spacing: .1em; font-weight: 700; margin-top: 1px; }
 
         /* Strip stat footer */
@@ -808,67 +808,68 @@
                             <div class="flex items-center gap-3 px-8 py-4 shrink-0">
                                 <h3 class="text-[30px] text-cyan-400 font-black flex items-center gap-3"><i data-lucide="trending-down"></i> 공정진행현황 및 위치관제</h3>
                                 <div id="bridge3d-status" class="text-[14px] text-slate-500 font-bold ml-4" style="display:none"></div>
-                                <button id="bridge3d-reset-btn" class="ml-auto text-[13px] font-black text-cyan-300 px-4 py-2 rounded-lg border-2 border-cyan-500/50 bg-cyan-950/40 hover:bg-cyan-500/20 hover:scale-105 transition-all shadow-[0_0_12px_rgba(0,245,255,0.3)]" style="letter-spacing:.05em;">↺ 카메라 초기화</button>
                             </div>
                             <div class="flex-1 relative" id="bridge3d-container">
                                 <div id="bridge3d-loading" style="position:absolute;inset:0;z-index:10;background:rgba(10,14,26,0.95);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.4s;">
                                     <div style="width:60px;height:60px;border:5px solid rgba(126,200,227,0.2);border-top-color:#7ec8e3;border-radius:50%;animation:bridge3d-spin 0.8s linear infinite;"></div>
                                     <p style="margin-top:18px;font-size:18px;color:#7ec8e3;font-weight:700;">3D 모델 로딩 중...</p>
                                 </div>
+                                <!-- 수조 게이지 오버레이 (좌측) — tide-panel의 tp-cv-tank와 동일 데이터를 공유 -->
+                                <div id="bridge3d-tank-overlay" style="position:absolute;top:16px;left:24px;z-index:20;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <canvas id="tp-cv-tank-3d" width="120" height="170" style="width:160px;height:318px;display:block;"></canvas>
+                                    <div id="tp-tank-num-3d" style="font-family:Consolas,monospace;font-size:22px;font-weight:900;color:#00f5ff;text-shadow:0 0 14px currentColor;line-height:1;margin-top: -25px;">---</div>
+                                    <div style="font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.05em;font-weight:700;">EL.m</div>
+                                </div>
                             </div>
                             <div id="bridge3d-timeline" class="shrink-0 px-8 pt-3 pb-6 border-t border-white/10 bg-black/40">
                                 <div class="flex items-center gap-4 mb-2">
-                                    <div class="text-[13px] font-black text-cyan-300 whitespace-nowrap">공정 진행도</div>
+                                    <div class="text-[13px] font-black text-cyan-300 whitespace-nowrap">공정 진행률</div>
                                     <div id="bridge3d-month-display" class="text-[15px] font-black text-cyan-300 min-w-[100px] text-center">착공 전</div>
                                     <div class="text-[13px] text-slate-400 ml-auto whitespace-nowrap">완료: <span id="bridge3d-progress-pct" class="text-cyan-300 font-black">0%</span></div>
                                 </div>
-                                <input type="range" id="bridge3d-timeline-slider" min="0" max="12" value="0" step="1" class="w-full">
+                                <input type="range" id="bridge3d-timeline-slider" min="0" max="10" value="0" step="1" class="w-full">
                                 <div id="bridge3d-month-ticks" class="flex justify-between w-full text-[10px] text-slate-500 mt-1 px-[2px]"></div>
                             </div>
                         </div>
                     </div>
-
+ 
                     <!-- Middle Side: Score, Workers Table, Task Table, Hazards (col-span-3) -->
                     <div class="col-span-3 flex flex-col gap-3 h-full justify-start">
                         
-                        <!-- 시화호 조수간만의 차 · 실시간 (KHOA 스타일) -->
-                        <div id="tide-panel" class="shrink-0 relative overflow-hidden flex flex-col" style="background:linear-gradient(180deg,#000916 0%,#000510 100%);border:2px solid rgba(0,200,255,0.4);border-radius:18px;height:480px;box-shadow:0 15px 50px rgba(0,100,255,0.2);">
-                            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 22px 8px;flex-shrink:0;position:relative;z-index:5;">
-                                <div style="font-size:18px;font-weight:900;color:#00f5ff;text-shadow:0 0 12px rgba(0,245,255,0.7);letter-spacing:.06em;display:flex;align-items:center;gap:8px;">
-                                    <span style="width:9px;height:9px;background:#00f5ff;border-radius:50%;box-shadow:0 0 9px #00f5ff;"></span>
-                                    시화호 조수간만의 차 · 실시간
-                                </div>
-                                <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                                    <div style="background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.2);border-radius:9px;padding:6px 14px;text-align:center;min-width:70px;">
-                                        <div id="tp-chip-sea" style="font-family:Consolas,monospace;font-size:18px;font-weight:900;line-height:1;color:#00f5ff;text-shadow:0 0 8px currentColor;">---</div>
-                                        <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;letter-spacing:.05em;">해수위(m)</div>
+                        <!-- TBM 관리 (middle 최상단, h-[480px] 확장) -->
+                        <div class="bg-black/50 rounded-[20px] border-2 border-violet-500/30 p-4 flex flex-col shadow-lg h-[480px] min-h-0 overflow-hidden gap-3 shrink-0" data-panel-root="tbm">
+                            <div class="flex items-center justify-between gap-2 shrink-0 flex-wrap">
+                                <h3 class="text-[18px] text-violet-300 font-black flex items-center gap-2 whitespace-nowrap"><i data-lucide="clipboard-check" class="w-5 h-5"></i> TBM 관리</h3>
+                                <div class="flex items-center gap-3">
+                                    <div class="text-[12px] font-bold flex items-center gap-2">
+                                        <span class="text-emerald-300">실시: <span id="tbm-kpi-done" class="text-white font-black">--</span>명</span>
+                                        <span class="text-white/20">|</span>
+                                        <span class="text-rose-300">미실시: <span id="tbm-kpi-miss" class="text-white font-black">--</span>명</span>
                                     </div>
-                                    <div style="background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.2);border-radius:9px;padding:6px 14px;text-align:center;min-width:70px;">
-                                        <div id="tp-chip-lake" style="font-family:Consolas,monospace;font-size:18px;font-weight:900;line-height:1;color:#a78bfa;text-shadow:0 0 8px currentColor;">---</div>
-                                        <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;letter-spacing:.05em;">호수위(m)</div>
-                                    </div>
-                                    <div style="background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.2);border-radius:9px;padding:6px 14px;text-align:center;min-width:70px;">
-                                        <div id="tp-chip-dir" style="font-family:Consolas,monospace;font-size:14px;font-weight:900;line-height:1;color:#fff;text-shadow:0 0 8px currentColor;">---</div>
-                                        <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;letter-spacing:.05em;">조위방향</div>
-                                    </div>
-                                    <div style="background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.2);border-radius:9px;padding:6px 14px;text-align:center;min-width:70px;">
-                                        <div id="tp-chip-st" style="font-family:Consolas,monospace;font-size:13px;font-weight:900;line-height:1;color:#00ff88;text-shadow:0 0 8px currentColor;">---</div>
-                                        <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;letter-spacing:.05em;">상태</div>
+                                    <div class="view-switch flex gap-0.5 bg-black/50 rounded-md p-0.5 border border-violet-400/20" data-panel="tbm">
+                                        <button data-view="table" class="vsw-btn active text-[11px] font-black px-2.5 py-0.5 rounded bg-violet-500/30 text-violet-100">표</button>
+                                        <button data-view="chart" class="vsw-btn text-[11px] font-bold px-2.5 py-0.5 rounded text-slate-400 hover:text-violet-200">차트</button>
                                     </div>
                                 </div>
                             </div>
-                            <div style="flex:1;display:grid;grid-template-columns:150px 1fr;overflow:hidden;min-height:0;">
-                                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-right:1px solid rgba(0,200,255,.12);padding:10px 0;">
-                                    <canvas id="tp-cv-tank" width="120" height="220"></canvas>
-                                    <div id="tp-tank-num" style="font-family:Consolas,monospace;font-size:22px;font-weight:900;text-shadow:0 0 14px currentColor;margin-top:6px;">---</div>
-                                    <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px;">EL.m (해수위)</div>
-                                </div>
-                                <div id="tp-main-col" style="position:relative;overflow:hidden;">
-                                    <canvas id="tp-cv-main" style="width:95%;height:98%;display:block;margin:auto"></canvas>
-                                    <div id="tp-tooltip" style="position:absolute;display:none;pointer-events:none;background:rgba(0,0,0,.92);border:1px solid rgba(0,200,255,.5);border-radius:6px;padding:6px 10px;font-family:Consolas,monospace;font-size:11px;color:#fff;z-index:20;white-space:nowrap;box-shadow:0 4px 12px rgba(0,100,255,.3);"></div>
-                                </div>
+                            <div id="tbm-table-view" class="view-pane flex-1 overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden border border-white/10 rounded-lg">
+                                <table class="w-full text-center border-collapse text-[12px]">
+                                    <thead class="sticky top-0 bg-[#001a33] z-10 text-slate-300 border-b border-white/20">
+                                        <tr>
+                                            <th class="py-2 px-1 font-bold">구분</th>
+                                            <th class="py-2 px-1 font-bold">업체명</th>
+                                            <th class="py-2 px-1 font-bold">공종</th>
+                                            <th class="py-2 px-1 font-bold">직종</th>
+                                            <th class="py-2 px-1 font-bold">작업자</th>
+                                            <th class="py-2 px-1 font-bold text-left">현위치</th>
+                                            <th class="py-2 px-1 font-bold">출근시간</th>
+                                            <th class="py-2 px-1 font-bold">TBM시간</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbm-tbody" class="text-white font-bold"></tbody>
+                                </table>
                             </div>
-                            <div style="flex-shrink:0;text-align:right;padding:6px 18px 10px;font-size:13px;font-weight:700;color:#00f5ff;text-shadow:0 0 8px rgba(0,245,255,.5);letter-spacing:.06em;">제공기관: 한국수자원공사</div>
+                            <div id="tbm-chart-view" class="view-pane flex-1 flex-col gap-2 overflow-hidden" style="display:none;"></div>
                         </div>
 
                         <!-- 2.5. Worker Monitor (일별 투입 현황) -->
@@ -923,6 +924,37 @@
                                 <div style="width:48px;height:48px;border:4px solid rgba(126,200,227,0.2);border-top-color:#7ec8e3;border-radius:50%;animation:bridge3d-spin 0.8s linear infinite;"></div>
                                 <div style="font-size:11px;color:#7ec8e3;font-weight:700;letter-spacing:.05em;">BRIDGE 3D 로딩 중...</div>
                             </div>
+                            <!-- 접합부 뷰 시 오버레이 카드 (더미 공정 정보) -->
+                            <div id="mini-junction-card">
+                                <div class="mjc-header">
+                                    <div style="display:flex;align-items:center;gap:8px;">
+                                        <span style="font-size:16px;">🎯</span>
+                                        <span id="mjc-title">좌측 접합부</span>
+                                    </div>
+                                    <div style="display:flex;align-items:baseline;gap:3px;">
+                                        <span id="mjc-progress">85</span>
+                                        <span style="font-size:10px;color:#7ec8e3;font-weight:700;">%</span>
+                                    </div>
+                                </div>
+                                <div class="mjc-body">
+                                    <div class="mjc-row">
+                                        <span class="mjc-label">공정 진행</span>
+                                        <span id="mjc-progress-text" class="mjc-value">거더 설치 완료, 케이블 장력 조정 중</span>
+                                    </div>
+                                    <div class="mjc-row">
+                                        <span class="mjc-label">담당</span>
+                                        <span id="mjc-owner" class="mjc-value">한진건설</span>
+                                    </div>
+                                    <div class="mjc-row">
+                                        <span class="mjc-label">금일 작업</span>
+                                        <span id="mjc-today" class="mjc-value">스트랜드 인장 12본 / 캣워크 점검</span>
+                                    </div>
+                                    <div class="mjc-row" style="flex-direction:row;align-items:center;justify-content:space-between;">
+                                        <span class="mjc-label">상태</span>
+                                        <span id="mjc-status">진행 중</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -946,76 +978,151 @@
                             </div>
                         </div> -->
 
-                        <!-- Compacted Sensors -->
-                        <div id="sensor-panel-container" class="bg-black/50 rounded-[20px] border-2 border-amber-500/30 p-3 flex flex-col shadow-lg shrink-0 h-[310px] overflow-y-auto [&::-webkit-scrollbar]:hidden transition-all duration-300">
-                            <h3 class="text-[16px] text-amber-400 font-black mb-2 flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4"></i> 통합 계측기 실시간 현황</h3>
-                            <div class="flex flex-col gap-2">
-                                <div class="grid grid-cols-3 gap-2">
-                                    <div id="target-sensor-1" class="bg-[#1e1b4b] rounded-xl p-2.5 flex flex-col border border-amber-500/20 transition-colors hover:border-amber-400 cursor-pointer">
-                                        <div class="flex justify-between items-start mb-1"><span class="text-slate-400 text-[10px] font-bold">진동(#1)</span><span class="text-[8px] bg-emerald-500/20 text-emerald-400 px-1 py-0.5 rounded border border-emerald-500/30">안전</span></div>
-                                        <div class="flex items-end justify-between mt-auto">
-                                            <span class="text-xl font-black text-white leading-none">0.02<span class="text-[9px] text-slate-500 ml-0.5">kine</span></span>
-                                            <span class="text-[8px] text-slate-500">MAX: 0.3</span>
-                                        </div>
-                                        <div class="w-full bg-black/50 h-1 mt-1.5 rounded-full overflow-hidden"><div class="bg-emerald-400 h-full w-[10%]"></div></div>
+                        <!-- 3.2 출역현황 -->
+                        <div class="bg-black/50 rounded-[20px] border-2 border-blue-500/30 p-3 flex flex-col shadow-lg h-[240px] min-h-0 overflow-hidden gap-2" data-panel-root="attend">
+                            <div class="flex items-center justify-between gap-2 shrink-0 flex-wrap">
+                                <h3 class="text-[16px] text-blue-400 font-black flex items-center gap-2 whitespace-nowrap"><i data-lucide="users" class="w-4 h-4"></i> 출역현황</h3>
+                                <div class="flex items-center gap-2">
+                                    <div class="text-[11px] font-bold flex items-center gap-2">
+                                        <span class="text-rose-300">유소견자: <span class="text-white font-black">4</span>명</span>
+                                        <span class="text-white/20">|</span>
+                                        <span class="text-emerald-300">신규자: <span class="text-white font-black">2</span>명</span>
+                                        <span class="text-white/20">|</span>
+                                        <span class="text-amber-300">외국인: <span class="text-white font-black">5</span>명</span>
                                     </div>
-                                    <div class="bg-[#1e1b4b] rounded-xl p-2.5 flex flex-col border border-amber-500/20 transition-colors hover:border-amber-400 cursor-pointer">
-                                        <div class="flex justify-between items-start mb-1"><span class="text-slate-400 text-[10px] font-bold">진동(#2)</span><span class="text-[8px] bg-emerald-500/20 text-emerald-400 px-1 py-0.5 rounded border border-emerald-500/30">안전</span></div>
-                                        <div class="flex items-end justify-between mt-auto">
-                                            <span class="text-xl font-black text-white leading-none">0.01<span class="text-[9px] text-slate-500 ml-0.5">kine</span></span>
-                                            <span class="text-[8px] text-slate-500">MAX: 0.3</span>
-                                        </div>
-                                        <div class="w-full bg-black/50 h-1 mt-1.5 rounded-full overflow-hidden"><div class="bg-emerald-400 h-full w-[5%]"></div></div>
-                                    </div>
-                                    <div class="bg-[#1e1b4b] rounded-xl p-2.5 flex flex-col border border-amber-500/20 transition-colors hover:border-amber-400 cursor-pointer">
-                                        <div class="flex justify-between items-start mb-1"><span class="text-slate-400 text-[10px] font-bold">진동(#3)</span><span class="text-[8px] bg-emerald-500/20 text-emerald-400 px-1 py-0.5 rounded border border-emerald-500/30">안전</span></div>
-                                        <div class="flex items-end justify-between mt-auto">
-                                            <span class="text-xl font-black text-white leading-none">0.03<span class="text-[9px] text-slate-500 ml-0.5">kine</span></span>
-                                            <span class="text-[8px] text-slate-500">MAX: 0.3</span>
-                                        </div>
-                                        <div class="w-full bg-black/50 h-1 mt-1.5 rounded-full overflow-hidden"><div class="bg-emerald-400 h-full w-[15%]"></div></div>
-                                    </div>
-                                    <div class="bg-[#1e1b4b] rounded-xl p-2.5 flex flex-col border border-amber-500/20 transition-colors hover:border-amber-400 cursor-pointer">
-                                        <div class="flex justify-between items-start mb-1"><span class="text-slate-400 text-[10px] font-bold">기울기(#1)</span><span class="text-[8px] bg-emerald-500/20 text-emerald-400 px-1 py-0.5 rounded border border-emerald-500/30">안전</span></div>
-                                        <div class="flex items-end justify-between mt-auto">
-                                            <span class="text-xl font-black text-white leading-none">0.05<span class="text-[9px] text-slate-500 ml-0.5">°</span></span>
-                                            <span class="text-[8px] text-slate-500">MAX: 0.15</span>
-                                        </div>
-                                        <div class="w-full bg-black/50 h-1 mt-1.5 rounded-full overflow-hidden"><div class="bg-emerald-400 h-full w-[33%]"></div></div>
-                                    </div>
-                                    <div class="bg-[#1e1b4b] rounded-xl p-2.5 flex flex-col border border-amber-500/20 transition-colors hover:border-amber-400 cursor-pointer">
-                                        <div class="flex justify-between items-start mb-1"><span class="text-slate-400 text-[10px] font-bold">기울기(#2)</span><span class="text-[8px] bg-emerald-500/20 text-emerald-400 px-1 py-0.5 rounded border border-emerald-500/30">안전</span></div>
-                                        <div class="flex items-end justify-between mt-auto">
-                                            <span class="text-xl font-black text-white leading-none">0.02<span class="text-[9px] text-slate-500 ml-0.5">°</span></span>
-                                            <span class="text-[8px] text-slate-500">MAX: 0.15</span>
-                                        </div>
-                                        <div class="w-full bg-black/50 h-1 mt-1.5 rounded-full overflow-hidden"><div class="bg-emerald-400 h-full w-[13%]"></div></div>
-                                    </div>
-                                    <div class="bg-[#1e1b4b] rounded-xl p-2.5 flex flex-col border border-amber-500/20 transition-colors hover:border-amber-400 cursor-pointer">
-                                        <div class="flex justify-between items-start mb-1"><span class="text-slate-400 text-[10px] font-bold">기울기(#3)</span><span class="text-[8px] bg-emerald-500/20 text-emerald-400 px-1 py-0.5 rounded border border-emerald-500/30">안전</span></div>
-                                        <div class="flex items-end justify-between mt-auto">
-                                            <span class="text-xl font-black text-white leading-none">0.04<span class="text-[9px] text-slate-500 ml-0.5">°</span></span>
-                                            <span class="text-[8px] text-slate-500">MAX: 0.15</span>
-                                        </div>
-                                        <div class="w-full bg-black/50 h-1 mt-1.5 rounded-full overflow-hidden"><div class="bg-emerald-400 h-full w-[26%]"></div></div>
+                                    <div class="view-switch flex gap-0.5 bg-black/50 rounded-md p-0.5 border border-blue-400/20" data-panel="attend">
+                                        <button data-view="table" class="vsw-btn active text-[10px] font-black px-2 py-0.5 rounded bg-blue-500/30 text-blue-100">표</button>
+                                        <button data-view="chart" class="vsw-btn text-[10px] font-bold px-2 py-0.5 rounded text-slate-400 hover:text-blue-200">차트</button>
                                     </div>
                                 </div>
-                                <div class="grid grid-cols-2 gap-2 mt-0.5">
-                                    <div class="bg-[#1e1b4b] rounded-xl p-2.5 flex flex-col border border-blue-500/20 hover:border-blue-400 cursor-pointer">
-                                        <div class="flex justify-between items-start mb-1"><span class="text-slate-400 text-[11px] font-bold">풍속 (상판)</span><span class="text-[9px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/30">안전</span></div>
-                                        <div class="flex items-end justify-between mt-1">
-                                            <span class="text-2xl font-black text-white leading-none">4.2<span class="text-[10px] text-slate-500 ml-0.5">m/s</span></span>
-                                            <span class="text-[9px] text-slate-500">MAX: 10.0</span>
-                                        </div>
-                                        <div class="w-full bg-black/50 h-1.5 mt-2 rounded-full overflow-hidden"><div class="bg-blue-400 h-full w-[42%]"></div></div>
+                            </div>
+                            <div id="attend-table-view" class="view-pane flex-1 overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden border border-white/10 rounded-lg">
+                                <table class="w-full text-center border-collapse text-[11px]">
+                                    <thead class="sticky top-0 bg-[#001a33] z-10 text-slate-300 border-b border-white/20">
+                                        <tr>
+                                            <th class="py-1.5 px-1 font-bold">업체명</th>
+                                            <th class="py-1.5 px-1 font-bold">공종</th>
+                                            <th class="py-1.5 px-1 font-bold">직종</th>
+                                            <th class="py-1.5 px-1 font-bold">작업자</th>
+                                            <th class="py-1.5 px-1 font-bold">나이</th>
+                                            <th class="py-1.5 px-1 font-bold">신규</th>
+                                            <th class="py-1.5 px-1 font-bold">외국인</th>
+                                            <th class="py-1.5 px-1 font-bold">유소견자</th>
+                                            <th class="py-1.5 px-1 font-bold text-left">현위치</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="attend-tbody" class="text-white font-bold"></tbody>
+                                </table>
+                            </div>
+                            <div id="attend-chart-view" class="view-pane flex-1 flex-col gap-1.5 overflow-hidden" style="display:none;"></div>
+                        </div>
+
+                        <!-- 3.3 장비작업 현황 -->
+                        <div class="bg-black/50 rounded-[20px] border-2 border-indigo-500/30 p-3 flex flex-col shadow-lg h-[210px] min-h-0 overflow-hidden gap-2" data-panel-root="equip">
+                            <div class="flex items-center justify-between gap-2 shrink-0 flex-wrap">
+                                <h3 class="text-[16px] text-indigo-400 font-black flex items-center gap-2 whitespace-nowrap"><i data-lucide="truck" class="w-4 h-4"></i> 장비작업 현황</h3>
+                                <div class="flex items-center gap-2">
+                                    <div class="text-[11px] font-bold flex items-center gap-2">
+                                        <span class="text-slate-300">기타장비: <span class="text-white font-black">6</span></span>
+                                        <span class="text-white/20">|</span>
+                                        <span class="text-cyan-300">살수차: <span class="text-white font-black">2</span></span>
+                                        <span class="text-white/20">|</span>
+                                        <span class="text-amber-300">카고 크레인: <span class="text-white font-black">3</span></span>
                                     </div>
-                                    <div class="bg-[#1e1b4b] rounded-xl p-2.5 flex flex-col border border-amber-500/20 hover:border-amber-400 cursor-pointer">
-                                        <div class="flex justify-between items-start mb-1"><span class="text-slate-400 text-[11px] font-bold">풍속 (주탑)</span><span class="text-[9px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded border border-amber-500/30">관심</span></div>
-                                        <div class="flex items-end justify-between mt-1">
-                                            <span class="text-2xl font-black text-amber-400 leading-none">5.8<span class="text-[10px] text-slate-500 ml-0.5">m/s</span></span>
-                                            <span class="text-[9px] text-slate-500">MAX: 10.0</span>
+                                    <div class="view-switch flex gap-0.5 bg-black/50 rounded-md p-0.5 border border-indigo-400/20" data-panel="equip">
+                                        <button data-view="table" class="vsw-btn active text-[10px] font-black px-2 py-0.5 rounded bg-indigo-500/30 text-indigo-100">표</button>
+                                        <button data-view="chart" class="vsw-btn text-[10px] font-bold px-2 py-0.5 rounded text-slate-400 hover:text-indigo-200">차트</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="equip-table-view" class="view-pane flex-1 overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden border border-white/10 rounded-lg">
+                                <table class="w-full text-center border-collapse text-[11px]">
+                                    <thead class="sticky top-0 bg-[#001a33] z-10 text-slate-300 border-b border-white/20">
+                                        <tr>
+                                            <th class="py-1.5 px-1 font-bold">장비</th>
+                                            <th class="py-1.5 px-1 font-bold">업체명</th>
+                                            <th class="py-1.5 px-1 font-bold text-left">세부작업</th>
+                                            <th class="py-1.5 px-1 font-bold">작업위치</th>
+                                            <th class="py-1.5 px-1 font-bold">운전원</th>
+                                            <th class="py-1.5 px-1 font-bold">신호수</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="equip-tbody" class="text-white font-bold"></tbody>
+                                </table>
+                            </div>
+                            <div id="equip-chart-view" class="view-pane flex-1 flex-col gap-1.5 overflow-hidden" style="display:none;"></div>
+                        </div>
+
+                        <!-- Compacted Sensors -->
+                        <div id="sensor-panel-container" class="bg-black/50 rounded-[20px] border-2 border-amber-500/30 p-2.5 flex flex-col shadow-lg shrink-0 h-[220px] overflow-y-auto [&::-webkit-scrollbar]:hidden transition-all duration-300">
+                            <h3 class="text-[14px] text-amber-400 font-black mb-1.5 flex items-center gap-2"><i data-lucide="activity" class="w-3.5 h-3.5"></i> 통합 계측기 실시간 현황</h3>
+                            <div class="flex flex-col gap-1">
+                                <div class="grid grid-cols-3 gap-1">
+                                    <div id="target-sensor-1" class="bg-[#1e1b4b] rounded-lg p-1.5 flex flex-col border border-amber-500/20 transition-colors hover:border-amber-400 cursor-pointer">
+                                        <div class="flex justify-between items-center"><span class="text-slate-400 text-[10px] font-bold">진동(#1)</span><span class="text-[8px] bg-emerald-500/20 text-emerald-400 px-1 rounded border border-emerald-500/30">안전</span></div>
+                                        <div class="flex items-center gap-1.5 mt-1">
+                                            <span class="text-[15px] font-black text-white leading-none shrink-0">0.02<span class="text-[8px] text-slate-500 ml-0.5">kine</span></span>
+                                            <div class="flex-1 bg-black/50 h-1 rounded-full overflow-hidden min-w-0"><div class="bg-emerald-400 h-full w-[10%]"></div></div>
+                                            <span class="text-[8px] text-slate-500 shrink-0">MAX 0.3</span>
                                         </div>
-                                        <div class="w-full bg-black/50 h-1.5 mt-2 rounded-full overflow-hidden"><div class="bg-amber-400 h-full w-[58%]"></div></div>
+                                    </div>
+                                    <div class="bg-[#1e1b4b] rounded-lg p-1.5 flex flex-col border border-amber-500/20 transition-colors hover:border-amber-400 cursor-pointer">
+                                        <div class="flex justify-between items-center"><span class="text-slate-400 text-[10px] font-bold">진동(#2)</span><span class="text-[8px] bg-emerald-500/20 text-emerald-400 px-1 rounded border border-emerald-500/30">안전</span></div>
+                                        <div class="flex items-center gap-1.5 mt-1">
+                                            <span class="text-[15px] font-black text-white leading-none shrink-0">0.01<span class="text-[8px] text-slate-500 ml-0.5">kine</span></span>
+                                            <div class="flex-1 bg-black/50 h-1 rounded-full overflow-hidden min-w-0"><div class="bg-emerald-400 h-full w-[5%]"></div></div>
+                                            <span class="text-[8px] text-slate-500 shrink-0">MAX 0.3</span>
+                                        </div>
+                                    </div>
+                                    <div class="bg-[#1e1b4b] rounded-lg p-1.5 flex flex-col border border-amber-500/20 transition-colors hover:border-amber-400 cursor-pointer">
+                                        <div class="flex justify-between items-center"><span class="text-slate-400 text-[10px] font-bold">진동(#3)</span><span class="text-[8px] bg-emerald-500/20 text-emerald-400 px-1 rounded border border-emerald-500/30">안전</span></div>
+                                        <div class="flex items-center gap-1.5 mt-1">
+                                            <span class="text-[15px] font-black text-white leading-none shrink-0">0.03<span class="text-[8px] text-slate-500 ml-0.5">kine</span></span>
+                                            <div class="flex-1 bg-black/50 h-1 rounded-full overflow-hidden min-w-0"><div class="bg-emerald-400 h-full w-[15%]"></div></div>
+                                            <span class="text-[8px] text-slate-500 shrink-0">MAX 0.3</span>
+                                        </div>
+                                    </div>
+                                    <div class="bg-[#1e1b4b] rounded-lg p-1.5 flex flex-col border border-amber-500/20 transition-colors hover:border-amber-400 cursor-pointer">
+                                        <div class="flex justify-between items-center"><span class="text-slate-400 text-[10px] font-bold">기울기(#1)</span><span class="text-[8px] bg-emerald-500/20 text-emerald-400 px-1 rounded border border-emerald-500/30">안전</span></div>
+                                        <div class="flex items-center gap-1.5 mt-1">
+                                            <span class="text-[15px] font-black text-white leading-none shrink-0">0.05<span class="text-[8px] text-slate-500 ml-0.5">°</span></span>
+                                            <div class="flex-1 bg-black/50 h-1 rounded-full overflow-hidden min-w-0"><div class="bg-emerald-400 h-full w-[33%]"></div></div>
+                                            <span class="text-[8px] text-slate-500 shrink-0">MAX 0.15</span>
+                                        </div>
+                                    </div>
+                                    <div class="bg-[#1e1b4b] rounded-lg p-1.5 flex flex-col border border-amber-500/20 transition-colors hover:border-amber-400 cursor-pointer">
+                                        <div class="flex justify-between items-center"><span class="text-slate-400 text-[10px] font-bold">기울기(#2)</span><span class="text-[8px] bg-emerald-500/20 text-emerald-400 px-1 rounded border border-emerald-500/30">안전</span></div>
+                                        <div class="flex items-center gap-1.5 mt-1">
+                                            <span class="text-[15px] font-black text-white leading-none shrink-0">0.02<span class="text-[8px] text-slate-500 ml-0.5">°</span></span>
+                                            <div class="flex-1 bg-black/50 h-1 rounded-full overflow-hidden min-w-0"><div class="bg-emerald-400 h-full w-[13%]"></div></div>
+                                            <span class="text-[8px] text-slate-500 shrink-0">MAX 0.15</span>
+                                        </div>
+                                    </div>
+                                    <div class="bg-[#1e1b4b] rounded-lg p-1.5 flex flex-col border border-amber-500/20 transition-colors hover:border-amber-400 cursor-pointer">
+                                        <div class="flex justify-between items-center"><span class="text-slate-400 text-[10px] font-bold">기울기(#3)</span><span class="text-[8px] bg-emerald-500/20 text-emerald-400 px-1 rounded border border-emerald-500/30">안전</span></div>
+                                        <div class="flex items-center gap-1.5 mt-1">
+                                            <span class="text-[15px] font-black text-white leading-none shrink-0">0.04<span class="text-[8px] text-slate-500 ml-0.5">°</span></span>
+                                            <div class="flex-1 bg-black/50 h-1 rounded-full overflow-hidden min-w-0"><div class="bg-emerald-400 h-full w-[26%]"></div></div>
+                                            <span class="text-[8px] text-slate-500 shrink-0">MAX 0.15</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-1">
+                                    <div class="bg-[#1e1b4b] rounded-lg p-1.5 flex flex-col border border-blue-500/20 hover:border-blue-400 cursor-pointer">
+                                        <div class="flex justify-between items-center"><span class="text-slate-400 text-[11px] font-bold">풍속 (상판)</span><span class="text-[9px] bg-blue-500/20 text-blue-400 px-1.5 rounded border border-blue-500/30">안전</span></div>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <span class="text-[17px] font-black text-white leading-none shrink-0">4.2<span class="text-[9px] text-slate-500 ml-0.5">m/s</span></span>
+                                            <div class="flex-1 bg-black/50 h-1.5 rounded-full overflow-hidden min-w-0"><div class="bg-blue-400 h-full w-[42%]"></div></div>
+                                            <span class="text-[9px] text-slate-500 shrink-0">MAX 10.0</span>
+                                        </div>
+                                    </div>
+                                    <div class="bg-[#1e1b4b] rounded-lg p-1.5 flex flex-col border border-amber-500/20 hover:border-amber-400 cursor-pointer">
+                                        <div class="flex justify-between items-center"><span class="text-slate-400 text-[11px] font-bold">풍속 (주탑)</span><span class="text-[9px] bg-amber-500/20 text-amber-400 px-1.5 rounded border border-amber-500/30">관심</span></div>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <span class="text-[17px] font-black text-amber-400 leading-none shrink-0">5.8<span class="text-[9px] text-slate-500 ml-0.5">m/s</span></span>
+                                            <div class="flex-1 bg-black/50 h-1.5 rounded-full overflow-hidden min-w-0"><div class="bg-amber-400 h-full w-[58%]"></div></div>
+                                            <span class="text-[9px] text-slate-500 shrink-0">MAX 10.0</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1122,7 +1229,7 @@
                         </div> -->
 
                         <!-- 3.1 금일 전체 작업 -->
-                        <div class="bg-black/50 rounded-[20px] border-2 border-cyan-500/30 p-3 flex flex-col shadow-lg h-[220px] min-h-0 overflow-hidden gap-2" data-panel-root="work">
+                        <div class="bg-black/50 rounded-[20px] border-2 border-cyan-500/30 p-3 flex flex-col shadow-lg h-[210px] min-h-0 overflow-hidden gap-2" data-panel-root="work">
                             <div class="flex items-center justify-between gap-2 shrink-0">
                                 <h3 class="text-[16px] text-cyan-400 font-black flex items-center gap-2 whitespace-nowrap"><i data-lucide="clipboard-list" class="w-4 h-4"></i> 금일 전체 작업</h3>
                                 <div class="flex items-center gap-2">
@@ -1166,115 +1273,44 @@
                             <div id="work-chart-view" class="view-pane flex-1 flex-col gap-1.5 overflow-hidden" style="display:none;"></div>
                         </div>
 
-                        <!-- 3.1.5 TBM 관리 -->
-                        <div class="bg-black/50 rounded-[20px] border-2 border-violet-500/30 p-3 flex flex-col shadow-lg h-[190px] min-h-0 overflow-hidden gap-2" data-panel-root="tbm">
-                            <div class="flex items-center justify-between gap-2 shrink-0 flex-wrap">
-                                <h3 class="text-[16px] text-violet-300 font-black flex items-center gap-2 whitespace-nowrap"><i data-lucide="clipboard-check" class="w-4 h-4"></i> TBM 관리</h3>
-                                <div class="flex items-center gap-2">
-                                    <div class="text-[11px] font-bold flex items-center gap-2">
-                                        <span class="text-emerald-300">실시: <span id="tbm-kpi-done" class="text-white font-black">--</span>명</span>
-                                        <span class="text-white/20">|</span>
-                                        <span class="text-rose-300">미실시: <span id="tbm-kpi-miss" class="text-white font-black">--</span>명</span>
+                        <!-- 시화호 조수간만의 차 · 실시간 (right 최상단, h-[320px] 축소) -->
+                        <div id="tide-panel" class="shrink-0 relative overflow-hidden flex flex-col" style="background:linear-gradient(180deg,#000916 0%,#000510 100%);border:2px solid rgba(0,200,255,0.4);border-radius:18px;height:290px;box-shadow:0 15px 50px rgba(0,100,255,0.2);">
+                            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 18px 6px;flex-shrink:0;position:relative;z-index:5;">
+                                <div style="font-size:16px;font-weight:900;color:#00f5ff;text-shadow:0 0 12px rgba(0,245,255,0.7);letter-spacing:.06em;display:flex;align-items:center;gap:8px;">
+                                    <span style="width:8px;height:8px;background:#00f5ff;border-radius:50%;box-shadow:0 0 9px #00f5ff;"></span>
+                                    시화호 조수간만의 차 · 실시간
+                                </div>
+                                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                                    <div style="background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.2);border-radius:8px;padding:4px 10px;text-align:center;min-width:60px;">
+                                        <div id="tp-chip-sea" style="font-family:Consolas,monospace;font-size:15px;font-weight:900;line-height:1;color:#00f5ff;text-shadow:0 0 8px currentColor;">---</div>
+                                        <div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:2px;letter-spacing:.05em;">해수위(m)</div>
                                     </div>
-                                    <div class="view-switch flex gap-0.5 bg-black/50 rounded-md p-0.5 border border-violet-400/20" data-panel="tbm">
-                                        <button data-view="table" class="vsw-btn active text-[10px] font-black px-2 py-0.5 rounded bg-violet-500/30 text-violet-100">표</button>
-                                        <button data-view="chart" class="vsw-btn text-[10px] font-bold px-2 py-0.5 rounded text-slate-400 hover:text-violet-200">차트</button>
+                                    <div style="background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.2);border-radius:8px;padding:4px 10px;text-align:center;min-width:60px;">
+                                        <div id="tp-chip-lake" style="font-family:Consolas,monospace;font-size:15px;font-weight:900;line-height:1;color:#a78bfa;text-shadow:0 0 8px currentColor;">---</div>
+                                        <div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:2px;letter-spacing:.05em;">호수위(m)</div>
+                                    </div>
+                                    <div style="background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.2);border-radius:8px;padding:4px 10px;text-align:center;min-width:60px;">
+                                        <div id="tp-chip-dir" style="font-family:Consolas,monospace;font-size:12px;font-weight:900;line-height:1;color:#fff;text-shadow:0 0 8px currentColor;">---</div>
+                                        <div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:2px;letter-spacing:.05em;">조위방향</div>
+                                    </div>
+                                    <div style="background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.2);border-radius:8px;padding:4px 10px;text-align:center;min-width:60px;">
+                                        <div id="tp-chip-st" style="font-family:Consolas,monospace;font-size:12px;font-weight:900;line-height:1;color:#00ff88;text-shadow:0 0 8px currentColor;">---</div>
+                                        <div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:2px;letter-spacing:.05em;">상태</div>
                                     </div>
                                 </div>
                             </div>
-                            <div id="tbm-table-view" class="view-pane flex-1 overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden border border-white/10 rounded-lg">
-                                <table class="w-full text-center border-collapse text-[11px]">
-                                    <thead class="sticky top-0 bg-[#001a33] z-10 text-slate-300 border-b border-white/20">
-                                        <tr>
-                                            <th class="py-1.5 px-1 font-bold">구분</th>
-                                            <th class="py-1.5 px-1 font-bold">업체명</th>
-                                            <th class="py-1.5 px-1 font-bold">공종</th>
-                                            <th class="py-1.5 px-1 font-bold">직종</th>
-                                            <th class="py-1.5 px-1 font-bold">작업자</th>
-                                            <th class="py-1.5 px-1 font-bold text-left">현위치</th>
-                                            <th class="py-1.5 px-1 font-bold">출근시간</th>
-                                            <th class="py-1.5 px-1 font-bold">TBM시간</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tbm-tbody" class="text-white font-bold"></tbody>
-                                </table>
-                            </div>
-                            <div id="tbm-chart-view" class="view-pane flex-1 flex-col gap-1.5 overflow-hidden" style="display:none;"></div>
-                        </div>
-
-                        <!-- 3.2 출역현황 -->
-                        <div class="bg-black/50 rounded-[20px] border-2 border-blue-500/30 p-3 flex flex-col shadow-lg h-[220px] min-h-0 overflow-hidden gap-2" data-panel-root="attend">
-                            <div class="flex items-center justify-between gap-2 shrink-0 flex-wrap">
-                                <h3 class="text-[16px] text-blue-400 font-black flex items-center gap-2 whitespace-nowrap"><i data-lucide="users" class="w-4 h-4"></i> 출역현황</h3>
-                                <div class="flex items-center gap-2">
-                                    <div class="text-[11px] font-bold flex items-center gap-2">
-                                        <span class="text-rose-300">유소견자: <span class="text-white font-black">4</span>명</span>
-                                        <span class="text-white/20">|</span>
-                                        <span class="text-emerald-300">신규자: <span class="text-white font-black">2</span>명</span>
-                                        <span class="text-white/20">|</span>
-                                        <span class="text-amber-300">외국인: <span class="text-white font-black">5</span>명</span>
-                                    </div>
-                                    <div class="view-switch flex gap-0.5 bg-black/50 rounded-md p-0.5 border border-blue-400/20" data-panel="attend">
-                                        <button data-view="table" class="vsw-btn active text-[10px] font-black px-2 py-0.5 rounded bg-blue-500/30 text-blue-100">표</button>
-                                        <button data-view="chart" class="vsw-btn text-[10px] font-bold px-2 py-0.5 rounded text-slate-400 hover:text-blue-200">차트</button>
-                                    </div>
+                            <div style="flex:1;display:grid;grid-template-columns:130px 1fr;overflow:hidden;min-height:0;">
+                                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-right:1px solid rgba(0,200,255,.12);padding:6px 0;">
+                                    <canvas id="tp-cv-tank" width="120" height="170"></canvas>
+                                    <div id="tp-tank-num" style="font-family:Consolas,monospace;font-size:18px;font-weight:900;text-shadow:0 0 14px currentColor;margin-top:4px;">---</div>
+                                    <div style="font-size:9px;color:rgba(255,255,255,.4);margin-top:1px;">EL.m (해수위)</div>
+                                </div>
+                                <div id="tp-main-col" style="position:relative;overflow:hidden;">
+                                    <canvas id="tp-cv-main" style="width:95%;height:98%;display:block;margin:auto"></canvas>
+                                    <div id="tp-tooltip" style="position:absolute;display:none;pointer-events:none;background:rgba(0,0,0,.92);border:1px solid rgba(0,200,255,.5);border-radius:6px;padding:6px 10px;font-family:Consolas,monospace;font-size:11px;color:#fff;z-index:20;white-space:nowrap;box-shadow:0 4px 12px rgba(0,100,255,.3);"></div>
                                 </div>
                             </div>
-                            <div id="attend-table-view" class="view-pane flex-1 overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden border border-white/10 rounded-lg">
-                                <table class="w-full text-center border-collapse text-[11px]">
-                                    <thead class="sticky top-0 bg-[#001a33] z-10 text-slate-300 border-b border-white/20">
-                                        <tr>
-                                            <th class="py-1.5 px-1 font-bold">업체명</th>
-                                            <th class="py-1.5 px-1 font-bold">공종</th>
-                                            <th class="py-1.5 px-1 font-bold">직종</th>
-                                            <th class="py-1.5 px-1 font-bold">작업자</th>
-                                            <th class="py-1.5 px-1 font-bold">나이</th>
-                                            <th class="py-1.5 px-1 font-bold">신규</th>
-                                            <th class="py-1.5 px-1 font-bold">외국인</th>
-                                            <th class="py-1.5 px-1 font-bold">유소견자</th>
-                                            <th class="py-1.5 px-1 font-bold text-left">현위치</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="attend-tbody" class="text-white font-bold"></tbody>
-                                </table>
-                            </div>
-                            <div id="attend-chart-view" class="view-pane flex-1 flex-col gap-1.5 overflow-hidden" style="display:none;"></div>
-                        </div>
-
-                        <!-- 3.3 장비작업 현황 -->
-                        <div class="bg-black/50 rounded-[20px] border-2 border-indigo-500/30 p-3 flex flex-col shadow-lg h-[220px] min-h-0 overflow-hidden gap-2" data-panel-root="equip">
-                            <div class="flex items-center justify-between gap-2 shrink-0 flex-wrap">
-                                <h3 class="text-[16px] text-indigo-400 font-black flex items-center gap-2 whitespace-nowrap"><i data-lucide="truck" class="w-4 h-4"></i> 장비작업 현황</h3>
-                                <div class="flex items-center gap-2">
-                                    <div class="text-[11px] font-bold flex items-center gap-2">
-                                        <span class="text-slate-300">기타장비: <span class="text-white font-black">6</span></span>
-                                        <span class="text-white/20">|</span>
-                                        <span class="text-cyan-300">살수차: <span class="text-white font-black">2</span></span>
-                                        <span class="text-white/20">|</span>
-                                        <span class="text-amber-300">카고 크레인: <span class="text-white font-black">3</span></span>
-                                    </div>
-                                    <div class="view-switch flex gap-0.5 bg-black/50 rounded-md p-0.5 border border-indigo-400/20" data-panel="equip">
-                                        <button data-view="table" class="vsw-btn active text-[10px] font-black px-2 py-0.5 rounded bg-indigo-500/30 text-indigo-100">표</button>
-                                        <button data-view="chart" class="vsw-btn text-[10px] font-bold px-2 py-0.5 rounded text-slate-400 hover:text-indigo-200">차트</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="equip-table-view" class="view-pane flex-1 overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden border border-white/10 rounded-lg">
-                                <table class="w-full text-center border-collapse text-[11px]">
-                                    <thead class="sticky top-0 bg-[#001a33] z-10 text-slate-300 border-b border-white/20">
-                                        <tr>
-                                            <th class="py-1.5 px-1 font-bold">장비</th>
-                                            <th class="py-1.5 px-1 font-bold">업체명</th>
-                                            <th class="py-1.5 px-1 font-bold text-left">세부작업</th>
-                                            <th class="py-1.5 px-1 font-bold">작업위치</th>
-                                            <th class="py-1.5 px-1 font-bold">운전원</th>
-                                            <th class="py-1.5 px-1 font-bold">신호수</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="equip-tbody" class="text-white font-bold"></tbody>
-                                </table>
-                            </div>
-                            <div id="equip-chart-view" class="view-pane flex-1 flex-col gap-1.5 overflow-hidden" style="display:none;"></div>
+                            <div style="flex-shrink:0;text-align:right;padding:3px 18px 6px;font-size:11px;font-weight:700;color:#00f5ff;text-shadow:0 0 8px rgba(0,245,255,.5);letter-spacing:.06em;">제공기관: 한국수자원공사</div>
                         </div>
 
                         <!-- Buttons -->
@@ -1649,24 +1685,24 @@
         }
 
         const TBM_DATA = [
-            { type: '정규', typeColor: 'text-cyan-300',   company: '재영전기',       field: '기타',    job: '신호수',   name: '김상익',    loc: '시화 종점부-지상존',  checkIn: '08:04', tbmTime: '08:03' },
-            { type: '정규', typeColor: 'text-cyan-300',   company: '재영전기',       field: '기타',    job: '전공',     name: '주병준',    loc: '시화 종점부-게이트2', checkIn: '06:24', tbmTime: '07:19' },
-            { type: '정규', typeColor: 'text-cyan-300',   company: '재영전기',       field: '기타',    job: '전공',     name: '진천복',    loc: '시화 종점부-지상존',  checkIn: '06:12', tbmTime: '07:19' },
-            { type: '정규', typeColor: 'text-cyan-300',   company: '재영전기',       field: '기타',    job: '운전원',   name: '이종아',    loc: '시화 종점부-지상존',  checkIn: '06:18', tbmTime: '07:19' },
-            { type: '정규', typeColor: 'text-cyan-300',   company: '재영전기',       field: '기타',    job: '전공',     name: '김종욱',    loc: '시화 종점부-지상존',  checkIn: '06:33', tbmTime: '07:19' },
-            { type: '조출', typeColor: 'text-amber-300',  company: '한진건설',       field: '가설',    job: '비계공',   name: '박영호',    loc: 'P2 주탑',             checkIn: '05:15', tbmTime: '05:45' },
-            { type: '조출', typeColor: 'text-amber-300',  company: '한진건설',       field: '가설',    job: '비계공',   name: '김덕수',    loc: 'P2 주탑',             checkIn: '05:20', tbmTime: '05:45' },
-            { type: '정규', typeColor: 'text-cyan-300',   company: '국제엔지니어링', field: '토공',    job: '굴착공',   name: '정수민',    loc: 'P1 시점',             checkIn: '07:10', tbmTime: '07:30' },
-            { type: '정규', typeColor: 'text-cyan-300',   company: '현대중공업',     field: '강구조',  job: '용접공',   name: 'NGUYEN V.', loc: '주탑 상단',           checkIn: '07:25', tbmTime: '07:30' },
-            { type: '정규', typeColor: 'text-cyan-300',   company: '대림산업',       field: '토공',    job: '형틀공',   name: '최영수',    loc: 'P3 종점부',           checkIn: '07:18', tbmTime: '07:30' },
-            { type: '야간', typeColor: 'text-indigo-300', company: '지에이이노디스', field: '콘크리트', job: '양생공',  name: '한동욱',    loc: 'P2',                  checkIn: '21:45', tbmTime: '22:00' },
-            { type: '야간', typeColor: 'text-indigo-300', company: '국제엔지니어링', field: '전기',    job: '전공',     name: '오성민',    loc: 'P2 주탑',             checkIn: '18:50', tbmTime: '19:00' },
-            { type: '정규', typeColor: 'text-cyan-300',   company: '남해건설',       field: '가설',    job: '비계공',   name: '장민석',    loc: '접속교',              checkIn: '07:05', tbmTime: '07:30' },
-            { type: '정규', typeColor: 'text-cyan-300',   company: '서진건설',       field: '가설',    job: '보통인부', name: '김재호',    loc: '종점 가설지',         checkIn: '07:45', tbmTime: null   },
-            { type: '조출', typeColor: 'text-amber-300',  company: '남해건설',       field: '기타',    job: '보통인부', name: '이정우',    loc: '시점',                checkIn: '05:40', tbmTime: '05:45' },
-            { type: '추가', typeColor: 'text-rose-300',   company: '다음이앤비',     field: '가설',    job: '보통인부', name: '류승범',    loc: '접속교',              checkIn: '12:55', tbmTime: null   },
-            { type: '정규', typeColor: 'text-cyan-300',   company: '다음이앤비',     field: '가설',    job: '신호수',   name: '김민수',    loc: '상부공',              checkIn: '07:20', tbmTime: '07:30' },
-            { type: '정규', typeColor: 'text-cyan-300',   company: '다음이앤비',     field: '기타',    job: '협력업체', name: '이성호',    loc: '송산 시점부',         checkIn: '07:55', tbmTime: '08:00' }
+            { type: '정규', typeColor: 'text-cyan-300',   company: '재영전기',       field: '기타',    job: '신호수',   name: '김상익',    loc: '시화 종점부-지상존',  checkIn: '08:04', tbmTime: '08:03', newbie: 'N', foreign: 'N', risk: 'Y' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '재영전기',       field: '기타',    job: '전공',     name: '주병준',    loc: '시화 종점부-게이트2', checkIn: '06:24', tbmTime: '07:19', newbie: 'N', foreign: 'N', risk: 'N' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '재영전기',       field: '기타',    job: '전공',     name: '진천복',    loc: '시화 종점부-지상존',  checkIn: '06:12', tbmTime: '07:19', newbie: 'Y', foreign: 'N', risk: 'N' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '재영전기',       field: '기타',    job: '운전원',   name: '이종아',    loc: '시화 종점부-지상존',  checkIn: '06:18', tbmTime: '07:19', newbie: 'N', foreign: 'N', risk: 'N' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '재영전기',       field: '기타',    job: '전공',     name: '김종욱',    loc: '시화 종점부-지상존',  checkIn: '06:33', tbmTime: '07:19', newbie: 'N', foreign: 'Y', risk: 'N' },
+            { type: '조출', typeColor: 'text-amber-300',  company: '한진건설',       field: '가설',    job: '비계공',   name: '박영호',    loc: 'P2 주탑',             checkIn: '05:15', tbmTime: '05:45', newbie: 'N', foreign: 'N', risk: 'N' },
+            { type: '조출', typeColor: 'text-amber-300',  company: '한진건설',       field: '가설',    job: '비계공',   name: '김덕수',    loc: 'P2 주탑',             checkIn: '05:20', tbmTime: '05:45', newbie: 'N', foreign: 'N', risk: 'Y' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '국제엔지니어링', field: '토공',    job: '굴착공',   name: '정수민',    loc: 'P1 시점',             checkIn: '07:10', tbmTime: '07:30', newbie: 'Y', foreign: 'N', risk: 'N' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '현대중공업',     field: '강구조',  job: '용접공',   name: 'NGUYEN V.', loc: '주탑 상단',           checkIn: '07:25', tbmTime: '07:30', newbie: 'N', foreign: 'Y', risk: 'Y' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '대림산업',       field: '토공',    job: '형틀공',   name: '최영수',    loc: 'P3 종점부',           checkIn: '07:18', tbmTime: '07:30', newbie: 'N', foreign: 'N', risk: 'N' },
+            { type: '야간', typeColor: 'text-indigo-300', company: '지에이이노디스', field: '콘크리트', job: '양생공',  name: '한동욱',    loc: 'P2',                  checkIn: '21:45', tbmTime: '22:00', newbie: 'N', foreign: 'N', risk: 'N' },
+            { type: '야간', typeColor: 'text-indigo-300', company: '국제엔지니어링', field: '전기',    job: '전공',     name: '오성민',    loc: 'P2 주탑',             checkIn: '18:50', tbmTime: '19:00', newbie: 'Y', foreign: 'Y', risk: 'N' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '남해건설',       field: '가설',    job: '비계공',   name: '장민석',    loc: '접속교',              checkIn: '07:05', tbmTime: '07:30', newbie: 'N', foreign: 'N', risk: 'Y' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '서진건설',       field: '가설',    job: '보통인부', name: '김재호',    loc: '종점 가설지',         checkIn: '07:45', tbmTime: null,    newbie: 'N', foreign: 'N', risk: 'N' },
+            { type: '조출', typeColor: 'text-amber-300',  company: '남해건설',       field: '기타',    job: '보통인부', name: '이정우',    loc: '시점',                checkIn: '05:40', tbmTime: '05:45', newbie: 'N', foreign: 'N', risk: 'N' },
+            { type: '추가', typeColor: 'text-rose-300',   company: '다음이앤비',     field: '가설',    job: '보통인부', name: '류승범',    loc: '접속교',              checkIn: '12:55', tbmTime: null,    newbie: 'N', foreign: 'N', risk: 'N' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '다음이앤비',     field: '가설',    job: '신호수',   name: '김민수',    loc: '상부공',              checkIn: '07:20', tbmTime: '07:30', newbie: 'N', foreign: 'N', risk: 'N' },
+            { type: '정규', typeColor: 'text-cyan-300',   company: '다음이앤비',     field: '기타',    job: '협력업체', name: '이성호',    loc: '송산 시점부',         checkIn: '07:55', tbmTime: '08:00', newbie: 'N', foreign: 'Y', risk: 'N' }
         ];
 
         function initTbmTable() {
@@ -1710,62 +1746,109 @@
 
             const R = 36, C = 2 * Math.PI * R;
             const doneDash = C * (done / total);
+            
+            // TBM 실시현황 도넛 표시용 하드코딩 수치 (실시 150 / 미실시 0 / 실시율 100%)
+            const DONUT_DONE = 150;
+            const DONUT_MISS = 0;
+            const DONUT_PCT = 100;
+            const donutDash = C; // 풀 원
+
+            // 벤 다이어그램: 근로자 특성 3집합 (신규자/유소견자/외국인)
+            const newCount     = TBM_DATA.filter(r => r.newbie  === 'Y').length;
+            const foreignCount = TBM_DATA.filter(r => r.foreign === 'Y').length;
+            const riskCount    = TBM_DATA.filter(r => r.risk    === 'Y').length;
 
             host.innerHTML = `
-                <div class="flex-1 grid grid-cols-12 gap-1.5 min-h-0 overflow-hidden">
-                    <div class="col-span-4 bg-black/40 border border-violet-500/20 rounded-lg p-1.5 flex flex-col items-center justify-center gap-1">
-                        <div class="text-[9px] text-violet-300 font-black tracking-wider">TBM 실시현황</div>
-                        <div class="relative">
-                            <svg width="78" height="78" viewBox="0 0 100 100">
-                                <circle cx="50" cy="50" r="${R}" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="12"/>
-                                <circle cx="50" cy="50" r="${R}" fill="none" stroke="#10b981" stroke-width="12"
-                                        stroke-dasharray="${doneDash} ${C}" stroke-dashoffset="0"
+                <div class="flex-1 grid grid-cols-2 grid-rows-2 gap-3 min-h-0 overflow-hidden">
+                    <!-- [1,1] TBM 실시현황 도넛 -->
+                    <div class="bg-black/40 border border-violet-500/20 rounded-xl p-3 flex flex-col items-center justify-center gap-2">
+                        <div class="text-[12px] text-violet-300 font-black tracking-wider self-start">TBM 실시현황</div>
+                        <div class="relative flex-1 flex items-center justify-center">
+                            <svg width="140" height="140" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="${R}" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="11"/>
+                                <circle cx="50" cy="50" r="${R}" fill="none" stroke="#10b981" stroke-width="11"
+                                        stroke-dasharray="${donutDash} ${C}" stroke-dashoffset="0"
                                         transform="rotate(-90 50 50)" stroke-linecap="round"
-                                        style="filter:drop-shadow(0 0 6px rgba(16,185,129,.5));"/>
+                                        style="filter:drop-shadow(0 0 8px rgba(16,185,129,.5));"/>
                             </svg>
                             <div class="absolute inset-0 flex flex-col items-center justify-center">
-                                <div class="text-[8px] text-slate-400 font-bold leading-none">실시율</div>
-                                <div class="text-[18px] font-black text-emerald-400 leading-none">${pct}<span class="text-[10px]">%</span></div>
+                                <div class="text-[10px] text-slate-400 font-bold leading-none mb-1">실시율</div>
+                                <div class="text-[32px] font-black text-emerald-400 leading-none">${DONUT_PCT}<span class="text-[16px]">%</span></div>
                             </div>
                         </div>
-                        <div class="flex gap-2 text-[9px] font-black">
-                            <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span><span class="text-slate-300">실시 ${done}</span></div>
-                            <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span><span class="text-slate-300">미실시 ${miss}</span></div>
+                        <div class="flex gap-4 text-[11px] font-black">
+                            <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]"></span><span class="text-slate-300">실시 <span class="text-emerald-300">${DONUT_DONE}</span></span></div>
+                            <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-400 shadow-[0_0_6px_rgba(251,113,133,0.8)]"></span><span class="text-slate-300">미실시 <span class="text-rose-300">${DONUT_MISS}</span></span></div>
                         </div>
                     </div>
 
-                    <div class="col-span-4 bg-black/40 border border-violet-500/20 rounded-lg p-2 flex flex-col gap-1 overflow-hidden">
-                        <div class="text-[10px] text-violet-300 font-black tracking-wider">구분별 인원</div>
-                        <div class="flex-1 flex flex-col justify-center gap-1">
+                    <!-- [1,2] 벤 다이어그램 — 출역현황 (사용자 예시 구조 기반) -->
+                    <div class="bg-black/40 border border-violet-500/20 rounded-xl p-3 flex flex-col gap-1 overflow-hidden">
+                        <div class="flex items-center justify-between">
+                            <div class="text-[12px] text-violet-300 font-black tracking-wider">출역현황</div>
+                            <div class="text-[11px] text-slate-400 font-bold">전체 <span class="text-white font-black">${total}</span>명</div>
+                        </div>
+                        <div class="flex-1 flex items-center justify-center min-h-0">
+                            <svg viewBox="30 25 340 265" class="w-full h-full" style="max-height:100%;" preserveAspectRatio="xMidYMid meet">
+                                <!-- 좌 큰 원(유소견자, 180px·#3b3bff·opacity 0.55): 중심(130,190), r=90 -->
+                                <circle cx="130" cy="190" r="90" fill="#3b3bff" fill-opacity="0.55"/>
+                                <!-- 우 큰 원(외국인, 180px·#69b7ff·opacity 0.55): 중심(260,190), r=90 -->
+                                <circle cx="260" cy="190" r="90" fill="#69b7ff" fill-opacity="0.55"/>
+                                <!-- 상 작은 원(신규자, 120px·#9fb4d9·opacity 0.55): 중심(210,95), r=60 -->
+                                <circle cx="210" cy="95"  r="60" fill="#9fb4d9" fill-opacity="0.55"/>
+
+                                <!-- 레이블: 이름(위) + 숫자명(아래), text-shadow 동일 -->
+                                <text x="130" y="186" text-anchor="middle" fill="#fff" font-size="18" font-weight="700" style="text-shadow:0 1px 2px rgba(0,0,0,.45);">유소견자</text>
+                                <text x="130" y="212" text-anchor="middle" fill="#fff" font-size="22" font-weight="700" style="text-shadow:0 1px 2px rgba(0,0,0,.45);">${riskCount}명</text>
+
+                                <text x="260" y="186" text-anchor="middle" fill="#fff" font-size="18" font-weight="700" style="text-shadow:0 1px 2px rgba(0,0,0,.45);">외국인</text>
+                                <text x="260" y="212" text-anchor="middle" fill="#fff" font-size="22" font-weight="700" style="text-shadow:0 1px 2px rgba(0,0,0,.45);">${foreignCount}명</text>
+
+                                <text x="210" y="88"  text-anchor="middle" fill="#fff" font-size="15" font-weight="700" style="text-shadow:0 1px 2px rgba(0,0,0,.45);">신규자</text>
+                                <text x="210" y="112" text-anchor="middle" fill="#fff" font-size="20" font-weight="700" style="text-shadow:0 1px 2px rgba(0,0,0,.45);">${newCount}명</text>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- [2,1] 구분별 인원 -->
+                    <div class="bg-black/40 border border-violet-500/20 rounded-xl p-3 flex flex-col gap-2 overflow-hidden">
+                        <div class="flex items-center justify-between">
+                            <div class="text-[12px] text-violet-300 font-black tracking-wider">구분별 인원</div>
+                            <div class="text-[11px] text-slate-500 font-bold">전체 ${total}명</div>
+                        </div>
+                        <div class="flex-1 flex flex-col justify-center gap-2 min-h-0">
                             ${typeEntries.map(([name, cnt]) => {
                                 const w = (cnt / typeMax * 100).toFixed(1);
                                 const color = TYPE_COLOR[name] || '#94a3b8';
                                 return `
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-7 text-[10px] font-black" style="color:${color}">${name}</div>
-                                        <div class="flex-1 bg-white/5 rounded-sm h-3 relative overflow-hidden">
-                                            <div class="h-full rounded-sm" style="width:${w}%;background:linear-gradient(90deg,${color}99,${color});box-shadow:0 0 6px ${color}99;"></div>
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 text-[12px] font-black" style="color:${color}">${name}</div>
+                                        <div class="flex-1 bg-white/5 rounded-md h-4 relative overflow-hidden">
+                                            <div class="h-full rounded-md" style="width:${w}%;background:linear-gradient(90deg,${color}99,${color});box-shadow:0 0 8px ${color}aa;"></div>
                                         </div>
-                                        <div class="w-5 text-right text-[10px] font-black text-white">${cnt}</div>
+                                        <div class="w-8 text-right text-[12px] font-black text-white">${cnt}</div>
                                     </div>`;
                             }).join('')}
                         </div>
-                        <div class="text-[9px] text-slate-500 font-bold text-right">전체 ${total}명</div>
                     </div>
 
-                    <div class="col-span-4 bg-black/40 border border-violet-500/20 rounded-lg p-2 flex flex-col gap-1 overflow-hidden">
-                        <div class="text-[10px] text-violet-300 font-black tracking-wider">공종별 분포</div>
-                        <div class="flex-1 flex flex-col justify-center gap-0.5">
+                    <!-- [2,2] 공종별 분포 -->
+                    <div class="bg-black/40 border border-violet-500/20 rounded-xl p-3 flex flex-col gap-2 overflow-hidden">
+                        <div class="flex items-center justify-between">
+                            <div class="text-[12px] text-violet-300 font-black tracking-wider">공종별 분포</div>
+                            <div class="text-[11px] text-slate-500 font-bold">${fieldEntries.length}종</div>
+                        </div>
+                        <div class="flex-1 flex flex-col justify-center gap-1.5 min-h-0">
                             ${fieldEntries.map(([name, cnt], i) => {
                                 const w = (cnt / fieldMax * 100).toFixed(1);
                                 const color = FIELD_COLORS[i % FIELD_COLORS.length];
                                 return `
-                                    <div class="flex items-center gap-1.5">
-                                        <div class="w-9 text-[9px] font-black truncate" style="color:${color}" title="${name}">${name}</div>
-                                        <div class="flex-1 bg-white/5 rounded-sm h-2.5 relative overflow-hidden">
-                                            <div class="h-full rounded-sm" style="width:${w}%;background:${color};box-shadow:0 0 4px ${color}aa;"></div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-14 text-[11px] font-black truncate" style="color:${color}" title="${name}">${name}</div>
+                                        <div class="flex-1 bg-white/5 rounded-sm h-3 relative overflow-hidden">
+                                            <div class="h-full rounded-sm" style="width:${w}%;background:${color};box-shadow:0 0 5px ${color}aa;"></div>
                                         </div>
-                                        <div class="w-4 text-right text-[9px] font-black text-white">${cnt}</div>
+                                        <div class="w-6 text-right text-[11px] font-black text-white">${cnt}</div>
                                     </div>`;
                             }).join('')}
                         </div>
@@ -2061,8 +2144,8 @@
                     <div class="col-span-2 flex flex-col gap-1 min-h-0">
                         <div class="sec-lab" style="color:#a78bfa;">가동률</div>
                         <div class="flex-1 min-h-0 flex items-center justify-center">
-                            <div class="gauge-wrap" style="width:85px;height:85px;">
-                                <svg class="gauge-svg" width="85" height="85" viewBox="0 0 100 100" style="transform:rotate(-90deg);">
+                            <div class="gauge-wrap" style="width:72px;height:72px;">
+                                <svg class="gauge-svg" width="72" height="72" viewBox="0 0 100 100" style="transform:rotate(-90deg);">
                                     <defs>
                                         <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="1">
                                             <stop offset="0%" stop-color="#a78bfa"/>
@@ -2073,7 +2156,7 @@
                                     <circle class="g-fill" cx="50" cy="50" r="${R}" stroke-dasharray="${fillDash}" stroke-dashoffset="${fillOffset}"/>
                                 </svg>
                                 <div class="gauge-center">
-                                    <div class="gc-pct">${activePct}<span style="font-size:11px;">%</span></div>
+                                    <div class="gc-pct">${activePct}<span style="font-size:9px;">%</span></div>
                                     <div class="gc-lab">${active}/${total}</div>
                                 </div>
                             </div>
@@ -3235,6 +3318,44 @@
         }
         #bridge3d-month-ticks span { cursor: pointer; }
         #bridge3d-month-ticks span:hover { color: #7ec8e3; }
+
+        /* 미니뷰어 접합부 카드 (컨테이너 내부 absolute) */
+        #mini-junction-card {
+            position: absolute; top: 16px; right: 16px; transform: translateX(24px);
+            z-index: 40; width: 260px;
+            background: rgba(0, 15, 30, 0.92); backdrop-filter: blur(10px);
+            border: 1.5px solid #00f5ff; border-radius: 12px; padding: 14px 16px;
+            box-shadow: 0 0 24px rgba(0, 245, 255, 0.35), inset 0 0 20px rgba(0, 245, 255, 0.06);
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            color: #e0e0e0;
+        }
+        #mini-junction-card.visible { opacity: 1; transform: translateX(0); }
+        .mjc-header {
+            display: flex; align-items: center; justify-content: space-between; gap: 8px;
+            margin-bottom: 10px; padding-bottom: 8px;
+            border-bottom: 1px solid rgba(0, 245, 255, 0.3);
+        }
+        #mjc-title {
+            font-size: 13px; font-weight: 900; color: #00f5ff;
+            letter-spacing: .06em; text-shadow: 0 0 8px rgba(0, 245, 255, 0.6);
+        }
+        #mjc-progress {
+            font-size: 20px; font-weight: 900; color: #fff;
+            font-family: Consolas, monospace; text-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
+        }
+        .mjc-body { display: flex; flex-direction: column; gap: 8px; }
+        .mjc-row { display: flex; flex-direction: column; gap: 2px; }
+        .mjc-label {
+            font-size: 9px; color: rgba(126, 200, 227, 0.8);
+            font-weight: 700; letter-spacing: .08em;
+        }
+        .mjc-value { font-size: 12px; color: #fff; font-weight: 600; line-height: 1.45; }
+        #mjc-status {
+            font-size: 10px; color: #34d399; font-weight: 900;
+            padding: 2px 9px; background: rgba(52, 211, 153, 0.15);
+            border: 1px solid rgba(52, 211, 153, 0.4); border-radius: 999px;
+        }
     </style>
 
     <!-- 3D BIM 교량 뷰어 (GLB + 오버레이) -->
@@ -3287,6 +3408,10 @@
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.08;
+        // 마우스 조작 차단 (좌클릭 회전 / 우클릭 팬 / 휠 줌 모두 비활성)
+        controls.enableRotate = false;
+        controls.enablePan = false;
+        controls.enableZoom = false;
 
         scene.add(new THREE.AmbientLight(0xffffff, 0.6));
         const dLight = new THREE.DirectionalLight(0xffffff, 1.2);
@@ -3301,13 +3426,13 @@
         let baseCameraDist = 1;
         const clock = new THREE.Clock();
 
-        // 공정 시각화용
-        const TOTAL_MONTHS = 12;
+        // 공정 시각화용 (진행률 기반 10단계, 10% 단위)
+        const TOTAL_STEPS = 10;
         const GRAY_MAT = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.6, metalness: 0.1 });
         const DONE_MAT = new THREE.MeshStandardMaterial({ color: 0x7ec8e3, roughness: 0.4, metalness: 0.2 });
         const PLAN_MAT = new THREE.MeshStandardMaterial({ color: 0x90d4a8, roughness: 0.4, metalness: 0.2 });
         let allMeshes = [];
-        let currentMonth = 0;
+        let currentStep = 0;
 
         function getMeshType(name) {
             if (!name) return '';
@@ -3315,22 +3440,22 @@
             return match ? match[1].replace(/\s*\d+$/, '').trim() : '';
         }
 
-        function distributeByAxis(meshes, axis, monthStart, monthEnd, reverse) {
+        function distributeByAxis(meshes, axis, stepStart, stepEnd, reverse) {
             if (meshes.length === 0) return;
             meshes.forEach(m => {
                 const box = new THREE.Box3().setFromObject(m);
                 m._axisPos = box.getCenter(new THREE.Vector3())[axis];
             });
             meshes.sort((a, b) => reverse ? b._axisPos - a._axisPos : a._axisPos - b._axisPos);
-            const span = monthEnd - monthStart + 1;
-            const perMonth = Math.ceil(meshes.length / span);
+            const span = stepEnd - stepStart + 1;
+            const perStep = Math.ceil(meshes.length / span);
             meshes.forEach((m, i) => {
-                const month = Math.min(Math.floor(i / perMonth) + monthStart, monthEnd);
-                allMeshes.push({ mesh: m, month });
+                const step = Math.min(Math.floor(i / perStep) + stepStart, stepEnd);
+                allMeshes.push({ mesh: m, step });
             });
         }
 
-        function assignMonths(group, partMap) {
+        function assignSteps(group, partMap) {
             allMeshes = [];
             const groupBox = new THREE.Box3().setFromObject(group);
             const groupSize = groupBox.getSize(new THREE.Vector3());
@@ -3357,7 +3482,7 @@
 
             distributeByAxis(mainCats.foundation, mainAxis, 1, 1, false);
             distributeByAxis(mainCats.column, mainAxis, 1, 2, false);
-            distributeByAxis(mainCats.structure, mainAxis, 1, 4, false);
+            distributeByAxis(mainCats.structure, mainAxis, 1, 3, false);
 
             if (mainCats.deck.length > 0) {
                 mainCats.deck.forEach(m => {
@@ -3365,13 +3490,13 @@
                     m._distFromCenter = Math.abs(box.getCenter(new THREE.Vector3())[mainAxis] - groupCenter[mainAxis]);
                 });
                 mainCats.deck.sort((a, b) => a._distFromCenter - b._distFromCenter);
-                const perMonth = Math.ceil(mainCats.deck.length / 5);
+                const perStep = Math.ceil(mainCats.deck.length / 5);
                 mainCats.deck.forEach((m, i) => {
-                    const month = Math.min(Math.floor(i / perMonth) + 5, 9);
-                    allMeshes.push({ mesh: m, month });
+                    const step = Math.min(Math.floor(i / perStep) + 4, 8);
+                    allMeshes.push({ mesh: m, step });
                 });
             }
-            mainCats.finish.forEach(m => { allMeshes.push({ mesh: m, month: 12 }); });
+            mainCats.finish.forEach(m => { allMeshes.push({ mesh: m, step: 10 }); });
 
             if (left) {
                 const leftBox = new THREE.Box3().setFromObject(left);
@@ -3379,7 +3504,7 @@
                 const leftReverse = leftCenter > groupCenter[mainAxis];
                 const leftMeshes = [];
                 left.traverse(child => { if (child.isMesh) leftMeshes.push(child); });
-                distributeByAxis(leftMeshes, mainAxis, 4, 12, leftReverse);
+                distributeByAxis(leftMeshes, mainAxis, 3, 10, leftReverse);
             }
 
             const rightMeshes = [];
@@ -3391,32 +3516,29 @@
                     : new THREE.Box3().setFromObject(right);
                 const rightEnd = rBox.getCenter(new THREE.Vector3())[mainAxis];
                 const rightReverse = rightEnd > groupCenter[mainAxis];
-                distributeByAxis(rightMeshes, mainAxis, 4, 12, rightReverse);
+                distributeByAxis(rightMeshes, mainAxis, 3, 10, rightReverse);
             }
 
             allMeshes.forEach(entry => { entry.mesh.material = GRAY_MAT; });
         }
 
-        function applyMonth(month) {
-            const total = allMeshes.length;
-            let doneCount = 0;
-            const nextMonth = month + 1;
+        function applyProgress(step) {
+            const nextStep = step + 1;
             allMeshes.forEach(entry => {
-                if (entry.month <= month && month > 0) {
+                if (entry.step <= step && step > 0) {
                     entry.mesh.material = DONE_MAT;
-                    doneCount++;
-                } else if (entry.month === nextMonth) {
+                } else if (entry.step === nextStep) {
                     entry.mesh.material = PLAN_MAT;
                 } else {
                     entry.mesh.material = GRAY_MAT;
                 }
             });
-            const pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
-            const monthEl = document.getElementById('bridge3d-month-display');
+            const pct = step * 10;
+            const labelEl = document.getElementById('bridge3d-month-display');
             const pctEl = document.getElementById('bridge3d-progress-pct');
-            if (monthEl) monthEl.textContent = month === 0 ? '착공 전' : month + '개월차';
+            if (labelEl) labelEl.textContent = step === 0 ? '착공 전' : pct + '%';
             if (pctEl) pctEl.textContent = pct + '%';
-            const sliderPct = (month / TOTAL_MONTHS) * 100;
+            const sliderPct = (step / TOTAL_STEPS) * 100;
             const slider = document.getElementById('bridge3d-timeline-slider');
             if (slider) slider.style.background = `linear-gradient(to right, #7ec8e3 ${sliderPct}%, #555 ${sliderPct}%)`;
         }
@@ -3424,22 +3546,22 @@
         function initTimeline() {
             const slider = document.getElementById('bridge3d-timeline-slider');
             if (!slider) return;
-            slider.max = TOTAL_MONTHS;
+            slider.max = TOTAL_STEPS;
             slider.addEventListener('input', () => {
-                currentMonth = parseInt(slider.value);
-                applyMonth(currentMonth);
+                currentStep = parseInt(slider.value);
+                applyProgress(currentStep);
             });
             const ticksEl = document.getElementById('bridge3d-month-ticks');
             if (ticksEl) {
                 const labels = ['착공 전'];
-                for (let i = 1; i <= TOTAL_MONTHS; i++) labels.push(i + '개월');
+                for (let i = 1; i <= TOTAL_STEPS; i++) labels.push((i * 10) + '%');
                 labels.forEach((lbl, i) => {
                     const span = document.createElement('span');
                     span.textContent = lbl;
                     span.addEventListener('click', () => {
                         slider.value = i;
-                        currentMonth = i;
-                        applyMonth(i);
+                        currentStep = i;
+                        applyProgress(i);
                     });
                     ticksEl.appendChild(span);
                 });
@@ -3491,8 +3613,8 @@
             </svg>`;
         }
 
-        const VIEW_RIGHT = { pos:[102.575,9.585,-168.155], target:[1.22,21.401,-13.679], up:[0,1,0] };
-        const VIEW_LEFT  = { pos:[-109.608,10.373,146.238], target:[1.22,21.401,-13.679], up:[0,1,0] };
+        const VIEW_RIGHT = { pos:[102.575,9.585,-168.155], target:[1.22,21.401,-13.679], up:[0,1,0], junctionType:'right' };
+        const VIEW_LEFT  = { pos:[-109.608,10.373,146.238], target:[1.22,21.401,-13.679], up:[0,1,0], junctionType:'left' };
 
         function addJunctionMarkers(partMap) {
             const main = partMap['bridge.glb'];
@@ -3556,7 +3678,7 @@
                 arrowHit.addEventListener('click', (e) => {
                     e.stopPropagation();
                     if (window._miniBridgeViewer && window._miniBridgeViewer.setView) {
-                        window._miniBridgeViewer.setView(view.pos, view.target, view.up);
+                        window._miniBridgeViewer.setView(view.pos, view.target, view.up, view.junctionType);
                     } else {
                         console.warn('mini viewer not ready');
                     }
@@ -3579,7 +3701,7 @@
                 inner.addEventListener('click', (e) => {
                     e.stopPropagation();
                     if (window._miniBridgeViewer && window._miniBridgeViewer.setView) {
-                        window._miniBridgeViewer.setView(view.pos, view.target, view.up);
+                        window._miniBridgeViewer.setView(view.pos, view.target, view.up, view.junctionType);
                     } else {
                         console.warn('mini viewer not ready');
                     }
@@ -3736,36 +3858,49 @@
             const size = box.getSize(new THREE.Vector3());
             const center = box.getCenter(new THREE.Vector3());
             const maxDim = Math.max(size.x, size.y, size.z);
-            const dist = Math.max((maxDim / 2) / Math.tan((camera.fov * Math.PI / 180) / 2) * 0.4, 1);
+            const dist = Math.max((maxDim / 2) / Math.tan((camera.fov * Math.PI / 180) / 2) * 0.34, 1);
 
-            const PAN_X = -dist * 0.15;
-            camera.position.set(center.x + dist * 0.6 + PAN_X, center.y + dist * 0.5, center.z + dist * 0.6);
+            // 측면 뷰 + 왼쪽으로 35도 orbit (Y축 기준)
+            // cos(35°) ≈ 0.819, sin(35°) ≈ 0.574. 부호 뒤집으면 반대 방향
+            const mainAxis = (size.z > size.x) ? 'z' : 'x';
+            if (mainAxis === 'z') {
+                camera.position.set(center.x + dist * 0.819, center.y, center.z + dist * 0.574);
+            } else {
+                camera.position.set(center.x + dist * 0.574, center.y, center.z + dist * 0.819);
+            }
             camera.near = dist * 0.001;
             camera.far = dist * 100;
             camera.updateProjectionMatrix();
-            controls.target.set(center.x + dist * 0.05 + PAN_X, center.y, center.z + dist * 0.15);
+            controls.target.copy(center);
+
+            // 화면 왼쪽으로 살짝 pan (카메라 + 타겟 같이 평행이동, 우클릭 드래그와 동일 동작)
+            const _camDir = new THREE.Vector3().subVectors(controls.target, camera.position).normalize();
+            const _rightVec = new THREE.Vector3().crossVectors(_camDir, camera.up).normalize();
+            const _panOffset = _rightVec.multiplyScalar(-dist * 0.30); // 음수 = 화면 왼쪽
+            camera.position.add(_panOffset);
+            controls.target.add(_panOffset);
+
+            // 카메라 살짝 위로 elevation (좌클릭 아래로 드래그 효과 = phi 감소)
+            // 타겟 기준 spherical 좌표에서 phi를 줄여 위쪽으로 orbit, 거리는 그대로 유지
+            const _sph = new THREE.Spherical().setFromVector3(
+                new THREE.Vector3().subVectors(camera.position, controls.target)
+            );
+            _sph.phi = Math.max(0.05, _sph.phi - 0.1); // 약 5.7도 위로
+            const _elevOff = new THREE.Vector3().setFromSpherical(_sph);
+            camera.position.copy(controls.target).add(_elevOff);
+
+            // 카메라+타겟 살짝 아래로 pan (우클릭 아래→위 드래그 효과)
+            const _yPan = dist * 0.05;
+            camera.position.y -= _yPan;
+            controls.target.y -= _yPan;
+
             controls.update();
             baseCameraDist = camera.position.distanceTo(controls.target);
 
-            // 초기 카메라 상태 저장 + 리셋 버튼 핸들러
-            const _initCamPos = camera.position.clone();
-            const _initTarget = controls.target.clone();
-            document.getElementById('bridge3d-reset-btn')?.addEventListener('click', () => {
-                // 1) damping 끄고 update() 호출 → 잔여 sphericalDelta 소진
-                const _wasDamp = controls.enableDamping;
-                controls.enableDamping = false;
-                controls.update();
-                // 2) 그 다음 카메라/타겟을 강제로 default로 덮어쓰기
-                camera.position.copy(_initCamPos);
-                controls.target.copy(_initTarget);
-                controls.update();
-                controls.enableDamping = _wasDamp;
-            });
-
             addJunctionMarkers(partMap);
-            assignMonths(object, partMap);
+            assignSteps(object, partMap);
             initTimeline();
-            applyMonth(0);
+            applyProgress(0);
 
             let meshCount = 0;
             object.traverse(c => { if (c.isMesh) meshCount++; });
@@ -3835,54 +3970,65 @@
         let mainGeom=null, hoverIdx=-1;
 
         function drawTank(ts){
-            const cv=document.getElementById('tp-cv-tank'); if(!cv) return;
-            const ctx=cv.getContext('2d'),W=120,H=220,T=ts/1000;
-            const v=VISIBLE[NOW_I].seaRwl;
+            const T=ts/1000;
+            const v=-1.2; // 수조 표시 수위 고정 (그래프/chip은 VISIBLE 데이터 그대로 사용)
             const pct=Math.max(0,Math.min(1,(v-LO)/(HI-LO)));
             const c=tcol(v),[R,G,B]=rgb(c);
-            ctx.clearRect(0,0,W,H);
-            ctx.fillStyle='rgba(0,5,16,.97)'; ctx.fillRect(0,0,W,H);
-            const bx=18,by=18,bw=75,bh=175;
-            ctx.strokeStyle='rgba(0,170,255,.45)'; ctx.lineWidth=1.6; ctx.strokeRect(bx,by,bw,bh);
-            const wH=bh*pct, wTop=by+bh-wH;
-            ctx.save(); ctx.beginPath(); ctx.rect(bx+1,by,bw-2,bh); ctx.clip();
-            const wg=ctx.createLinearGradient(bx,wTop,bx,by+bh);
-            wg.addColorStop(0,`rgba(${R},${G},${B},.65)`);
-            wg.addColorStop(.35,`rgba(${R*.4|0},${G*.4|0},${B*.55|0},.9)`);
-            wg.addColorStop(1,`rgba(${R*.15|0},${G*.15|0},${B*.25|0},.98)`);
-            ctx.fillStyle=wg;
-            ctx.beginPath(); ctx.moveTo(bx,by+bh);
-            for(let x=bx;x<=bx+bw;x+=2){
-                const wy=wTop+Math.sin((x/bw*3.2+T*2.2)*2*Math.PI)*4+Math.sin((x/bw*6.5+T*3.4)*2*Math.PI)*1.8;
-                ctx.lineTo(x,wy);
-            }
-            ctx.lineTo(bx+bw,by+bh); ctx.closePath(); ctx.fill();
-            ctx.strokeStyle=`rgba(${R},${G},${B},.78)`; ctx.lineWidth=2; ctx.shadowColor=c; ctx.shadowBlur=8;
-            ctx.beginPath();
-            for(let x=bx;x<=bx+bw;x+=2){
-                const wy=wTop+Math.sin((x/bw*3.2+T*2.2)*2*Math.PI)*4+Math.sin((x/bw*6.5+T*3.4)*2*Math.PI)*1.8;
-                x===bx?ctx.moveTo(x,wy):ctx.lineTo(x,wy);
-            }
-            ctx.stroke(); ctx.shadowBlur=0; ctx.restore();
-            [[3,'#ff2244'],[1.0,'#ff8c00'],[-1,'#00ccff']].forEach(([vv,cc])=>{
-                const ly=by+bh-bh*((vv-LO)/(HI-LO));
-                ctx.strokeStyle=cc; ctx.lineWidth=.9; ctx.setLineDash([3,4]); ctx.globalAlpha=.45;
-                ctx.beginPath(); ctx.moveTo(bx,ly); ctx.lineTo(bx+bw,ly); ctx.stroke();
-                ctx.setLineDash([]); ctx.globalAlpha=1;
-                ctx.fillStyle=cc; ctx.font='bold 9px Consolas,monospace'; ctx.textAlign='left';
-                ctx.fillText(vv>0?'+'+vv:vv,bx+bw+4,ly+3);
+            // 수조 canvas를 여러 개 동시 렌더 (tide-panel + #bridge3d-container 좌측 오버레이)
+            const TARGETS = [
+                { cv: document.getElementById('tp-cv-tank'),    numEl: document.getElementById('tp-tank-num') },
+                { cv: document.getElementById('tp-cv-tank-3d'), numEl: document.getElementById('tp-tank-num-3d') }
+            ];
+            TARGETS.forEach(({cv, numEl}) => {
+                if(!cv) return;
+                const ctx=cv.getContext('2d'),W=120,H=170;
+                ctx.clearRect(0,0,W,H);
+                const bx=18,by=14,bw=75,bh=135;
+                // 박스 내부만 어두운 배경 (canvas 바깥 영역은 투명 유지)
+                ctx.fillStyle='rgba(0,5,16,.97)'; ctx.fillRect(bx,by,bw,bh);
+                ctx.strokeStyle='rgba(0,170,255,.45)'; ctx.lineWidth=1.6; ctx.strokeRect(bx,by,bw,bh);
+                const wH=bh*pct, wTop=by+bh-wH;
+                ctx.save(); ctx.beginPath(); ctx.rect(bx+1,by,bw-2,bh); ctx.clip();
+                const wg=ctx.createLinearGradient(bx,wTop,bx,by+bh);
+                wg.addColorStop(0,`rgba(${R},${G},${B},.65)`);
+                wg.addColorStop(.35,`rgba(${R*.4|0},${G*.4|0},${B*.55|0},.9)`);
+                wg.addColorStop(1,`rgba(${R*.15|0},${G*.15|0},${B*.25|0},.98)`);
+                ctx.fillStyle=wg;
+                ctx.beginPath(); ctx.moveTo(bx,by+bh);
+                for(let x=bx;x<=bx+bw;x+=2){
+                    const wy=wTop+Math.sin((x/bw*3.2+T*2.2)*2*Math.PI)*4+Math.sin((x/bw*6.5+T*3.4)*2*Math.PI)*1.8;
+                    ctx.lineTo(x,wy);
+                }
+                ctx.lineTo(bx+bw,by+bh); ctx.closePath(); ctx.fill();
+                ctx.strokeStyle=`rgba(${R},${G},${B},.78)`; ctx.lineWidth=2; ctx.shadowColor=c; ctx.shadowBlur=8;
+                ctx.beginPath();
+                for(let x=bx;x<=bx+bw;x+=2){
+                    const wy=wTop+Math.sin((x/bw*3.2+T*2.2)*2*Math.PI)*4+Math.sin((x/bw*6.5+T*3.4)*2*Math.PI)*1.8;
+                    x===bx?ctx.moveTo(x,wy):ctx.lineTo(x,wy);
+                }
+                ctx.stroke(); ctx.shadowBlur=0; ctx.restore();
+                [[3,'#ff2244'],[1.0,'#ff8c00'],[-1,'#00ccff']].forEach(([vv,cc])=>{
+                    const ly=by+bh-bh*((vv-LO)/(HI-LO));
+                    ctx.strokeStyle=cc; ctx.lineWidth=.9; ctx.setLineDash([3,4]); ctx.globalAlpha=.45;
+                    ctx.beginPath(); ctx.moveTo(bx,ly); ctx.lineTo(bx+bw,ly); ctx.stroke();
+                    ctx.setLineDash([]); ctx.globalAlpha=1;
+                    ctx.fillStyle=cc; ctx.font='bold 9px Consolas,monospace'; ctx.textAlign='left';
+                    ctx.fillText(vv>0?'+'+vv:vv,bx+bw+4,ly+3);
+                });
+                const arY=by+bh-bh*pct;
+                ctx.strokeStyle=c; ctx.lineWidth=1.8; ctx.shadowColor=c; ctx.shadowBlur=6;
+                ctx.beginPath(); ctx.moveTo(bx+bw,arY); ctx.lineTo(bx+bw+12,arY); ctx.stroke(); ctx.shadowBlur=0;
+                if (numEl) {
+                    numEl.textContent=(v>=0?'+':'')+v.toFixed(2);
+                    numEl.style.color=c;
+                }
             });
-            const arY=by+bh-bh*pct;
-            ctx.strokeStyle=c; ctx.lineWidth=1.8; ctx.shadowColor=c; ctx.shadowBlur=6;
-            ctx.beginPath(); ctx.moveTo(bx+bw,arY); ctx.lineTo(bx+bw+12,arY); ctx.stroke(); ctx.shadowBlur=0;
-            const ne=document.getElementById('tp-tank-num');
-            ne.textContent=(v>=0?'+':'')+v.toFixed(2); ne.style.color=c;
         }
 
         function drawMain(ts){
             const cv=document.getElementById('tp-cv-main'); if(!cv) return;
             const W=cv.offsetWidth,H=cv.offsetHeight; if(!W||!H) return;
-            if(cv.width!==W){cv.width=W;cv.height=H;}
+            if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H;}
             const ctx=cv.getContext('2d'),T=ts/1000;
             ctx.clearRect(0,0,W,H);
             const v=VISIBLE[NOW_I].seaRwl,c=tcol(v),[R,G,B]=rgb(c);
@@ -4089,6 +4235,48 @@
             dLight2.position.set(-10, 10, -10);
             scene.add(dLight2);
 
+            // 하이라이트 머티리얼 — index.html DONE/PLAN 색 공유
+            const MINI_HIGHLIGHT_MATS = {
+                cyan: new THREE.MeshStandardMaterial({ color: 0x7ec8e3, roughness: 0.4, metalness: 0.2 }),
+                mint: new THREE.MeshStandardMaterial({ color: 0x90d4a8, roughness: 0.4, metalness: 0.2 })
+            };
+            const CYAN_KEYWORDS = [
+                'Structural_Framing_77', 'Structural Framing 77',
+                'Generic_Models_471',    'Generic Models 471',
+                'Generic_Models_475',    'Generic Models 475',
+                'Generic_Models_476',    'Generic Models 476'
+            ];
+            const MINT_KEYWORDS = [
+                '1390374', '1390375', '1390376', '1390377',
+                '1390556', '1390562',
+                '주경간교_교량_받침', '주경간교 교량 받침'
+            ];
+            function miniMatchAny(name, keywords) {
+                for (const k of keywords) if (name.includes(k)) return true;
+                return false;
+            }
+            function applyMiniHighlights(root) {
+                const matched = [];
+                root.traverse(child => {
+                    if (!child.isMesh) return;
+                    const n = child.name;
+                    if (miniMatchAny(n, CYAN_KEYWORDS)) {
+                        child.material = MINI_HIGHLIGHT_MATS.cyan;
+                        matched.push(['CYAN', n]);
+                    } else if (miniMatchAny(n, MINT_KEYWORDS)) {
+                        child.material = MINI_HIGHLIGHT_MATS.mint;
+                        matched.push(['MINT', n]);
+                    }
+                });
+                console.log('[mini] 하이라이트 매칭', matched.length, '개');
+                matched.forEach(([k, n]) => console.log(`  [${k}]`, n));
+                if (matched.length === 0) {
+                    console.warn('[mini] 매칭 없음. 실제 메시 이름 샘플:');
+                    let cnt = 0;
+                    root.traverse(c => { if (c.isMesh && cnt < 30) { console.log('  -', c.name); cnt++; } });
+                }
+            }
+
             try {
                 const dracoLoader = new DRACOLoader();
                 dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/libs/draco/');
@@ -4096,6 +4284,7 @@
                 loader.setDRACOLoader(dracoLoader);
                 const gltf = await new Promise((res, rej) => loader.load('bridge.glb', res, undefined, rej));
                 scene.add(gltf.scene);
+                applyMiniHighlights(gltf.scene);
                 const loadEl = document.getElementById('bridge3d-mini-loading');
                 if (loadEl) { loadEl.style.opacity = '0'; setTimeout(() => loadEl.remove(), 450); }
             } catch (err) {
@@ -4104,12 +4293,46 @@
                 if (loadEl) loadEl.innerHTML = '<div style="color:#ef4444;font-size:11px;font-weight:700;">로드 실패</div>';
             }
 
+            // 접합부 카드 더미 데이터
+            const MINI_JUNCTION_DATA = {
+                left: {
+                    title: '좌측 접합부', progress: 85,
+                    progressText: '거더 설치 완료, 케이블 장력 조정 중',
+                    owner: 'OO건설',
+                    today: '스트랜드 인장 12본 / 캣워크 점검',
+                    status: '진행 중'
+                },
+                right: {
+                    title: '우측 접합부', progress: 72,
+                    progressText: '상판 콘크리트 양생 완료, 난간 설치 예정',
+                    owner: 'OO산업',
+                    today: '거더 SEG-14 거치 / 방수 테스트',
+                    status: '진행 중'
+                }
+            };
+            const miniCard = document.getElementById('mini-junction-card');
+            function showMiniCard(type) {
+                const d = MINI_JUNCTION_DATA[type]; if (!d || !miniCard) return;
+                document.getElementById('mjc-title').textContent = d.title;
+                document.getElementById('mjc-progress').textContent = d.progress;
+                document.getElementById('mjc-progress-text').textContent = d.progressText;
+                document.getElementById('mjc-owner').textContent = d.owner;
+                document.getElementById('mjc-today').textContent = d.today;
+                document.getElementById('mjc-status').textContent = d.status;
+                miniCard.classList.add('visible');
+            }
+            function hideMiniCard() { if (miniCard) miniCard.classList.remove('visible'); }
+            // 사용자가 마우스로 카메라 조작 시작 시 카드 숨김
+            controls.addEventListener('start', hideMiniCard);
+
             // 외부에서 카메라 이동
             // - default(탑뷰) → 접합부: 직선 lerp
             // - 접합부 → 접합부: 타겟 중심 spherical 궤도 회전
+            // - junctionType('left'|'right') 전달 시 트윈 완료 후 해당 접합부 카드 표시
             let animTarget = null;
             window._miniBridgeViewer = {
-                setView(pos, target, up) {
+                setView(pos, target, up, junctionType) {
+                    hideMiniCard();
                     const fromTgt = TARGET.clone();
                     const toTgt = new THREE.Vector3(target[0], target[1], target[2]);
                     const fromPos = camera.position.clone();
@@ -4132,14 +4355,16 @@
                             mode: 'orbit',
                             fromTgt, toTgt, fromSph, toSph, dTheta,
                             fromUp, toUp,
-                            t: 0, dur: 1.6
+                            t: 0, dur: 1.6,
+                            junctionType
                         };
                     } else {
                         animTarget = {
                             mode: 'lerp',
                             fromPos, toPos, fromTgt, toTgt,
                             fromUp, toUp,
-                            t: 0, dur: 1.2
+                            t: 0, dur: 1.2,
+                            junctionType
                         };
                     }
                 }
@@ -4168,7 +4393,11 @@
                         TARGET.lerpVectors(animTarget.fromTgt, animTarget.toTgt, e);
                     }
                     camera.up.lerpVectors(animTarget.fromUp, animTarget.toUp, e).normalize();
-                    if (animTarget.t >= 1) animTarget = null;
+                    if (animTarget.t >= 1) {
+                        const jt = animTarget.junctionType;
+                        animTarget = null;
+                        if (jt) showMiniCard(jt);
+                    }
                     controls.target.copy(TARGET);
                 }
                 controls.update();
