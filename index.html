@@ -814,12 +814,8 @@
                                     <div style="width:60px;height:60px;border:5px solid rgba(126,200,227,0.2);border-top-color:#7ec8e3;border-radius:50%;animation:bridge3d-spin 0.8s linear infinite;"></div>
                                     <p style="margin-top:18px;font-size:18px;color:#7ec8e3;font-weight:700;">3D 모델 로딩 중...</p>
                                 </div>
-                                <!-- 수조 게이지 오버레이 (좌측) — tide-panel의 tp-cv-tank와 동일 데이터를 공유 -->
-                                <div id="bridge3d-tank-overlay" style="position:absolute;top:16px;left:24px;z-index:20;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:6px;">
-                                    <canvas id="tp-cv-tank-3d" width="120" height="170" style="width:160px;height:318px;display:block;"></canvas>
-                                    <div id="tp-tank-num-3d" style="font-family:Consolas,monospace;font-size:22px;font-weight:900;color:#00f5ff;text-shadow:0 0 14px currentColor;line-height:1;margin-top: -25px;">---</div>
-                                    <div style="font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.05em;font-weight:700;">EL.m</div>
-                                </div>
+                                <!-- 2D 수위 오버레이 — 좌측 Y축(수위 m) 라벨 + 현재 수위에 해당하는 가로선 (그래프 방식) -->
+                                <canvas id="bridge3d-water-overlay" style="position:absolute;inset:0;z-index:8;pointer-events:none;width:100%;height:100%;"></canvas>
                             </div>
                             <div id="bridge3d-timeline" class="shrink-0 px-8 pt-3 pb-6 border-t border-white/10 bg-black/40">
                                 <div class="flex items-center gap-4 mb-2">
@@ -920,6 +916,11 @@
 
                         <!-- 하단: bridge.glb 미니 뷰어 (오버레이/펄스 없음, 카메라 고정) -->
                         <div class="bg-[#0a0e1a] rounded-[20px] border-2 border-slate-700/50 h-[560px] shrink-0 overflow-hidden relative" id="bridge3d-mini-container">
+                            <!-- 좌측 상단 섹션 제목 — 메인 패널 '공정진행현황 및 위치관제' 헤더와 동등 -->
+                            <div id="bridge3d-mini-title" style="position:absolute;top:12px;left:16px;z-index:30;pointer-events:none;display:flex;align-items:center;gap:8px;background:rgba(0,15,30,0.7);border:1px solid rgba(126,200,227,0.3);border-radius:10px;padding:6px 12px;backdrop-filter:blur(6px);">
+                                <i data-lucide="scan-line" style="width:18px;height:18px;color:#22d3ee;"></i>
+                                <span style="font-size:16px;color:#22d3ee;font-weight:900;letter-spacing:.04em;text-shadow:0 0 8px rgba(34,211,238,0.4);">횡단면도</span>
+                            </div>
                             <div id="bridge3d-mini-loading" style="position:absolute;inset:0;z-index:10;background:rgba(10,14,26,0.95);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;transition:opacity 0.4s;">
                                 <div style="width:48px;height:48px;border:4px solid rgba(126,200,227,0.2);border-top-color:#7ec8e3;border-radius:50%;animation:bridge3d-spin 0.8s linear infinite;"></div>
                                 <div style="font-size:11px;color:#7ec8e3;font-weight:700;letter-spacing:.05em;">BRIDGE 3D 로딩 중...</div>
@@ -3403,6 +3404,7 @@
         css2dRenderer.domElement.style.top = '0';
         css2dRenderer.domElement.style.left = '0';
         css2dRenderer.domElement.style.pointerEvents = 'none';
+        css2dRenderer.domElement.style.zIndex = '15';   // 수위 오버레이(8) 위로 라벨 띄움
         container.appendChild(css2dRenderer.domElement);
 
         const controls = new OrbitControls(camera, renderer.domElement);
@@ -3568,12 +3570,103 @@
             }
         }
 
+        // ─── 2D 수위 오버레이 (그래프식: 좌측 Y축 라벨 + 현재 수위 가로선) ───
+        // 화면 = 그래프, 모델 = 그래프 배경.
+        // 컨테이너 픽셀 기준 선형 매핑(meters → y px). 카메라/모델 좌표 무관.
+        // 외부에서 window.setWaterLevel(meters) 호출 시 다시 그림. (추후 KHOA/시화호 API 연동)
+        let currentWaterMeters = 1.0;                // 하드코딩 시작값
+        const WATER_AXIS_MIN = -2.5;                 // Y축 하한 (m) — 그래프를 1m 아래로 시프트
+        const WATER_AXIS_MAX = 6.0;                  // Y축 상한 (m) — 그래프를 1m 아래로 시프트
+        const WATER_PAD_TOP = 18;
+        const WATER_PAD_BOT = 18;
+        const WATER_AXIS_X_RIGHT = 54;               // 좌측 Y축 라벨 영역 우측 끝(px)
+        const WATER_TICKS = [5, 3, 1, 0, -1, -3];    // Y축 눈금 (m)
+        const WATER_LINE_COLOR = '#4FC3F7';          // 수면선 색상 (물색 단색)
+
+        function meterToCanvasY(meters, H) {
+            const usable = H - WATER_PAD_TOP - WATER_PAD_BOT;
+            return WATER_PAD_TOP + usable * (WATER_AXIS_MAX - meters) / (WATER_AXIS_MAX - WATER_AXIS_MIN);
+        }
+
+        function drawWaterOverlay() {
+            const cv = document.getElementById('bridge3d-water-overlay');
+            if (!cv) return;
+            const W = cv.clientWidth, H = cv.clientHeight;
+            if (!W || !H) return;
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            if (cv.width !== W * dpr || cv.height !== H * dpr) {
+                cv.width = W * dpr; cv.height = H * dpr;
+            }
+            const ctx = cv.getContext('2d');
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.clearRect(0, 0, W, H);
+
+            // Y축 세로 라인 (희미한 가이드)
+            ctx.strokeStyle = 'rgba(126, 200, 227, 0.18)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(WATER_AXIS_X_RIGHT, WATER_PAD_TOP);
+            ctx.lineTo(WATER_AXIS_X_RIGHT, H - WATER_PAD_BOT);
+            ctx.stroke();
+
+            // Y축 눈금 + 라벨
+            ctx.font = 'bold 11px Consolas, monospace';
+            ctx.textBaseline = 'middle';
+            WATER_TICKS.forEach(t => {
+                const y = meterToCanvasY(t, H);
+                // 짧은 tick 마크
+                ctx.strokeStyle = 'rgba(126, 200, 227, 0.4)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(WATER_AXIS_X_RIGHT - 4, y);
+                ctx.lineTo(WATER_AXIS_X_RIGHT, y);
+                ctx.stroke();
+                // 라벨 (Y축 라벨 영역 안)
+                ctx.textAlign = 'right';
+                ctx.fillStyle = (t === 0) ? 'rgba(255,255,255,0.75)' : 'rgba(126, 200, 227, 0.7)';
+                ctx.fillText((t > 0 ? '+' : '') + t + 'm', WATER_AXIS_X_RIGHT - 7, y);
+            });
+
+            // 현재 수위 가로선 — Y축 우측부터 컨테이너 우측 끝까지
+            const wy = meterToCanvasY(currentWaterMeters, H);
+            ctx.strokeStyle = WATER_LINE_COLOR;
+            ctx.shadowColor = WATER_LINE_COLOR;
+            ctx.shadowBlur = 12;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(WATER_AXIS_X_RIGHT, wy);
+            ctx.lineTo(W - 8, wy);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // 가로선 좌측(Y축 옆)에 현재 수위 값 박스
+            const labelText = (currentWaterMeters >= 0 ? '+' : '') + currentWaterMeters.toFixed(2) + 'm';
+            ctx.font = 'bold 13px Consolas, monospace';
+            ctx.textAlign = 'left';
+            const tw = ctx.measureText(labelText).width + 14;
+            const bx = WATER_AXIS_X_RIGHT + 6, by = wy - 11;
+            ctx.fillStyle = 'rgba(0, 15, 30, 0.9)';
+            ctx.fillRect(bx, by, tw, 22);
+            ctx.strokeStyle = WATER_LINE_COLOR;
+            ctx.lineWidth = 1;
+            ctx.strokeRect(bx, by, tw, 22);
+            ctx.fillStyle = WATER_LINE_COLOR;
+            ctx.fillText(labelText, bx + 7, wy + 1);
+        }
+
+        // 외부 API — 실제 조위 데이터(해수위 m) 수신 시 호출
+        window.setWaterLevel = function(meters) {
+            currentWaterMeters = meters;
+            drawWaterOverlay();
+        };
+
         function resizeViewer() {
             if (!container.clientWidth || !container.clientHeight) return;
             camera.aspect = container.clientWidth / container.clientHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(container.clientWidth, container.clientHeight);
             css2dRenderer.setSize(container.clientWidth, container.clientHeight);
+            drawWaterOverlay();
         }
         resizeViewer();
         new ResizeObserver(resizeViewer).observe(container);
@@ -4322,8 +4415,7 @@
                 miniCard.classList.add('visible');
             }
             function hideMiniCard() { if (miniCard) miniCard.classList.remove('visible'); }
-            // 사용자가 마우스로 카메라 조작 시작 시 카드 숨김
-            controls.addEventListener('start', hideMiniCard);
+            // 사용자가 직접 카메라 조작해도 카드는 유지. 다른 접합부 뷰 클릭 시 setView() 안의 hideMiniCard()로 교체됨.
 
             // 외부에서 카메라 이동
             // - default(탑뷰) → 접합부: 직선 lerp
