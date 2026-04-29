@@ -486,6 +486,23 @@
         .view-switch .vsw-btn { transition: all .2s; letter-spacing: .03em; }
         .view-switch .vsw-btn:not(.active):hover { background: rgba(255,255,255,0.06); }
 
+        /* 차트 차오름 애니메이션 — 가로/세로 바, 도넛 등 */
+        @keyframes chartBarRise {
+            0%   { transform: scaleX(0); }
+            100% { transform: scaleX(1); }
+        }
+        @keyframes chartBarRiseY {
+            0%   { transform: scaleY(0); }
+            100% { transform: scaleY(1); }
+        }
+        .chart-bar-anim    { transform-origin: left center;   animation: chartBarRise 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+        .chart-bar-anim-y  { transform-origin: bottom center; animation: chartBarRiseY 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+        .chart-fade-in     { animation: chartFadeIn 0.6s ease both; }
+        @keyframes chartFadeIn {
+            0%   { opacity: 0; transform: translateY(6px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
         /* KPI mini cards */
         .kpi-mini {
             background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(0,0,0,0.55));
@@ -808,6 +825,19 @@
                             <div class="flex items-center gap-3 px-8 py-4 shrink-0">
                                 <h3 class="text-[30px] text-cyan-400 font-black flex items-center gap-3"><i data-lucide="trending-down"></i> 공정진행현황 및 위치관제</h3>
                                 <div id="bridge3d-status" class="text-[14px] text-slate-500 font-bold ml-4" style="display:none"></div>
+                                <div class="ml-auto flex items-center gap-3">
+                                    <button class="bridge3d-cam-btn" id="bridge3d-top-view-btn" title="사선 조감도">사선조감도</button>
+                                    <button class="bridge3d-cam-btn" id="bridge3d-overhead-view-btn" title="상부 조감도">상부조감도</button>
+                                    <button class="bridge3d-cam-btn" id="bridge3d-reset-cam-btn" title="default 카메라로 복귀">카메라초기화</button>
+                                    <div id="bridge3d-water-ctrl" class="flex items-center gap-2 px-3 py-1.5 rounded-lg border-2 border-cyan-500/50 bg-cyan-950/40 shadow-[0_0_12px_rgba(0,245,255,0.3)]" title="수위 프리셋. 추후 실제 조위 데이터와 연동">
+                                        <span class="text-[13px] font-black text-cyan-300 whitespace-nowrap tracking-wider mr-1">호수위</span>
+                                        <button class="water-preset-btn tone-green"  data-water="-1.2" title="정상 수위 -1.2m">정상</button>
+                                        <button class="water-preset-btn tone-yellow" data-water="0"    title="주의 수위 0m">주의</button>
+                                        <button class="water-preset-btn tone-orange" data-water="1"    title="경계 수위 +1m">경계</button>
+                                        <button class="water-preset-btn tone-red"    data-water="1.3"  title="위험 수위 +1.3m">위험</button>
+                                        <span id="bridge3d-water-value" class="text-[13px] font-black text-white font-mono min-w-[56px] text-right ml-1">+0.00m</span>
+                                    </div>
+                                </div>
                             </div>
                             <div class="flex-1 relative" id="bridge3d-container">
                                 <div id="bridge3d-loading" style="position:absolute;inset:0;z-index:10;background:rgba(10,14,26,0.95);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.4s;">
@@ -815,7 +845,16 @@
                                     <p style="margin-top:18px;font-size:18px;color:#7ec8e3;font-weight:700;">3D 모델 로딩 중...</p>
                                 </div>
                                 <!-- 2D 수위 오버레이 — 좌측 Y축(수위 m) 라벨 + 현재 수위에 해당하는 가로선 (그래프 방식) -->
-                                <canvas id="bridge3d-water-overlay" style="position:absolute;inset:0;z-index:8;pointer-events:none;width:100%;height:100%;"></canvas>
+                                <canvas id="bridge3d-water-overlay" style="position:absolute;inset:0;z-index:8;pointer-events:none;width:100%;height:100%;transition:opacity 0.4s ease;"></canvas>
+                                <!-- 방면 안내 라벨 (좌상: 화성방면 / 우상: 안성방면) -->
+                                <div class="bridge3d-direction-card bridge3d-direction-left">
+                                    <span class="bridge3d-direction-arrow">◀</span>
+                                    <span>화성방면</span>
+                                </div>
+                                <div class="bridge3d-direction-card bridge3d-direction-right">
+                                    <span>안성방면</span>
+                                    <span class="bridge3d-direction-arrow">▶</span>
+                                </div>
                             </div>
                             <div id="bridge3d-timeline" class="shrink-0 px-8 pt-3 pb-6 border-t border-white/10 bg-black/40">
                                 <div class="flex items-center gap-4 mb-2">
@@ -2170,6 +2209,43 @@
                 </div>`;
         }
 
+        // 차트 렌더 직후 가로 바(width:NN%) / 도넛(stroke-dasharray) / 컨테이너 fade-in 애니메이션 트리거
+        function animateChartFills(host) {
+            if (!host) return;
+            // 1) 가로 바: 인라인 width: NN% 가진 div → scaleX 0→1
+            host.querySelectorAll('div[style*="width:"]').forEach(el => {
+                if (/width\s*:\s*[\d.]+\s*%/.test(el.style.cssText)) {
+                    el.classList.remove('chart-bar-anim');
+                    void el.offsetWidth; // reflow → 재시작
+                    el.classList.add('chart-bar-anim');
+                }
+            });
+            // 2) 세로 바: 인라인 height: NN% 가진 div → scaleY 0→1
+            host.querySelectorAll('div[style*="height:"]').forEach(el => {
+                if (/height\s*:\s*[\d.]+\s*%/.test(el.style.cssText)) {
+                    el.classList.remove('chart-bar-anim-y');
+                    void el.offsetWidth;
+                    el.classList.add('chart-bar-anim-y');
+                }
+            });
+            // 3) SVG 도넛(stroke-dasharray가 0이 아닌 circle) → 0→원래값
+            host.querySelectorAll('circle[stroke-dasharray]').forEach(c => {
+                const target = c.getAttribute('stroke-dasharray');
+                if (!target || target.startsWith('0 ')) return;
+                c.style.transition = 'none';
+                c.setAttribute('stroke-dasharray', '0 99999');
+                void c.getBBox();
+                requestAnimationFrame(() => {
+                    c.style.transition = 'stroke-dasharray 1.0s cubic-bezier(0.22, 0.61, 0.36, 1)';
+                    c.setAttribute('stroke-dasharray', target);
+                });
+            });
+            // 4) 차트 host 컨테이너 자체 fade-in
+            host.classList.remove('chart-fade-in');
+            void host.offsetWidth;
+            host.classList.add('chart-fade-in');
+        }
+
         function initPanelViewSwitch() {
             const RENDERERS = { work: renderWorkChart, attend: renderAttendChart, equip: renderEquipChart, tbm: renderTbmChart };
             document.querySelectorAll('.view-switch').forEach(group => {
@@ -2201,9 +2277,28 @@
                             tableView.style.display = 'none'; chartView.style.display = 'flex';
                             if (workTabs) workTabs.style.display = 'none';
                             RENDERERS[panel]?.();
+                            animateChartFills(chartView);
                         }
                     });
                 });
+            });
+        }
+
+        // 5초마다 4개 패널의 표↔차트 자동 토글. 패널 간 시작 오프셋(stagger)을 주어 동시 전환 어색함 제거
+        function startAutoViewSwitch(intervalMs = 5000, staggerMs = 1500) {
+            const order = ['tbm', 'attend', 'equip', 'work']; // 좌→우 / 위→아래 순서
+            order.forEach((key, i) => {
+                const group = document.querySelector(`.view-switch[data-panel="${key}"]`);
+                if (!group) return;
+                const tick = () => {
+                    const buttons = group.querySelectorAll('.vsw-btn');
+                    if (buttons.length < 2) return;
+                    const activeBtn = group.querySelector('.vsw-btn.active') || buttons[0];
+                    const otherBtn = Array.from(buttons).find(b => b !== activeBtn);
+                    if (otherBtn) otherBtn.click();
+                };
+                // i번째 패널은 i * stagger 만큼 늦게 첫 toggle 시작 → 이후 동일 intervalMs 주기 유지
+                setTimeout(() => setInterval(tick, intervalMs), i * staggerMs);
             });
         }
 
@@ -3251,6 +3346,7 @@
                 initEquipTable();
                 initTbmTable();
                 initPanelViewSwitch();
+                startAutoViewSwitch(5000);  // 4개 패널 표↔차트 5초마다 자동 토글
                 initWorkerMonitor();
                 initRainForecast();
                 initWeatherSim();
@@ -3320,6 +3416,61 @@
         #bridge3d-month-ticks span { cursor: pointer; }
         #bridge3d-month-ticks span:hover { color: #7ec8e3; }
 
+        /* 방면 안내 카드 (#bridge3d-container 좌상/우상) */
+        .bridge3d-direction-card {
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(0, 15, 30, 0.85); backdrop-filter: blur(6px);
+            border: 1.5px solid rgba(0, 245, 255, 0.7);
+            border-radius: 10px; padding: 8px 14px;
+            font-size: 16px; font-weight: 900; color: #00f5ff;
+            letter-spacing: 0.08em;
+            text-shadow: 0 0 6px rgba(0, 245, 255, 0.6);
+            box-shadow: 0 0 16px rgba(0, 245, 255, 0.35), inset 0 0 16px rgba(0, 245, 255, 0.06);
+            pointer-events: none;
+        }
+        .bridge3d-direction-left {
+            position: absolute; top: 16px; left: 80px; z-index: 16;
+        }
+        .bridge3d-direction-right {
+            position: absolute; top: 16px; right: 30px; z-index: 16;
+        }
+        .bridge3d-direction-arrow { color: #7ec8e3; font-size: 14px; }
+
+        /* 카메라 컨트롤 버튼 (헤더의 상단뷰 / 카메라초기화) */
+        .bridge3d-cam-btn {
+            padding: 8px 14px; border-radius: 8px;
+            font-size: 13px; font-weight: 800; letter-spacing: 0.05em;
+            border: 1.5px solid rgba(0, 245, 255, 0.6);
+            background: rgba(0, 15, 30, 0.85); color: #00f5ff;
+            cursor: pointer; line-height: 1;
+            box-shadow: 0 0 12px rgba(0, 245, 255, 0.25);
+            transition: all 0.15s;
+        }
+        .bridge3d-cam-btn:hover {
+            background: rgba(0, 245, 255, 0.18);
+            transform: translateY(-1px);
+            box-shadow: 0 0 16px rgba(0, 245, 255, 0.55);
+        }
+        .bridge3d-cam-btn:active { transform: translateY(0); }
+
+        /* 수위 프리셋 버튼 (#bridge3d-water-ctrl, 신호등 톤) */
+        .water-preset-btn {
+            padding: 4px 10px; border-radius: 6px;
+            font-size: 12px; font-weight: 800; letter-spacing: 0.05em;
+            border: 1.5px solid; background: rgba(0, 15, 30, 0.6);
+            cursor: pointer; transition: all 0.15s; line-height: 1;
+        }
+        .water-preset-btn:hover { transform: translateY(-1px); filter: brightness(1.15); }
+        .water-preset-btn.tone-green  { color: #22c55e; border-color: rgba(34,197,94,0.5); }
+        .water-preset-btn.tone-yellow { color: #eab308; border-color: rgba(234,179,8,0.5); }
+        .water-preset-btn.tone-orange { color: #f97316; border-color: rgba(249,115,22,0.5); }
+        .water-preset-btn.tone-red    { color: #ef4444; border-color: rgba(239,68,68,0.5); }
+        .water-preset-btn.active { color: #fff; }
+        .water-preset-btn.tone-green.active  { background: rgba(34,197,94,0.35);  border-color: #22c55e; box-shadow: 0 0 10px rgba(34,197,94,0.55); }
+        .water-preset-btn.tone-yellow.active { background: rgba(234,179,8,0.35);  border-color: #eab308; box-shadow: 0 0 10px rgba(234,179,8,0.55); }
+        .water-preset-btn.tone-orange.active { background: rgba(249,115,22,0.35); border-color: #f97316; box-shadow: 0 0 10px rgba(249,115,22,0.55); }
+        .water-preset-btn.tone-red.active    { background: rgba(239,68,68,0.35);  border-color: #ef4444; box-shadow: 0 0 10px rgba(239,68,68,0.55); }
+
         /* 미니뷰어 접합부 카드 (컨테이너 내부 absolute) */
         #mini-junction-card {
             position: absolute; top: 16px; right: 16px; transform: translateX(24px);
@@ -3366,6 +3517,7 @@
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
         import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
         import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+        import { Water } from 'three/addons/objects/Water.js';
 
         const container = document.getElementById('bridge3d-container');
         const statusEl = document.getElementById('bridge3d-status');
@@ -3427,6 +3579,126 @@
         let pulseRings = [];
         let baseCameraDist = 1;
         const clock = new THREE.Clock();
+
+        // ─── 수면 (D′: Water.js + 반사 패스 직전 모델 숨김) ───
+        let currentModel = null;
+        let water = null;
+        let waterBaseY = 0;
+        let waterTargetY = 0;
+        const METER_TO_MODEL = 10;      // 시각 과장 배율 (1m → 10 model unit)
+        const BASE_Y_OFFSET_M = 3.0;    // 수면 기본 Y 오프셋 (m)
+
+        function createWater(box, size, center) {
+            const waterSize = Math.max(size.x, size.z) * 3;
+            const geo = new THREE.PlaneGeometry(waterSize, waterSize);
+            water = new Water(geo, {
+                textureWidth: 256,
+                textureHeight: 256,
+                waterNormals: new THREE.TextureLoader().load(
+                    'https://threejs.org/examples/textures/waternormals.jpg',
+                    tex => { tex.wrapS = tex.wrapT = THREE.RepeatWrapping; }
+                ),
+                sunDirection: new THREE.Vector3(0.3, 1.0, 0.3).normalize(),
+                sunColor: 0x7ec8e3,
+                waterColor: 0x0a3a5f,
+                distortionScale: 3.0,
+                fog: false
+            });
+            water.rotation.x = -Math.PI / 2;
+            waterBaseY = box.min.y + 1.5 + BASE_Y_OFFSET_M * METER_TO_MODEL;
+            waterTargetY = waterBaseY;
+            water.position.set(center.x, waterBaseY, center.z);
+
+            // 반사 패스 직전 currentModel을 숨겨 드로우콜 0 → 배경/하늘색만 반사에 담김
+            const origOnBeforeRender = water.onBeforeRender.bind(water);
+            water.onBeforeRender = function(renderer, sceneArg, cameraArg) {
+                const wasVisible = currentModel ? currentModel.visible : true;
+                if (currentModel) currentModel.visible = false;
+                origOnBeforeRender(renderer, sceneArg, cameraArg);
+                if (currentModel) currentModel.visible = wasVisible;
+            };
+
+            scene.add(water);
+        }
+
+        // ─── 카메라 트윈 / 사선조감도 / 상부조감도 / 초기화 ───
+        let _initCamPos = null;     // loadModel에서 default 카메라 setup 직후 저장
+        let _initTarget = null;
+        let _camTween = null;       // 진행 중 트윈 핸들 (재요청 시 취소용)
+        // ─────── 카메라 뷰 파라미터 (사용자 조정 영역) ───────
+        // PHI         (rad)   : 0=완전 탑뷰, π/2≈1.57=수평. 작을수록 위에서 내려다봄
+        // THETA_OFFSET(rad)   : default theta 기준 수평 회전. 음수=좌측 회전(우측드래그), 양수=우측 회전(좌측드래그)
+        // PAN_LEFT    (radius 비율) : 양수=카메라 좌측 이동(모델 우측↑·panLeft·우측드래그), 음수=카메라 우측 이동(모델 좌측↑·panRight·좌측드래그)
+        // ZOOM        (radius 배율) : 1=그대로, <1=가까이(확대), >1=멀리(축소)
+
+        const TOP_VIEW_PHI          = 1.1;     // 사선조감도 phi
+        const TOP_VIEW_THETA_OFFSET = -0.2;    // 사선조감도 theta 회전 (좌측드래그 방향)
+        const TOP_VIEW_PAN_LEFT     = 0.1;     // 사선조감도 좌측 평행이동
+        const TOP_VIEW_ZOOM         = 1;       // 사선조감도 거리 배율
+
+        const OVERHEAD_VIEW_PHI          = 0.01;   // 상부조감도 phi (거의 탑뷰)
+        const OVERHEAD_VIEW_THETA_OFFSET = 0;     // 상부조감도 theta 회전 없음
+        const OVERHEAD_VIEW_PAN_LEFT     = -0.3; // 상부조감도 우측 평행이동 (음수 = panRight)
+        const OVERHEAD_VIEW_ZOOM         = 0.95;  // 상부조감도 거리 배율 (0.85 = 15% 확대)
+
+        const CAM_TWEEN_MS = 1200;             // 트윈 지속 시간
+
+        function tweenCamera(targetPos, targetLookAt, durationMs = CAM_TWEEN_MS) {
+            if (_camTween) _camTween.cancelled = true;
+            const startPos = camera.position.clone();
+            const startTarget = controls.target.clone();
+            const t0 = performance.now();
+            const tween = { cancelled: false };
+            _camTween = tween;
+            function step() {
+                if (tween.cancelled) return;
+                const t = Math.min(1, (performance.now() - t0) / durationMs);
+                // easeInOutQuad
+                const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+                camera.position.lerpVectors(startPos, targetPos, e);
+                controls.target.lerpVectors(startTarget, targetLookAt, e);
+                if (t < 1) requestAnimationFrame(step);
+                else if (_camTween === tween) _camTween = null;
+            }
+            step();
+        }
+
+        function setWaterOverlayVisible(visible) {
+            const ov = document.getElementById('bridge3d-water-overlay');
+            if (ov) ov.style.opacity = visible ? '1' : '0';
+        }
+
+        // 공통 조감도 트윈 (phi/theta_offset/pan_left/zoom 파라미터로 사선/상부 둘 다 처리)
+        function goAerialView(phi, thetaOffset, panLeft, zoom = 1) {
+            if (!_initCamPos || !_initTarget) return;
+            const initOffset = _initCamPos.clone().sub(_initTarget);
+            const initSph = new THREE.Spherical().setFromVector3(initOffset);
+            const newRadius = initSph.radius * zoom;
+            const newSph = new THREE.Spherical(newRadius, phi, initSph.theta + thetaOffset);
+            const newPos = new THREE.Vector3().setFromSpherical(newSph).add(_initTarget);
+            const newTarget = _initTarget.clone();
+
+            // panLeft != 0 → 카메라+타겟을 같이 평행이동. 양수=좌측, 음수=우측
+            if (panLeft !== 0) {
+                const camDir = new THREE.Vector3().subVectors(newTarget, newPos).normalize();
+                const rightVec = new THREE.Vector3().crossVectors(camDir, camera.up).normalize();
+                const panOffset = rightVec.multiplyScalar(-newRadius * panLeft);
+                newPos.add(panOffset);
+                newTarget.add(panOffset);
+            }
+
+            setWaterOverlayVisible(false);  // 위에서 본 시야에서는 호수위 그래프가 의미 없으므로 숨김
+            tweenCamera(newPos, newTarget);
+        }
+
+        function goTopView()      { goAerialView(TOP_VIEW_PHI,      TOP_VIEW_THETA_OFFSET,      TOP_VIEW_PAN_LEFT,      TOP_VIEW_ZOOM); }       // 사선조감도
+        function goOverheadView() { goAerialView(OVERHEAD_VIEW_PHI, OVERHEAD_VIEW_THETA_OFFSET, OVERHEAD_VIEW_PAN_LEFT, OVERHEAD_VIEW_ZOOM); }   // 상부조감도
+
+        function resetCamera() {
+            if (!_initCamPos || !_initTarget) return;
+            setWaterOverlayVisible(true);   // default 측면뷰 복귀 → 호수위 그래프 다시 표시
+            tweenCamera(_initCamPos.clone(), _initTarget.clone());
+        }
 
         // 공정 시각화용 (진행률 기반 10단계, 10% 단위)
         const TOTAL_STEPS = 10;
@@ -3580,10 +3852,31 @@
         const WATER_PAD_TOP = 18;
         const WATER_PAD_BOT = 18;
         const WATER_AXIS_X_RIGHT = 54;               // 좌측 Y축 라벨 영역 우측 끝(px)
-        const WATER_TICKS = [5, 3, 1, 0, -1, -3];    // Y축 눈금 (m)
-        const WATER_LINE_COLOR = '#4FC3F7';          // 수면선 색상 (물색 단색)
+        const WATER_TICKS = [5, 3, 1, 0, -1, -2];    // Y축 눈금 (m) — -3은 시프트 후 그래프 영역 밖이라 제외
+        const WATER_LINE_COLOR = '#4FC3F7';          // 수면선 색상 (fallback, 미사용 가능)
+        // 호수위 프리셋 톤(정상/주의/경계/위험)에 맞춘 동적 색상. setWaterLevel 호출 시 currentWaterColor 갱신.
+        const WATER_TONE_GREEN  = '#22c55e';         // 정상  (m ≤ -0.6)
+        const WATER_TONE_YELLOW = '#eab308';         // 주의  (-0.6 < m ≤ 0.5)
+        const WATER_TONE_ORANGE = '#f97316';         // 경계  (0.5  < m ≤ 1.15)
+        const WATER_TONE_RED    = '#ef4444';         // 위험  (m > 1.15)
+        let currentWaterColor = WATER_TONE_GREEN;
+        function getWaterToneColor(meters) {
+            if (meters > 1.15)  return WATER_TONE_RED;
+            if (meters > 0.5)   return WATER_TONE_ORANGE;
+            if (meters > -0.6)  return WATER_TONE_YELLOW;
+            return WATER_TONE_GREEN;
+        }
 
         function meterToCanvasY(meters, H) {
+            // 3D water가 생성된 후엔 실제 water mesh world Y를 카메라로 화면 투영 → 픽셀 Y
+            // (그래프 라벨/가로선이 3D 모델 수위와 정확히 일치)
+            if (water && container.clientWidth > 0 && container.clientHeight > 0) {
+                const worldY = waterBaseY + meters * METER_TO_MODEL;
+                const v = new THREE.Vector3(water.position.x, worldY, water.position.z);
+                v.project(camera);
+                return (1 - v.y) * 0.5 * H;
+            }
+            // fallback (water 생성 전 초기 1회): 기존 선형 매핑
             const usable = H - WATER_PAD_TOP - WATER_PAD_BOT;
             return WATER_PAD_TOP + usable * (WATER_AXIS_MAX - meters) / (WATER_AXIS_MAX - WATER_AXIS_MIN);
         }
@@ -3609,6 +3902,13 @@
             ctx.lineTo(WATER_AXIS_X_RIGHT, H - WATER_PAD_BOT);
             ctx.stroke();
 
+            // Y축 제목 (최상단) — 축 의미 표기
+            ctx.font = 'bold 11px Pretendard, sans-serif';
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'top';
+            ctx.fillStyle = 'rgba(126, 200, 227, 0.95)';
+            ctx.fillText('호수위', WATER_AXIS_X_RIGHT - 4, 3);
+
             // Y축 눈금 + 라벨
             ctx.font = 'bold 11px Consolas, monospace';
             ctx.textBaseline = 'middle';
@@ -3627,10 +3927,18 @@
                 ctx.fillText((t > 0 ? '+' : '') + t + 'm', WATER_AXIS_X_RIGHT - 7, y);
             });
 
-            // 현재 수위 가로선 — Y축 우측부터 컨테이너 우측 끝까지
-            const wy = meterToCanvasY(currentWaterMeters, H);
-            ctx.strokeStyle = WATER_LINE_COLOR;
-            ctx.shadowColor = WATER_LINE_COLOR;
+            // 현재 수위 가로선 — 3D water mesh의 실제 화면 위치에 동기화 (lerp 값 따라감)
+            let wy;
+            if (water && container.clientWidth > 0 && container.clientHeight > 0) {
+                const wp = water.position;
+                const v = new THREE.Vector3(wp.x, wp.y, wp.z);
+                v.project(camera);
+                wy = (1 - v.y) * 0.5 * H;
+            } else {
+                wy = meterToCanvasY(currentWaterMeters, H);
+            }
+            ctx.strokeStyle = currentWaterColor;
+            ctx.shadowColor = currentWaterColor;
             ctx.shadowBlur = 12;
             ctx.lineWidth = 2;
             ctx.beginPath();
@@ -3639,25 +3947,39 @@
             ctx.stroke();
             ctx.shadowBlur = 0;
 
-            // 가로선 좌측(Y축 옆)에 현재 수위 값 박스
+            // 가로선 좌측(Y축 옆)에 현재 수위 값 박스 — 주기적 깜빡임 (현재 수위 강조)
             const labelText = (currentWaterMeters >= 0 ? '+' : '') + currentWaterMeters.toFixed(2) + 'm';
             ctx.font = 'bold 13px Consolas, monospace';
+            ctx.textBaseline = 'middle';
             ctx.textAlign = 'left';
             const tw = ctx.measureText(labelText).width + 14;
             const bx = WATER_AXIS_X_RIGHT + 6, by = wy - 11;
+            // 어두운 배경(가독성 위해 알파 고정)
             ctx.fillStyle = 'rgba(0, 15, 30, 0.9)';
             ctx.fillRect(bx, by, tw, 22);
-            ctx.strokeStyle = WATER_LINE_COLOR;
-            ctx.lineWidth = 1;
+            // 펄스: 약 1Hz, 0.4 ~ 1.0 알파 + glow 동기화
+            const blink = 0.4 + 0.6 * (0.5 + 0.5 * Math.sin(performance.now() * 0.005));
+            ctx.save();
+            ctx.globalAlpha = blink;
+            ctx.strokeStyle = currentWaterColor;
+            ctx.lineWidth = 1.5;
+            ctx.shadowColor = currentWaterColor;
+            ctx.shadowBlur = 12;
             ctx.strokeRect(bx, by, tw, 22);
+            ctx.shadowBlur = 0;
             ctx.fillStyle = WATER_LINE_COLOR;
             ctx.fillText(labelText, bx + 7, wy + 1);
+            ctx.restore();
         }
 
-        // 외부 API — 실제 조위 데이터(해수위 m) 수신 시 호출
+        // 외부 API — 실제 조위 데이터(해수위 m) 수신 시 호출 (2D 오버레이 + 3D 수면)
         window.setWaterLevel = function(meters) {
             currentWaterMeters = meters;
+            currentWaterColor = getWaterToneColor(meters);   // 호수위 임계값에 따라 라인/박스 톤 갱신
             drawWaterOverlay();
+            if (water) {
+                waterTargetY = waterBaseY + meters * METER_TO_MODEL;
+            }
         };
 
         function resizeViewer() {
@@ -3675,6 +3997,13 @@
             requestAnimationFrame(animate);
             const delta = clock.getDelta();
             controls.update();
+
+            if (water) {
+                water.material.uniforms['time'].value += delta;
+                water.position.y += (waterTargetY - water.position.y) * 0.06;
+                // 그래프 가로선이 3D 수면 lerp을 따라가게 매 프레임 redraw (캔버스 작아 부담 적음)
+                drawWaterOverlay();
+            }
 
             if (baseCameraDist > 0) {
                 const currentDist = camera.position.distanceTo(controls.target);
@@ -3761,7 +4090,8 @@
                 arrowGroup.add(head);
                 const arrowY = DECK_Y + 18;
                 arrowGroup.position.set(jx, arrowY, jz);
-                scene.add(arrowGroup);
+                // currentModel(D′ 반사 패스에서 숨겨지는 그룹)에 부착 → 화살표가 물에 반사되지 않음
+                (currentModel || scene).add(arrowGroup);
 
                 // 화살표 클릭 영역
                 const arrowOuter = document.createElement('div');
@@ -3946,6 +4276,7 @@
             const object = new THREE.Group();
             Object.values(partMap).forEach(o => object.add(o));
             scene.add(object);
+            currentModel = object; // D′ 수면 반사 패스에서 참조
 
             const box = new THREE.Box3().setFromObject(object);
             const size = box.getSize(new THREE.Vector3());
@@ -3990,10 +4321,38 @@
             controls.update();
             baseCameraDist = camera.position.distanceTo(controls.target);
 
+            // default 카메라 위치/타겟 저장 (상단뷰/카메라초기화 트윈 기준점)
+            _initCamPos = camera.position.clone();
+            _initTarget = controls.target.clone();
+
             addJunctionMarkers(partMap);
             assignSteps(object, partMap);
             initTimeline();
             applyProgress(0);
+
+            // 수면(D′) 생성 + 수위 프리셋 버튼 이벤트 연결 (정상/주의/경계/위험)
+            createWater(box, size, center);
+            const waterValue = document.getElementById('bridge3d-water-value');
+            const waterBtns = document.querySelectorAll('#bridge3d-water-ctrl .water-preset-btn');
+            function applyWaterPreset(m, btn) {
+                window.setWaterLevel(m);
+                if (waterValue) waterValue.textContent = (m >= 0 ? '+' : '') + m.toFixed(2) + 'm';
+                waterBtns.forEach(b => b.classList.toggle('active', b === btn));
+            }
+            waterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const m = parseFloat(btn.dataset.water);
+                    applyWaterPreset(m, btn);
+                });
+            });
+            // 초기 상태: 정상(-1.2m) 활성
+            const defaultBtn = document.querySelector('#bridge3d-water-ctrl .water-preset-btn[data-water="-1.2"]');
+            if (defaultBtn) applyWaterPreset(-1.2, defaultBtn);
+
+            // 카메라 컨트롤 버튼 (사선조감도 / 상부조감도 / 카메라초기화)
+            document.getElementById('bridge3d-top-view-btn')?.addEventListener('click', goTopView);
+            document.getElementById('bridge3d-overhead-view-btn')?.addEventListener('click', goOverheadView);
+            document.getElementById('bridge3d-reset-cam-btn')?.addEventListener('click', resetCamera);
 
             let meshCount = 0;
             object.traverse(c => { if (c.isMesh) meshCount++; });
